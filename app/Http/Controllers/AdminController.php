@@ -83,11 +83,31 @@ class AdminController extends Controller
         $recentActivity = $this->getRecentActivity();
         // Admin only sees languages assigned to them
         $languages = \App\Models\Language::where('assigned_admin_id', $admin->id)->get();
+
         $recentReports = \App\Models\Report::with(['user', 'language'])
             ->whereIn('language_id', $languages->pluck('id'))
             ->latest()
             ->take(5)
             ->get();
+
+        // Quarterly reports for this quarter
+        $currentQuarter = 'Q3 2025'; // You may want to make this dynamic
+        $quarterlyReports = \App\Models\Report::with(['user', 'language'])
+            ->whereIn('language_id', $languages->pluck('id'))
+            ->where('quarter', $currentQuarter)
+            ->get();
+        $quarterlyReportsCount = $quarterlyReports->count();
+
+        // Calculate reports for revision
+        $reportsForRevision = \App\Models\Report::whereIn('language_id', $languages->pluck('id'))
+            ->where(function($query) {
+                $query->where('status', 'rejected')
+                      ->orWhere('review_status', 'rejected');
+            })->count();
+
+        // Get all users assigned to the admin's languages
+        $userIds = $languages->pluck('assigned_user_id')->filter()->unique();
+        $users = User::whereIn('id', $userIds)->get();
 
         return view('admin.globalrize-dashboard', compact(
             'totalUsers',
@@ -97,7 +117,11 @@ class AdminController extends Controller
             'adminStats',
             'recentActivity',
             'languages',
-            'recentReports'
+            'recentReports',
+            'reportsForRevision',
+            'quarterlyReports',
+            'quarterlyReportsCount',
+            'users'
         ));
     }
 
@@ -222,6 +246,7 @@ class AdminController extends Controller
             'reports_due' => $reports->where('status', 'draft')->count(),
             'reports_reviewed' => $reports->where('review_status', 'reviewed')->count(),
             'reports_approved' => $reports->where('review_status', 'approved')->count(),
+            'reports_revision' => $reports->where('status', 'rejected')->count() + $reports->where('review_status', 'rejected')->count(),
             'year_submitted' => \App\Models\Report::whereIn('language_id', $languages->pluck('id'))->whereYear('created_at', $year)->count(),
             'year_reviewed' => \App\Models\Report::whereIn('language_id', $languages->pluck('id'))->whereYear('reviewed_at', $year)->count(),
             'year_approved' => \App\Models\Report::whereIn('language_id', $languages->pluck('id'))->whereYear('reviewed_at', $year)->where('review_status', 'approved')->count(),

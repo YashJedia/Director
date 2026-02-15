@@ -78,7 +78,22 @@
             <!-- Page Content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
                 <div class="container mx-auto px-6 py-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                                                <!-- Reports for Revision Tile -->
+                                                <div class="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-lg p-5 shadow-md">
+                                                    <div class="flex items-center justify-between">
+                                                        <div>
+                                                            <p class="text-sm font-medium text-red-600">Reports for Revision</p>
+                                                            <p class="text-2xl font-bold text-red-900" id="dashboard-reports-revision">{{ $reportsForRevision ?? 0 }}</p>
+                                                            <p class="text-xs text-red-500">Needs user revision</p>
+                                                        </div>
+                                                        <div class="bg-red-500 p-3 rounded-full">
+                                                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h7V3m0 0l11 11-4 4-7-7z" />
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
                         <!-- Stats Cards -->
                         <div class="bg-white overflow-hidden shadow rounded-lg">
                             <div class="p-5">

@@ -55,7 +55,7 @@
     </div>
 
     <!-- Report Statistics Tiles -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         <!-- Total Reports Received -->
         <div class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-6 shadow-md">
             <div class="flex items-center justify-between">
@@ -66,6 +66,20 @@
                 </div>
                 <div class="bg-blue-500 p-3 rounded-full">
                     <i class="fas fa-file-alt text-white text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports for Revision -->
+        <div class="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-lg p-6 shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-red-600">Reports for Revision</p>
+                    <p class="text-2xl font-bold text-red-900" id="reports-revision">0</p>
+                    <p class="text-xs text-red-500">Needs user revision</p>
+                </div>
+                <div class="bg-red-500 p-3 rounded-full">
+                    <i class="fas fa-undo text-white text-xl"></i>
                 </div>
             </div>
         </div>
@@ -685,7 +699,9 @@
                     document.getElementById('reports-approved').textContent = data.stats.reports_approved || '0';
                     document.getElementById('year-submitted').textContent = data.stats.year_submitted || '0';
                     document.getElementById('year-reviewed').textContent = data.stats.year_reviewed || '0';
+
                     document.getElementById('year-approved').textContent = data.stats.year_approved || '0';
+                    document.getElementById('reports-revision').textContent = data.stats.reports_revision || '0';
                     
                     // Populate fields if report data exists
                     if (data.report_data && languageId) {
