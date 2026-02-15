@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <!-- Sidebar -->
+    <div class=" sticky-top px-3 border-bottom  py-2 bg-white gg-1 d-flex align-items-center justify-content-between mb-4">
+      <div class="d-flex align-items-center">
+         <button class="toggle-btn me-3" id="sidebarToggle">
+          <i class="fa fa-bars"></i>
+        </button>
+        <div>
+          <h5 class="gg">
+          <i class="fa-solid fa-chart-column"></i>
+          </h5>
+        </div>
+        <div class="ms-2">
+          <h5 class="mb-0 fw-bold"> GlobalRize Reporting</h5>
+          <div class="text-muted" style="font-size: 13px;">International Director</div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="text-muted small border rounded-pill px-3 py-1 me-4">Current Period: <strong>Q3 2025</strong></div>
+        <div class="header-right">
+          <div class="fw-semibold">Test Director</div>
+          <div class="circle">T</div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar hide" id="sidebar">
+      <a href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+      <a href="reports.html" class="active"><i class="fa-solid fa-file-lines"></i> Reports</a>
+      <a href="user-management.html"><i class="fa-solid fa-user-gear"></i> User Management</a>
+      <a href="language-assistant.html"><i class="fa-solid fa-language"></i> Language Assignment</a>
+      <a href="analytics-overview.html" ><i class="fa-solid fa-chart-column"></i> Analytics</a>
+      <a href="dashboard.html"><i class="fa-solid fa-gear"></i> Settings</a>
+    </div>
+    <!-- Main content -->
+    <!-- Main Content -->
+    <div class="content">
+      <!-- Top Bar -->
+      
+      
+      <div class="d-flex  align-items-center">
+        <button class="btn btn-outline-secondary mb-3"><i class="fa fa-arrow-left"></i> Back to Dashboard</button>
+        <h4 class="fw-bold mb-3 ms-4">Quarterly Report</h4>
+      </div>
+      <div class="card-shadow report-details">
+        <h5 class="fw-semibold mb-3">Report Details</h5>
+        <div class="row g-3">
+          <div class="col-lg-4">
+            <label for="year" class="form-label fw-bold">Year</label>
+            <select id="year" class="form-select">
+              <option selected>2025</option>
+            </select>
+          </div>
+          <div class="col-lg-4">
+            <label for="quarter" class="form-label fw-bold">Quarter</label>
+            <select id="quarter" class="form-select">
+              <option selected>Q3</option>
+            </select>
+          </div>
+          <div class="col-lg-4">
+            <label for="language" class="form-label fw-bold">Language</label>
+            <select id="language" class="form-select">
+              <option selected>English</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- Section I: Goal Progress -->
+      <div class="card-shadow">
+        <div class="section-header"><i class="fa-solid fa-bullseye"></i> Section I: Goal Progress</div>
+        <div class="p-3 table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Metric</th>
+                <th>Year End 2024<br><small>(Previous Year)</small></th>
+                <th>Year End Goal 2025<br><small>(Full Year Target)</small></th>
+                <th>Goal Q1<br><small>(Quarterly Target)</small></th>
+                <th>Achieved Q1</th>
+                <th class="text-success">% Achieved Q1<br><small>(Auto-calculated)</small></th>
+                <th>Achieved 2025 so far<br><small>(Cumulative)</small></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Number of Languages</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="text-success">0%</td><td>0</td>
+              </tr>
+              <tr>
+                <td>Number of Volunteers</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="text-success">0%</td><td>0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Section II: Organic Reach -->
+      <div class="card-shadow">
+        <div class="section-header"><i class="fa-solid fa-chart-line"></i> Section II: Organic Reach (Per Language & Platform)</div>
+        <div class="p-3">
+          <div class="info-box text-primary">
+            <strong><i class="fa fa-info-circle"></i> Important:</strong> Enter organic reach only (exclude paid advertisements). These metrics should reflect natural engagement for each assigned language during the reporting period.
+          </div>
+          <div class="mt-4">
+
+            <div class="d-flex align-items-center mb-3">
+            <div class="bg-blue"><i class="fa fa-globe h5 mb-0"></i> </div>
+            
+            <div class="ms-3">
+              <strong>English</strong>
+              <p class="text-muted small mb-0">Enter student counts for each course type</p>
+            </div>
+          </div>
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="platform-box">
+
+                  <div class="d-flex align-items-center justify-content-between">
+
+                    <div>
+                       <strong><i class="fab fa-facebook text-primary"></i> Facebook</strong>
+                    </div>
+                     <div class="small text-primary text-nowrap">
+                      <i class="fa fa-globe small mb-0"></i> English
+                       </div>
+                  </div>
+
+
+
+                   <input class="form-control mt-2 text-center" placeholder="Organic reach count" /></div>
+              </div>
+              <div class="col-lg-4">
+
+                 
+
+
+                <div class="platform-box">
+
+                  <div class="d-flex align-items-center justify-content-between">
+
+                    <div>
+                       <strong><i class="fab fa-instagram text-danger"></i> Instagram</strong>
+                    </div>
+                     <div class="small text-primary text-nowrap">
+                      <i class="fa fa-globe small mb-0"></i> English
+                       </div>
+                  </div>
+                
+                <input class="form-control mt-2 text-center" placeholder="Organic reach count" /></div>
+              </div>
+              <div class="col-lg-4">
+                <div class="platform-box">
+
+                  <div class="d-flex align-items-center justify-content-between">
+
+                    <div>
+                       <strong><i class="fa fa-leaf text-success"></i> YouVersion</strong>
+                    </div>
+                     <div class="small text-primary text-nowrap">
+                      <i class="fa fa-globe small mb-0"></i> English
+                       </div>
+                  </div>
+                  <input class="form-control mt-2 text-center" placeholder="Organic reach count" /></div>
+              </div>
+              <div class="col-lg-4">
+                <div class="platform-box">
+                     <div class="d-flex align-items-center justify-content-between">
+
+                    <div>
+                       <strong><i class="fab fa-whatsapp text-success"></i> WhatsApp</strong>
+                    </div>
+                     <div class="small text-primary text-nowrap">
+                      <i class="fa fa-globe small mb-0"></i> English
+                       </div>
+                  </div>
+                  <input class="form-control mt-2 text-center" placeholder="Organic reach count" /></div>
+              </div>
+              <div class="col-lg-4">
+                <div class="platform-box">
+
+                    <div class="d-flex align-items-center justify-content-between">
+
+                    <div>
+                       <strong><i class="fab fa-youtube text-danger"></i> YouTube</strong>
+                    </div>
+                     <div class="small text-primary text-nowrap">
+                      <i class="fa fa-globe small mb-0"></i> English
+                       </div>
+                  </div>
+
+                 <input class="form-control mt-2 text-center" placeholder="Organic reach count" /></div>
+              </div>
+              <div class="col-lg-4">
+                <div class="platform-box">
+
+                    <div class="d-flex align-items-center justify-content-between">
+
+                    <div>
+                       <strong><i class="fa fa-globe text-secondary"></i> Website</strong>
+                    </div>
+                     <div class="small text-primary text-nowrap">
+                      <i class="fa fa-globe small mb-0"></i> English
+                       </div>
+                  </div>
+
+                 <input class="form-control mt-2 text-center" placeholder="Organic reach count" /></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Section III -->
+      <div class="card-shadow mt-4">
+        <div class="section-header"><i class="fa-solid fa-graduation-cap"></i> Section III: Bible Course Students</div>
+        <div class="p-3 bg-light">
+
+           <div class="d-flex align-items-center mb-3">
+            <div class="bg-blue"><i class="fa fa-globe h5 mb-0"></i> </div>
+            
+            <div class="ms-3">
+              <strong>English</strong>
+              <p class="text-muted small mb-0">Enter student counts for each course type</p>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-lg-4">
+
+
+                <div class="input-card highlight-box">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex">
+                    <div class="bg-whites text-success"><i class="fa fa-book  mb-0"></i> </div>
+                    
+                    <div class="ms-3">
+                      <strong class="text-success">Evangelistic</strong>
+                      <p class="text-muted small mb-0">Basic introduction courses</p>
+                    </div>
+                  </div>
+                  <div class="float-end">
+                    <div class="small text-primary text-nowrap"><i class="fa fa-globe small mb-0"></i> English </div>
+                  </div>
+                </div>
+                 <input type="text" class="form-control mt-2 text-center" placeholder="Number of students">
+              </div>
+
+             
+            </div>
+            <div class="col-lg-4">
+
+               <div class="input-card light-blue">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex">
+                    <div class="bg-whites text-primary"><i class="fa fa-user-group  mb-0"></i> </div>
+                    
+                    <div class="ms-3">
+                      <strong class="text-primary">Discipleship</strong>
+                      <p class="text-muted small mb-0">Growth and development courses</p>
+                    </div>
+                  </div>
+                  <div class="float-end">
+                    <div class="small text-primary text-nowrap"><i class="fa fa-globe small mb-0"></i> English </div>
+                  </div>
+                </div>
+                <input type="text" class="form-control mt-2 text-center" placeholder="Number of students">
+              </div>
+            </div>
+            <div class="col-lg-4">
+
+                <div class="input-card issue-box">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex">
+                    <div class="bg-whites text-purple"><i class="fa fa-graduation-cap  mb-0"></i> </div>
+                    
+                    <div class="ms-3">
+                      <strong class="text-purple">Leadership</strong>
+                      <p class="text-muted small mb-0">Leadership training courses</p>
+                    </div>
+                  </div>
+                  <div class="float-end">
+                    <div class="small text-primary text-nowrap"><i class="fa fa-globe small mb-0"></i> English </div>
+                  </div>
+                </div>
+                <input type="text" class="form-control mt-2 text-center" placeholder="Number of students">
+              </div>
+
+            
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Section IV -->
+      <div class="card-shadow mt-4">
+        <div class="section-header"><i class="fa-regular fa-comment-dots"></i> Section IV: Chat Conversations</div>
+        <div class="p-3 bg-light">
+          <div class="d-flex align-items-center mb-3">
+            <div class="bg-blue"><i class="fa fa-globe h5 mb-0"></i> </div>
+            
+            <div class="ms-3">
+              <strong>English</strong>
+              <p class="text-muted small mb-0">Enter conversation counts for each type</p>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="input-card concern-box">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex">
+                    <div class="bg-whites"><i class="fa fa-user-group  h5 mb-0"></i> </div>
+                    
+                    <div class="ms-3">
+                      <strong class="text-warning">Evangelistic Conversations</strong>
+                      <p class="text-muted small mb-0">Outreach and evangelistic discussions</p>
+                    </div>
+                  </div>
+                  <div class="float-end">
+                    <div class="small text-primary"><i class="fa fa-globe small mb-0"></i> English </div>
+                  </div>
+                </div>
+                <input type="text" class="form-control mt-2 text-center" placeholder="Number of conversations">
+              </div>
+            </div>
+            <div class="col-md-6">
+
+              <div class="input-card issue-box bbb-color">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex">
+                    <div class="bg-whites text-danger"><i class="fa fa-heart  h5 mb-0"></i> </div>
+                    
+                    <div class="ms-3">
+                      <strong class="text-danger">Pastoral Connections</strong>
+                      <p class="text-muted small mb-0">Pastoral care and support connections made</p>
+                    </div>
+                  </div>
+                  <div class="float-end">
+                    <div class="small text-primary"><i class="fa fa-globe small mb-0"></i> English </div>
+                  </div>
+                </div>
+                <input type="text" class="form-control mt-2 text-center" placeholder="Number of conversations">
+              </div>
+
+             
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Section V -->
+      <div class="card-shadow mt-4">
+        <div class="section-header"><i class="fa-solid fa-euro-sign"></i> Section V: Organization</div>
+        <div class="row g-3 p-3">
+          <div class="col-md-6">
+            <div class="border p-3 highlight-box rounded">
+              <label class="form-label">Income (Euros)</label>
+              <input type="text" class="form-control" value="€ 0.00">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="border p-3 rounded concern-box">
+              <label class="form-label">Expenditure (Euros)</label>
+              <input type="text" class="form-control" value="€ 0.00">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Section VI -->
+      <div class="card-shadow mt-4">
+        <div class="section-header"><i class="fa-solid fa-user-group"></i> Section VI: Public Relations & Staffing</div>
+        <div class="row g-3 p-3">
+          <div class="col-md-6">
+            <div class="border p-3 rounded light-blue">
+              <label class="form-label fw-bold">PR (Total Organic Reach)</label>
+              <input type="text" class="form-control" value="0">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="border p-3 rounded issue-box">
+              <label class="form-label fw-bold">Personal FTE (Full-Time Equivalent)</label>
+              <input type="text" class="form-control " value="0.0">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Section VII -->
+      <div class="card-shadow">
+        <div class="section-header"><i class="fa-solid fa-feather-pointed"></i> Section VII: Descriptive Text Fields</div>
+        <div class="p-3">
+          <div class="input-card light-blue">
+            <strong>New Activity</strong> <small>(max 100 words)</small>
+            <textarea class="form-control mt-2" rows="3" maxlength="500" placeholder="Describe new activities for this quarter..."></textarea>
+            <small>0/500 characters</small>
+          </div>
+          <div class="input-card highlight-box">
+            <strong>Organizational Highlight</strong> <small>(max 50 words)</small>
+            <textarea class="form-control mt-2" rows="2" maxlength="250" placeholder="Share an organizational highlight..."></textarea>
+            <small>0/250 characters</small>
+          </div>
+          <div class="input-card concern-box">
+            <strong>Organizational Concern</strong> <small>(max 50 words)</small>
+            <textarea class="form-control mt-2" rows="2" maxlength="250" placeholder="Share any organizational concerns..."></textarea>
+            <small>0/250 characters</small>
+          </div>
+          <div class="input-card issue-box">
+            <strong>Organizational Issues</strong> <small>(max 50 words)</small>
+            <textarea class="form-control mt-2" rows="2" maxlength="250" placeholder="Describe any organizational issues (board, office, or personal)..."></textarea>
+            <small>0/250 characters</small>
+          </div>
+        </div>
+      </div>
+      <!-- Submit Section -->
+      <div class="d-flex justify-content-between align-items-center gap-3 p-4">
+        <div>
+          <small class="text-muted">Changes are automatically saved as drafts</small>
+        </div>
+        <div>
+          <button class="btn btn-outline-secondary"><i class="fa fa-save"></i> Save Draft</button>
+          <button class="btn btn-primary"><i class="fa fa-paper-plane"></i> Submit Report</button>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtn = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (toggleBtn && sidebar) {
+          toggleBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('show');
+          });
+        } else {
+          console.error('Sidebar or toggle button not found');
+        }
+      });
+    </script>
+
+</body>
+</html>

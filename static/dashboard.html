@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Admin Dashboard</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+      <link rel="stylesheet" href="style.css">
+   </head>
+   <body>
+      <!-- Sidebar -->
+      <!-- Sidebar -->
+      <div class=" sticky-top px-3 border-bottom  py-2 bg-white gg-1 d-flex align-items-center justify-content-between mb-4">
+         <div class="d-flex align-items-center">
+
+            <button class="toggle-btn me-3" id="sidebarToggle">
+          <i class="fa fa-bars"></i>
+        </button>
+            <div>
+               <h5 class="gg">
+                  <i class="fa-solid fa-chart-column"></i> 
+               </h5>
+            </div>
+            <div class="ms-2">
+               <h5 class="mb-0 fw-bold"> GlobalRize Reporting</h5>
+               <div class="text-muted" style="font-size: 13px;">International Director</div>
+            </div>
+         </div>
+         <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted small border rounded-pill px-3 py-1 me-4">Current Period: <strong>Q3 2025</strong></div>
+            <div class="header-right">
+               <div class="fw-semibold">Test Director</div>
+               <div class="circle">T</div>
+            </div>
+         </div>
+      </div>
+  <div class="sidebar hide" id="sidebar">
+         <a href="dashboard.html" class="active"><i class="fa-solid fa-house"></i> Dashboard</a>
+         <a href="reports.html"><i class="fa-solid fa-file-lines"></i> Reports</a>
+         <a href="user-management.html"><i class="fa-solid fa-user-gear"></i> User Management</a>
+         <a href="language-assistant.html"><i class="fa-solid fa-language"></i> Language Assignment</a>
+         <a href="analytics-overview.html" ><i class="fa-solid fa-chart-column"></i> Analytics</a>
+         <a href="dashboard.html"><i class="fa-solid fa-gear"></i> Settings</a>
+      </div>
+      <!-- Main content -->
+      <!-- Main Content -->
+      <div class="content">
+         <!-- Top Bar -->
+         <div class="d-flex justify-content-between align-items-center mb-4 flex-row-reverse">
+            <div class="d-flex align-items-center gap-2">
+               <span class="badge bg-white border text-dark rounded-pill">Q3 2025</span>
+               <button class="btn btn-primary"><i class="fa-solid fa-plus me-3"></i> New Report</button>
+            </div>
+            <div class="">
+               <h3 class="fw-bold mb-0">Welcome back, Test Director</h3>
+               <small class="text-muted">International Director Dashboard</small>
+            </div>
+         </div>
+         <!-- Stat Cards -->
+         <div class="row mb-4">
+            <div class="col-md-3">
+               <div class="card card-shadow p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                     <div>
+                        <h6>Total Reports</h6>
+                        <h4>2</h4>
+                        <small class="text-muted">All time reports created</small>
+                     </div>
+                     <i class="fa-solid fa-file-lines text-secondary"></i>
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-3">
+               <div class="card card-shadow p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                     <div>
+                        <h6>Draft Reports</h6>
+                        <h4>0</h4>
+                        <small class="text-muted">Pending completion</small>
+                     </div>
+                     <i class="fa-solid fa-bar-chart text-secondary"></i>
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-3">
+               <div class="card card-shadow p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                     <div>
+                        <h6>Submitted</h6>
+                        <h4>2</h4>
+                        <small class="text-muted">Completed reports</small>
+                     </div>
+                     <i class="fa-solid fa-chart-line text-secondary"></i>
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-3">
+               <div class="card card-shadow p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                     <div>
+                        <h6>This Quarter</h6>
+                        <h4>2</h4>
+                        <small class="text-muted">Q3 2025 reports</small>
+                     </div>
+                     <i class="fa-solid fa-calendar text-secondary"></i>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <!-- Recent Reports -->
+         <div class="card card-shadow p-4 mb-4">
+            <h4 class="mb-1 fw-bold">Recent Reports</h4>
+            <p class="text-muted mb-4">Your latest quarterly reporting activities</p>
+            <div class="mb-3 border rounded p-3 d-flex justify-content-between align-items-center">
+               <div class="d-flex align-items-center">
+                  <h6><i class="fa-solid fa-file-alt me-2 text-primary"></i></h6>
+                  <div class="ms-3">
+                     <h6 class="mb-1">Hindi - Q3 2025</h6>
+                     <small class="text-muted">Updated 03/07/2025</small>
+                  </div>
+               </div>
+               <div class="d-flex gap-2">
+                  <span class="badge-submitted mb-0 rounded-pill px-3">submitted</span>
+                  <button class="btn btn-outline-secondary btn-sm px-3"><i class="fa-solid fa-eye"></i> View</button>
+                  <button class="btn btn-outline-secondary btn-sm px-3"><i class="fa-solid fa-edit"></i> Edit</button>
+               </div>
+            </div>
+            <div class="mb-3 border rounded p-3 d-flex justify-content-between align-items-center">
+               <div class="d-flex align-items-center">
+                  <h6><i class="fa-solid fa-file-alt me-2 text-primary"></i></h6>
+                  <div class="ms-3">
+                     <h6>Spanish - Q3 2025</h6>
+                     <small class="text-muted">Updated 03/07/2025</small>
+                  </div>
+               </div>
+               <div class="d-flex gap-2">
+                  <span class="badge-submitted mb-0 rounded-pill px-3">submitted</span>
+                  <button class="btn btn-outline-secondary btn-sm px-3"><i class="fa-solid fa-eye"></i> View</button>
+                  <button class="btn btn-outline-secondary btn-sm px-3"><i class="fa-solid fa-edit"></i> Edit</button>
+               </div>
+            </div>
+         </div>
+         <!-- Quick Actions -->
+         <div class="card card-shadow p-4 mb-4">
+            <h4 class="mb-1 fw-bold">Quick Actions</h4>
+            <p class="text-muted mb-4">Administrative tools and user management</p>
+            <div class="d-flex gap-3">
+               <button class="btn btn-outline-secondary w-100 d-flex align-items-center"><i class="fa-solid fa-users me-4"></i> Manage Users</button>
+               <button class="btn btn-outline-secondary w-100 d-flex align-items-center"><i class="fa-solid fa-globe me-4"></i> Language Settings</button>
+               <button class="btn btn-outline-secondary w-100 d-flex align-items-center"><i class="fa-solid fa-chart-line me-4"></i> Analytics Overview</button>
+            </div>
+         </div>
+         <!-- Form Management Center -->
+         <div class="card card-shadow p-4 mb-4">
+            <h4 class="mb-0 fw-bold"><i class="fa fa-search me-2 h5"></i>Form Management Center</h4>
+            <p class="text-muted">Search and view specific forms by admin, year, and quarter</p>
+            <div class="row mb-3">
+               <div class="col-lg-4">
+                  <label for="" class="small mb-1"> Years</label>
+                  <select class="form-select">
+                     <option>All years</option>
+                  </select>
+               </div>
+               <div class="col-lg-4">
+                  <label for="" class="small mb-1"> Quarter</label>
+                  <select class="form-select">
+                     <option>All quarters</option>
+                  </select>
+               </div>
+               <div class="col-lg-4">
+                  <label for="" class="small mb-1"> Admin User</label>
+                  <select class="form-select">
+                     <option>All admins</option>
+                  </select>
+               </div>
+            </div>
+            <div class="mb-3 text-muted bg-light p-3"><i class="fa-solid fa-folder-open"></i> 2 forms found</div>
+            <div class="border rounded p-3 mb-3 bb-rder">
+               <h6>Maria Rodriguez</h6>
+               <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                     <p class="text-muted mb-1"><i class="fa-solid fa-globe me-1"></i> Hindi (hi)</p>
+                  </div>
+                  <div class="d-flex gap-2">
+                     <span class="badge-submitted ms-2">1 form</span>
+                  </div>
+               </div>
+               <div class="d-flex justify-content-between align-items-center">
+                  <div class="p-3 border rounded mt-2">
+                     <div class="d-flex">
+                        <span class="badge bg-light text-dark"><i class="fa-regular fa-calendar me-1"></i> 2025 Q3</span>
+                        <span class="badge-submitted ms-2">submitted</span>
+                     </div>
+                     <div class="mt-3">
+                        <button class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-eye"></i> View</button>
+                        <button class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-edit"></i> Edit</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="border rounded p-3 bb-rder">
+               <h6>Maria Rodriguez</h6>
+               <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                     <p class="text-muted mb-1"><i class="fa-solid fa-globe me-1"></i> Hindi (hi)</p>
+                  </div>
+                  <div class="d-flex gap-2">
+                     <span class="badge-submitted ms-2">1 form</span>
+                  </div>
+               </div>
+               <div class="d-flex justify-content-between align-items-center">
+                  <div class="p-3 border rounded mt-2">
+                     <div class="d-flex">
+                        <span class="badge bg-light text-dark"><i class="fa-regular fa-calendar me-1"></i> 2025 Q3</span>
+                        <span class="badge-submitted ms-2">submitted</span>
+                     </div>
+                     <div class="mt-3">
+                        <button class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-eye"></i> View</button>
+                        <button class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-edit"></i> Edit</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+         
+      </script>
+       <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtn = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (toggleBtn && sidebar) {
+          toggleBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('show');
+          });
+        } else {
+          console.error('Sidebar or toggle button not found');
+        }
+      });
+    </script>
+
+   </body>
+</html>

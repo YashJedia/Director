@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>User Management</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+      <link rel="stylesheet" href="style.css">
+   </head>
+   <body>
+      <!-- Sidebar -->
+      <!-- Sidebar -->
+      <div class=" sticky-top px-3 border-bottom  py-2 bg-white gg-1 d-flex align-items-center justify-content-between mb-4">
+         <div class="d-flex align-items-center">
+             <button class="toggle-btn me-3" id="sidebarToggle">
+          <i class="fa fa-bars"></i>
+        </button>
+            <div>
+               <h5 class="gg">
+                  <i class="fa-solid fa-chart-column"></i> 
+               </h5>
+            </div>
+            <div class="ms-2">
+               <h5 class="mb-0 fw-bold"> GlobalRize Reporting</h5>
+               <div class="text-muted" style="font-size: 13px;">International Director</div>
+            </div>
+         </div>
+         <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted small border rounded-pill px-3 py-1 me-4">Current Period: <strong>Q3 2025</strong></div>
+            <div class="header-right">
+               <div class="fw-semibold">Test Director</div>
+               <div class="circle">T</div>
+            </div>
+         </div>
+      </div>
+      <div class="sidebar hide" id="sidebar">
+        <a href="dashboard.html" ><i class="fa-solid fa-house"></i> Dashboard</a>
+         <a href="reports.html"><i class="fa-solid fa-file-lines"></i> Reports</a>
+         <a href="user-management.html" class="active"><i class="fa-solid fa-user-gear"></i> User Management</a>
+         <a href="language-assistant.html"><i class="fa-solid fa-language"></i> Language Assignment</a>
+         <a href="analytics-overview.html"><i class="fa-solid fa-chart-column"></i> Analytics</a>
+         <a href="dashboard.html"><i class="fa-solid fa-gear"></i> Settings</a>
+      </div>
+      <!-- Main content -->
+      <!-- Main Content -->
+      <div class="content">
+         <!-- Top Bar -->
+         <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="">
+               <h3 class="fw-bold mb-0">User Management</h3>
+               <small class="text-muted">Manage user roles and permissions for the GlobalRize system.</small>
+            </div>
+         </div>
+        
+
+        
+    <!-- Invite Admins -->
+    <div class="card card-shadow p-4 mb-4">
+         <div class="d-clearfix">
+            <div class="float-start">
+                <h4 class="fw-bold"><i class="fas fa-envelope"></i> Invite Admins</h4>
+      <p>Create invitations and share registration details with new team members to grant admin access.</p>
+            </div>
+
+            <div class="float-end mt-3">
+                <button class="btn btn-primary"><i class="fas fa-plus me-3"></i> Create Invitation</button>
+            </div>
+         </div>
+     
+     
+    </div>
+
+    <!-- Pending Invitations -->
+    <div class="card card-shadow p-4 mb-4">
+      <h4 class="fw-bold"><i class="fas fa-clock"></i> Pending Invitations</h4>
+      <div class="d-flex align-items-center justify-content-between">
+        <div><i class="fas fa-envelope me-2"></i> jasper_b4u@yahoo.com</div>
+        <div class="text-muted bg-light p-2"><i class="fas fa-hourglass-half"></i> Pending &nbsp; 03/07/2025</div>
+      </div>
+    </div>
+
+    <!-- Manual Invitation -->
+    <div class="card card-shadow p-4 mb-4">
+      <h4 class="fw-bold"><i class="fas fa-envelope-open-text"></i> Manual Invitation Process</h4>
+      <p>To invite a new team member manually, follow these steps:</p>
+      <ol>
+        <li>Create an invitation above with their email address</li>
+        <li>Share these registration details with them:
+          <ul>
+            <li><strong>Website:</strong> https://8b4576ef-b644-4dfb-912e-f530d4eeb4e4-00-1sedkeexttho8.janeway.replit.dev</li>
+            <li><strong>Email:</strong> Use the exact email address you entered</li>
+            <li><strong>Instructions:</strong> Register using the same email to get admin access</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+  </div>
+       
+        
+       
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtn = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (toggleBtn && sidebar) {
+          toggleBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('show');
+          });
+        } else {
+          console.error('Sidebar or toggle button not found');
+        }
+      });
+    </script>
+
+   </body>
+</html>

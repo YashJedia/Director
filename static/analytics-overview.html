@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Analytics Overview</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+      <link rel="stylesheet" href="style.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   </head>
+   <body>
+      <!-- Sidebar -->
+      <!-- Sidebar -->
+      <div class=" sticky-top px-3 border-bottom  py-2 bg-white gg-1 d-flex align-items-center justify-content-between mb-4">
+         <div class="d-flex align-items-center">
+
+             <button class="toggle-btn me-3" id="sidebarToggle">
+          <i class="fa fa-bars"></i>
+        </button>
+            <div>
+               <h5 class="gg">
+                  <i class="fa-solid fa-chart-column"></i> 
+               </h5>
+            </div>
+            <div class="ms-2">
+               <h5 class="mb-0 fw-bold"> GlobalRize Reporting</h5>
+               <div class="text-muted" style="font-size: 13px;">International Director</div>
+            </div>
+         </div>
+         <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted small border rounded-pill px-3 py-1 me-4">Current Period: <strong>Q3 2025</strong></div>
+            <div class="header-right">
+               <div class="fw-semibold">Test Director</div>
+               <div class="circle">T</div>
+            </div>
+         </div>
+      </div>
+      <div class="sidebar hide" id="sidebar">
+         <a href="dashboard.html" ><i class="fa-solid fa-house"></i> Dashboard</a>
+         <a href="reports.html"><i class="fa-solid fa-file-lines"></i> Reports</a>
+         <a href="user-management.html"><i class="fa-solid fa-user-gear"></i> User Management</a>
+         <a href="language-assistant.html"><i class="fa-solid fa-language"></i> Language Assignment</a>
+         <a href="analytics-overview.html" class="active"><i class="fa-solid fa-chart-column"></i> Analytics</a>
+         <a href="dashboard.html"><i class="fa-solid fa-gear"></i> Settings</a>
+      </div>
+      <!-- Main content -->
+      <!-- Main Content -->
+      <div class="content">
+         <!-- Top Bar -->
+         <div class="d-flex justify-content-between align-items-center mb-4 flex-row-reverse">
+            <div class="d-flex align-items-center gap-2">
+                <select class="form-select w-auto">
+        <option selected>2025</option>
+      </select>
+            </div>
+            <div class="">
+               <h3 class="fw-bold mb-0">Analytics Overview</h3>
+               <small class="text-muted">Comprehensive reporting insights and organizational metrics</small>
+            </div>
+         </div>
+         <!-- Stat Cards -->
+         <div class="row mb-4">
+            <div class="col-md-3">
+               <div class="card card-shadow p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                     <div>
+                        <h6>Total Reports</h6>
+                        <h4>2</h4>
+                        <small class="text-muted">2 in 2025</small>
+                     </div>
+                     <i class="fa-solid fa-file-lines text-secondary"></i>
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-3">
+               <div class="card card-shadow p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                     <div>
+                        <h6>Completion Rate</h6>
+                        <h4>100%</h4>
+                        <small class="text-muted">2 of 2 submitted</small>
+                     </div>
+                     <i class="fa-solid fa-bar-chart text-secondary"></i>
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-3">
+               <div class="card card-shadow p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                     <div>
+                        <h6>Active Admins</h6>
+                        <h4>2</h4>
+                        <small class="text-muted">Admin users in system</small>
+                     </div>
+                     <i class="fa-solid fa-user-check text-secondary"></i>
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-3">
+               <div class="card card-shadow p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                     <div>
+                        <h6>Languages</h6>
+                        <h4>107</h4>
+                        <small class="text-muted">Available languages</small>
+                     </div>
+                     <i class="fa-solid fa-language text-secondary"></i>
+                  </div>
+               </div>
+            </div>
+         </div>
+         
+
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="card-shadow">
+          <div class="card-title fw-bold mb-0">Quarterly Reports (2025)</div>
+          <p class="text-muted mb-3">Report submissions by quarter</p>
+          <div class="chart-container">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card-shadow">
+          <div class="card-title fw-bold mb-0">Report Status Distribution</div>
+          <p class="text-muted mb-3">Overall completion status</p>
+          <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="card-shadow">
+          <div class="card-title fw-bold mb-0">Reports by Language (2025)</div>
+           <p class="text-muted mb-3">Most active languages</p>
+          <div class="chart-container">
+            <canvas id="languageChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card-shadow">
+          <div class="card-title fw-bold mb-0">Top Active Users (2025)</div>
+           <p class="text-muted mb-3">Admin reporting activity</p>
+         <div class="chart-container">
+            <canvas id="userChart"></canvas>
+         </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-shadow">
+      <div class="card-title fw-bold mb-0">Language Summary (2025)</div>
+       <p class="text-muted mb-3">Detailed breakdown by language</p>
+      <div class="mb-2">
+        <div class="d-flex justify-content-between align-items-center border p-3 rounded mb-4">
+          <div class="d-flex">
+            <div class="me-3"><span class="text-primary">●</span> </div>
+            <div>
+              <h6 class="mb-0">Spanish</h6>
+             <small>1 submitted, 0 draft</small></div>
+          </div>
+         
+        <div>
+            <span class="fw-bold">1</span>
+            <h6 class="fw-normal text-muted mb-0">total reports</h6>
+        </div>
+        </div>
+
+      </div>
+      <div class="d-flex justify-content-between align-items-center border p-3 rounded mb-4">
+          <div class="d-flex">
+            <div class="me-3"><span class="text-success">●</span> </div>
+            <div>
+              <h6 class="mb-0">Hindi</h6>
+             <small>1 submitted, 0 draft</small></div>
+          </div>
+         
+        <div>
+            <span class="fw-bold">1</span>
+            <h6 class="fw-normal text-muted mb-0">total reports</h6>
+        </div>
+        </div>
+    </div>
+  </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+        datasets: [
+          { label: 'Submitted', data: [0, 0, 2, 0], backgroundColor: '#10b981' },
+          { label: 'Draft', data: [0, 0, 0, 0], backgroundColor: '#d1d5db' }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, layout: { padding: 10 }, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    new Chart(document.getElementById('pieChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Submitted', 'Draft'],
+        datasets: [{ data: [2, 0], backgroundColor: ['#10b981', '#f59e0b'] }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, layout: { padding: 10 }, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    new Chart(document.getElementById('languageChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Hindi', 'Spanish'],
+        datasets: [
+          { label: 'Reports', data: [1, 1], backgroundColor: '#6366f1' }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, layout: { padding: 10 }, plugins: { legend: { display: false } } }
+    });
+
+    new Chart(document.getElementById('userChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Maria Rodriguez', 'John Smith', 'Sophie Chen', 'Test Leader'],
+        datasets: [
+          { label: 'Reports', data: [2, 0, 0, 0], backgroundColor: '#8b5cf6' }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, layout: { padding: 10 }, plugins: { legend: { display: false } } }
+    });
+  </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtn = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (toggleBtn && sidebar) {
+          toggleBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('show');
+          });
+        } else {
+          console.error('Sidebar or toggle button not found');
+        }
+      });
+    </script>
+
+
+
+   </body>
+</html>
