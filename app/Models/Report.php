@@ -21,6 +21,9 @@ class Report extends Model
         'reviewed_at',
         'reviewed_by',
         'review_status',
+        'revision_requested',
+        'revision_requested_at',
+        'revision_reason',
         'languages_previous_year',
         'languages_goal_2025',
         'languages_goal_q1',
@@ -55,6 +58,8 @@ class Report extends Model
     protected $casts = [
         'score' => 'integer',
         'reviewed_at' => 'datetime',
+        'revision_requested' => 'boolean',
+        'revision_requested_at' => 'datetime',
         'languages_previous_year' => 'integer',
         'languages_goal_2025' => 'integer',
         'languages_goal_q1' => 'integer',

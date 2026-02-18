@@ -40,6 +40,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/reports/{report}/update', [AdminController::class, 'updateReport'])->name('reports.update');
         Route::delete('/reports/{report}', [AdminController::class, 'deleteReport'])->name('reports.delete');
         Route::post('/reports/{report}/review', [AdminController::class, 'reviewReport'])->name('reports.review');
+        Route::post('/reports/{report}/send-for-revision', [AdminController::class, 'sendForRevision'])->name('reports.send-for-revision');
         Route::post('/reports/{report}/comment', [AdminController::class, 'addComment'])->name('reports.comment');
         Route::post('/reports/{report}/submit-to-super-admin', [AdminController::class, 'submitToSuperAdmin'])->name('reports.submit-to-super-admin');
         

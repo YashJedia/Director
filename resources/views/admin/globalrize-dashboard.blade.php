@@ -178,6 +178,11 @@
                     <a href="{{ route('admin.reports.edit', $report->id) }}" class="border border-gray-300 text-gray-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-gray-50 transition-colors duration-200 flex items-center">
                         <i class="fa-solid fa-eye mr-1"></i>View
                     </a>
+                    @if($report->status === 'submitted')
+                    <button onclick="openRevisionModal({{ $report->id }})" class="border border-orange-300 text-orange-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-orange-50 transition-colors duration-200 flex items-center">
+                        <i class="fa-solid fa-redo mr-1"></i>Revision
+                    </button>
+                    @endif
                     <a href="{{ route('admin.reports.edit', $report->id) }}" class="border border-gray-300 text-gray-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-gray-50 transition-colors duration-200 flex items-center">
                         <i class="fa-solid fa-edit mr-1"></i>Edit
                     </a>
@@ -278,4 +283,120 @@
             @endforeach
         </div>
     </div>
-@endsection 
+
+    <!-- Send for Revision Modal -->
+    <div id="revision-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900">
+                        <i class="fas fa-redo text-orange-600 mr-2"></i>Send Report for Revision
+                    </h3>
+                    <button onclick="closeRevisionModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Report Information Summary -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-blue-900 mb-3">Report Information</h4>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                        <li><strong>Title:</strong> <span id="revision-report-title"></span></li>
+                        <li><strong>Quarter:</strong> <span id="revision-report-quarter"></span></li>
+                        <li><strong>Submitter:</strong> <span id="revision-report-submitter"></span></li>
+                    </ul>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Revision Feedback <span class="text-red-500">*</span>
+                    </label>
+                    <p class="text-xs text-gray-600 mb-2">Provide specific, constructive feedback about what needs to be revised. This will be sent to the user in the notification email.</p>
+                    <textarea id="revision-reason" rows="6" maxlength="1000" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Example: Please revise the following sections:&#10;1. Section I - Languages data needs verification&#10;2. Section III - Bible course numbers incomplete&#10;3. Add details to Section VII - Organizational concerns"></textarea>
+                    <div class="flex justify-between items-center mt-2">
+                        <small class="text-gray-500">Max 1000 characters</small>
+                        <small id="char-count" class="text-gray-500">0 / 1000</small>
+                    </div>
+                </div>
+
+                <!-- Email Preview -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-gray-900 mb-2 text-sm">
+                        <i class="fas fa-envelope text-gray-600 mr-2"></i>Email Preview
+                    </h4>
+                    <p class="text-xs text-gray-600">The user will receive an email notification with your feedback and a link to edit their report. The report status will be automatically reset to Draft.</p>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button onclick="closeRevisionModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                        Cancel
+                    </button>
+                    <button onclick="submitRevision()" class="px-4 py-2 bg-orange-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                        Send for Revision
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentReportId = null;
+
+        // Open revision modal
+        function openRevisionModal(reportId) {
+            // Get report data from the page
+            const reportRow = document.querySelector(`[data-report-id="${reportId}"]`);
+            
+            if (reportRow) {
+                const reportTitle = reportRow.querySelector('h5')?.textContent || 'Report';
+                const reportQuarter = reportRow.querySelector('.text-sm')?.textContent || 'Q3 2025';
+                const reportSubmitter = reportRow.querySelector('[data-submitter]')?.textContent || 'User';
+                
+                document.getElementById('revision-report-title').textContent = reportTitle;
+                document.getElementById('revision-report-quarter').textContent = reportQuarter;
+                document.getElementById('revision-report-submitter').textContent = reportSubmitter;
+            }
+            
+            currentReportId = reportId;
+            document.getElementById('revision-modal').classList.remove('hidden');
+        }
+
+        // Close revision modal
+        function closeRevisionModal() {
+            document.getElementById('revision-modal').classList.add('hidden');
+            document.getElementById('revision-reason').value = '';
+            document.getElementById('char-count').textContent = '0 / 1000';
+            currentReportId = null;
+        }
+
+        // Character counter for revision reason
+        document.getElementById('revision-reason')?.addEventListener('input', function() {
+            document.getElementById('char-count').textContent = this.value.length + ' / 1000';
+        });
+
+        // Submit revision request
+        function submitRevision() {
+            const reason = document.getElementById('revision-reason').value;
+            
+            if (!reason.trim()) {
+                alert('Please provide revision feedback before sending.');
+                return;
+            }
+            
+            // Submit the revision request via POST
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/reports/${currentReportId}/send-for-revision`;
+            
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            form.innerHTML = `
+                <input type="hidden" name="_token" value="${csrfToken}">
+                <input type="hidden" name="revision_reason" value="${reason}">
+            `;
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+@endsection

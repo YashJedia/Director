@@ -57,7 +57,7 @@ class UserController extends Controller
             'total_reports' => count($userReports),
             'draft_reports' => count(array_filter($userReports, fn($r) => $r['status'] === 'draft')),
             'submitted_reports' => count(array_filter($userReports, fn($r) => $r['status'] === 'submitted')),
-            'revision_reports' => count(array_filter($userReports, fn($r) => $r['status'] === 'rejected' || (isset($r['review_status']) && $r['review_status'] === 'rejected'))),
+            'revision_reports' => count(array_filter($userReports, fn($r) => isset($r['revision_requested']) && $r['revision_requested'] === true)),
             'this_quarter' => count(array_filter($userReports, fn($r) => $r['quarter'] === 'Q3 2025'))
         ];
 
@@ -119,10 +119,9 @@ class UserController extends Controller
         
         if ($statusFilter !== 'all') {
             if ($statusFilter === 'revision_needed') {
-                // Revision needed = rejected status or rejected review_status
+                // Revision needed = revision_requested is true
                 $reports = array_filter($reports, fn($r) => 
-                    ($r['status'] ?? '') === 'rejected' || 
-                    ($r['review_status'] ?? '') === 'rejected'
+                    (isset($r['revision_requested']) && $r['revision_requested'] === true)
                 );
             } elseif ($statusFilter === 'due') {
                 // Due = draft reports that are due (for now, we'll show all draft reports)
@@ -644,6 +643,7 @@ class UserController extends Controller
                     'language' => $report->language ? $report->language->name : 'Unknown',
                     'status' => $report->status,
                     'review_status' => $report->review_status ?? null,
+                    'revision_requested' => $report->revision_requested ?? false,
                     'score' => $report->score,
                     'updated_at' => $report->updated_at,
                 ];

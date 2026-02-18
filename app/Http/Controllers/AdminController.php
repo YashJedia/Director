@@ -98,12 +98,9 @@ class AdminController extends Controller
             ->get();
         $quarterlyReportsCount = $quarterlyReports->count();
 
-        // Calculate reports for revision
+        // Calculate reports for revision (newly sent back for revision)
         $reportsForRevision = \App\Models\Report::whereIn('language_id', $languages->pluck('id'))
-            ->where(function($query) {
-                $query->where('status', 'rejected')
-                      ->orWhere('review_status', 'rejected');
-            })->count();
+            ->where('revision_requested', true)->count();
 
         // Get all users assigned to the admin's languages
         $userIds = $languages->pluck('assigned_user_id')->filter()->unique();
@@ -547,6 +544,48 @@ class AdminController extends Controller
         // Mail::to($report->user->email)->send(new ReportReviewedMail($report));
 
         return redirect()->route('admin.reports')->with('success', 'Report reviewed successfully! Email notification sent to user.');
+    }
+
+    public function sendForRevision(Request $request, $reportId)
+    {
+        $admin = Auth::guard('admin')->user();
+        
+        // Super Admin cannot send reports for revision
+        if ($admin->isSuperAdmin()) {
+            return redirect()->route('admin.dashboard')->with('error', 'Super Admin can only manage languages and assign them to admins.');
+        }
+        
+        $validator = Validator::make($request->all(), [
+            'revision_reason' => 'required|string|max:1000'
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $report = \App\Models\Report::findOrFail($reportId);
+        
+        // Verify the report's language is assigned to this admin
+        if ($report->language->assigned_admin_id !== $admin->id) {
+            return redirect()->route('admin.reports')->with('error', 'You can only send reports for languages assigned to you for revision.');
+        }
+
+        // Update the report with revision information
+        $report->update([
+            'revision_requested' => true,
+            'revision_requested_at' => now(),
+            'revision_reason' => $request->revision_reason,
+            'status' => 'draft'  // Reset status back to draft so user can re-edit
+        ]);
+
+        // Send email notification to user
+        Mail::to($report->user->email)->send(new \App\Mail\ReportRevisionRequestMail(
+            $report,
+            $request->revision_reason,
+            $admin->name
+        ));
+
+        return redirect()->route('admin.reports')->with('success', 'Report has been sent back for revision. Email notification sent to ' . $report->user->name);
     }
 
     public function showInviteUser()
@@ -1085,6 +1124,7 @@ class AdminController extends Controller
             'reports_due' => $reports->where('status', 'draft')->count(),
             'reports_reviewed' => $reports->where('review_status', 'reviewed')->count(),
             'reports_approved' => $reports->where('review_status', 'approved')->count(),
+            'reports_revision' => \App\Models\Report::whereIn('language_id', $languages->pluck('id'))->where('revision_requested', true)->count(),
             'year_submitted' => \App\Models\Report::whereIn('language_id', $languages->pluck('id'))->whereYear('created_at', $year)->count(),
             'year_reviewed' => \App\Models\Report::whereIn('language_id', $languages->pluck('id'))->whereYear('reviewed_at', $year)->count(),
             'year_approved' => \App\Models\Report::whereIn('language_id', $languages->pluck('id'))->whereYear('reviewed_at', $year)->where('review_status', 'approved')->count(),

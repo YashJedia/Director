@@ -1,0 +1,159 @@
+<!-- 
+    Example: Admin Reports View - Send for Revision Button
+    Location: Could be used in admin reports view
+    This shows how to integrate the "Send for Revision" feature into your UI
+-->
+
+<!-- Add this to your admin reports table or report detail view -->
+
+<div class="report-actions">
+    <!-- Other action buttons -->
+    
+    <!-- Send for Revision Button -->
+    @if($report->review_status !== 'rejected' && $report->status == 'submitted')
+    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#revisionModal{{ $report->id }}">
+        <i class="fas fa-redo"></i> Send for Revision
+    </button>
+    @endif
+</div>
+
+<!-- Modal for Send for Revision -->
+<div class="modal fade" id="revisionModal{{ $report->id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-redo"></i> Send Report for Revision
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form action="{{ route('admin.reports.send-for-revision', $report->id) }}" method="POST">
+                @csrf
+                
+                <div class="modal-body">
+                    <!-- Report Information Summary -->
+                    <div class="alert alert-info mb-4">
+                        <h6 class="alert-heading">Report Information</h6>
+                        <ul class="mb-0">
+                            <li><strong>Title:</strong> {{ $report->title }}</li>
+                            <li><strong>Quarter:</strong> {{ $report->quarter }}</li>
+                            <li><strong>Submitter:</strong> {{ $report->user->name }} ({{ $report->user->email }})</li>
+                            <li><strong>Current Status:</strong> <span class="badge badge-info">{{ ucwords($report->status) }}</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Revision Reason Input -->
+                    <div class="form-group">
+                        <label for="revisionReason{{ $report->id }}">
+                            <strong>Revision Feedback <span class="text-danger">*</span></strong>
+                        </label>
+                        <p class="text-muted small mb-2">
+                            Provide specific, constructive feedback about what needs to be revised. 
+                            This will be sent to the user in the notification email.
+                        </p>
+                        <textarea 
+                            id="revisionReason{{ $report->id }}"
+                            name="revision_reason"
+                            class="form-control @error('revision_reason') is-invalid @enderror"
+                            rows="8"
+                            placeholder="Example: Please revise the following sections:&#10;1. Section I - Languages data does not match previous format&#10;2. Section III - Bible course numbers need verification from the system&#10;3. Section V - Income/Expenditure breakdown is incomplete"
+                            required
+                            maxlength="1000">{{ old('revision_reason') }}</textarea>
+                        
+                        <div class="form-text text-muted mt-2">
+                            <small id="charCount{{ $report->id }}">0 / 1000 characters</small>
+                        </div>
+
+                        @error('revision_reason')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- Preview of what user will see -->
+                    <div class="alert alert-secondary mt-4">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-envelope"></i> Email Preview
+                        </h6>
+                        <p class="mb-2"><small><strong>Subject:</strong> Report Revision Requested - {{ $report->title }}</small></p>
+                        <p class="small mb-0">
+                            The user will receive an email notification with your feedback and a link 
+                            to edit their report. The report status will be automatically reset to "Draft" 
+                            so they can make changes.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-redo"></i> Send for Revision
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for character counter -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('revisionReason{{ $report->id }}');
+    const charCount = document.getElementById('charCount{{ $report->id }}');
+    
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            charCount.textContent = this.value.length + ' / 1000 characters';
+        });
+    }
+});
+</script>
+
+<!-- ===================================
+    ALTERNATIVE: Simple Button Version
+    ===================================
+    
+    If you want a simpler, more compact version:
+-->
+
+<!--
+<button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#revisionModal">
+    <i class="fas fa-redo"></i> Request Revision
+</button>
+-->
+
+<!-- ===================================
+    INTEGRATION CHECKLIST
+    =================================== 
+
+    1. ✅ Add the route (already done in routes/web.php):
+       Route::post('/reports/{report}/send-for-revision', 
+                   [AdminController::class, 'sendForRevision'])
+           ->name('reports.send-for-revision');
+
+    2. ✅ Add Button to Reports List/Detail View
+       Include the button in your admin reports template
+
+    3. ✅ Include the Modal in Reports View
+       Copy the modal code to your reports template
+
+    4. ✅ Ensure Mail is Configured
+       Check .env file has proper MAIL_* settings
+
+    5. ✅ Run Migration
+       php artisan migrate
+
+    6. Test End-to-End
+       - Create report as user
+       - Submit report  
+       - Log in as admin
+       - Click "Send for Revision"
+       - Check user's email
+       - Verify report status changed to draft
+       - Re-edit and resubmit as user
+
+-->
