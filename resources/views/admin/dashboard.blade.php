@@ -187,7 +187,6 @@
     </div>
 
     <script>
-        // Fetch and update revision count dynamically
         function fetchRevisionCount() {
             fetch('{{ route("admin.reports.revision-count") }}')
                 .then(response => response.json())

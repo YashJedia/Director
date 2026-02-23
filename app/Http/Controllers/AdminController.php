@@ -118,6 +118,14 @@ class AdminController extends Controller
         $reportsForRevision = \App\Models\Report::whereIn('language_id', $languages->pluck('id'))
             ->where('revision_requested', true)->count();
 
+        // Get approved reports (not requesting revision and not yet submitted to super admin)
+        $approvedReports = \App\Models\Report::with(['user', 'language'])
+            ->whereIn('language_id', $languages->pluck('id'))
+            ->where('revision_requested', false)
+            ->where('submitted_to_super_admin', false)
+            ->latest()
+            ->get();
+
         // Get all users assigned to the admin's languages
         $userIds = $languages->pluck('assigned_user_id')->filter()->unique();
         $users = User::whereIn('id', $userIds)->get();
@@ -134,7 +142,8 @@ class AdminController extends Controller
             'reportsForRevision',
             'quarterlyReports',
             'quarterlyReportsCount',
-            'users'
+            'users',
+            'approvedReports'
         ));
     }
 
@@ -1392,12 +1401,20 @@ class AdminController extends Controller
     {
         $admin = Auth::guard('admin')->user();
         
-        // Super Admin cannot edit reports
+        $report = \App\Models\Report::with(['comments.admin', 'user', 'language'])->findOrFail($id);
+        
+        // Super Admin can view all reports (read-only)
         if ($admin->isSuperAdmin()) {
-            return redirect()->route('admin.dashboard')->with('error', 'Super Admin can only manage languages and assign them to admins.');
+            $users = \App\Models\User::all();
+            $languages = \App\Models\Language::all();
+            $commentsByField = $report->comments->groupBy('field') ?? collect();
+            return view('admin.reports.edit', compact('report', 'users', 'languages', 'commentsByField'))
+                ->with('isReadOnly', true)
+                ->with('isSuperAdmin', true);
         }
         
-        $report = \App\Models\Report::with(['comments.admin', 'user', 'language'])->findOrFail($id);
+        // Regular Admin cannot edit reports - they can only view submitted reports
+        return redirect()->route('admin.reports')->with('error', 'You can only view reports for languages assigned to you.');
         
         // Verify the report's language is assigned to this admin
         if ($report->language->assigned_admin_id !== $admin->id) {
@@ -1727,79 +1744,75 @@ class AdminController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        // Get all reports submitted to super admin with language and user info
+        // Get all reports submitted to super admin with language and user info - FRESH DATA
         $submittedReports = Report::where('submitted_to_super_admin', true)
             ->with(['language', 'user'])
-            ->orderBy('language_id')
-            ->orderBy('quarter')
             ->get();
 
-        // Organize data by language and section
-        $aggregatedData = [];
-        $quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+        $quarters = ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'];
         
         // Get all unique languages from submitted reports
-        $languages = $submittedReports->pluck('language')->unique('id');
+        $languages = $submittedReports->pluck('language')->unique('id')->sortBy('name');
         
-        // Define sections and their corresponding fields
+        // Define all sections and their corresponding numeric fields
         $sections = [
             'Ministry' => [
-                'Number of languages' => 'languages_achieved_q1',
-                'Number of volunteers' => 'volunteers_achieved_q1',
+                'Languages - Previous Year' => 'languages_previous_year',
+                'Languages - Goal 2025' => 'languages_goal_2025',
+                'Languages - Goal Q1' => 'languages_goal_q1',
+                'Languages - Achieved Q1' => 'languages_achieved_q1',
+                'Volunteers - Previous Year' => 'volunteers_previous_year',
+                'Volunteers - Goal 2025' => 'volunteers_goal_2025',
+                'Volunteers - Goal Q1' => 'volunteers_goal_q1',
+                'Volunteers - Achieved Q1' => 'volunteers_achieved_q1',
+                'Volunteers - Chatters' => 'volunteers_chatters',
+                'Volunteers - Mentors' => 'volunteers_mentors',
+                'Volunteers - Content Creators' => 'volunteers_content_creators',
+                'Volunteers - Others' => 'volunteers_others',
             ],
-            'Bible mentors' => 'volunteers_mentors',
-            'Chat volunteers' => 'volunteers_chatters',
-            'Content creators' => 'volunteers_content_creators',
-            'Organic reach' => [
-                'Facebook' => 'facebook_reach',
-                'Instagram' => 'instagram_reach',
-                'YouTube' => 'youtube_reach',
-                'Website' => 'website_reach',
+            'Outreach & Engagement' => [
+                'Evangelistic Students' => 'evangelistic_students',
+                'Discipleship Students' => 'discipleship_students',
+                'Leadership Students' => 'leadership_students',
+                'Evangelistic Conversations' => 'evangelistic_conversations',
+                'Pastoral Connections' => 'pastoral_connections',
             ],
-            'Organization' => [
-                'Income from fundraising (€)' => 'income_from_fundraising_euros',
-                'Number of supporters' => 'number_of_supporters',
-                'PR total organic reach' => 'pr_total_organic_reach',
+            'Social Media Reach' => [
+                'Facebook Reach' => 'facebook_reach',
+                'Instagram Reach' => 'instagram_reach',
+                'YouTube Reach' => 'youtube_reach',
+                'Website Reach' => 'website_reach',
+            ],
+            'Financial & Operations' => [
+                'Income (€)' => 'income_euros',
+                'Expenditure (€)' => 'expenditure_euros',
+                'PR Total Organic Reach' => 'pr_total_organic_reach',
                 'Personnel FTE' => 'personal_fte',
             ]
         ];
 
         // Build aggregated data structure
+        $aggregatedData = [];
+        
         foreach ($sections as $sectionName => $fields) {
             $aggregatedData[$sectionName] = [];
-
-            if (is_string($fields)) {
-                // Simple section with single field - organized by language
+            
+            foreach ($fields as $fieldLabel => $dbField) {
+                $aggregatedData[$sectionName][$fieldLabel] = [];
+                
                 foreach ($languages as $language) {
                     $languageKey = $language->name;
-                    $aggregatedData[$sectionName][$languageKey] = [];
+                    $aggregatedData[$sectionName][$fieldLabel][$languageKey] = [];
                     
                     foreach ($quarters as $quarter) {
+                        // Find reports for this language and quarter
                         $report = $submittedReports->filter(function($r) use ($language, $quarter) {
                             return $r->language_id === $language->id && $r->quarter === $quarter;
                         })->first();
                         
-                        $aggregatedData[$sectionName][$languageKey][$quarter] = $report ? ($report->{$fields} ?? 0) : 0;
-                    }
-                }
-            } else {
-                // Complex section with subsections and fields
-                foreach ($fields as $subsectionName => $field) {
-                    $aggregatedData[$sectionName][$subsectionName] = [];
-                    
-                    foreach ($languages as $language) {
-                        $languageKey = $language->name;
-                        if (!isset($aggregatedData[$sectionName][$subsectionName][$languageKey])) {
-                            $aggregatedData[$sectionName][$subsectionName][$languageKey] = [];
-                        }
-                        
-                        foreach ($quarters as $quarter) {
-                            $report = $submittedReports->filter(function($r) use ($language, $quarter) {
-                                return $r->language_id === $language->id && $r->quarter === $quarter;
-                            })->first();
-                            
-                            $aggregatedData[$sectionName][$subsectionName][$languageKey][$quarter] = $report ? ($report->{$field} ?? 0) : 0;
-                        }
+                        // Get the value from the report, default to 0 if not found
+                        $value = $report ? ($report->{$dbField} ?? 0) : 0;
+                        $aggregatedData[$sectionName][$fieldLabel][$languageKey][$quarter] = $value;
                     }
                 }
             }
@@ -1811,5 +1824,47 @@ class AdminController extends Controller
             'quarters' => $quarters,
             'submittedReports' => $submittedReports,
         ]);
+    }
+
+    public function submitApprovedReports(Request $request)
+    {
+        $admin = Auth::guard('admin')->user();
+        
+        // Get all approved reports for this admin (not requesting revision and not yet submitted)
+        $languages = \App\Models\Language::where('assigned_admin_id', $admin->id)->pluck('id');
+        
+        $approvedReports = \App\Models\Report::whereIn('language_id', $languages)
+            ->where('revision_requested', false)
+            ->where('submitted_to_super_admin', false)
+            ->get();
+        
+        if ($approvedReports->isEmpty()) {
+            return redirect()->route('admin.dashboard')->with('error', 'No approved reports to submit.');
+        }
+        
+        $submittedCount = 0;
+        $failedCount = 0;
+        
+        foreach ($approvedReports as $report) {
+            try {
+                // Update report to mark as submitted to super admin
+                $report->update([
+                    'submitted_to_super_admin' => true,
+                    'submitted_to_super_admin_at' => now(),
+                    'submitted_to_super_admin_by' => $admin->id,
+                ]);
+                
+                $submittedCount++;
+            } catch (\Exception $e) {
+                $failedCount++;
+                \Log::error('Failed to submit report ' . $report->id . ': ' . $e->getMessage());
+            }
+        }
+        
+        if ($failedCount > 0) {
+            return redirect()->route('admin.dashboard')->with('warning', "Submitted $submittedCount report(s). Failed to submit $failedCount report(s).");
+        }
+        
+        return redirect()->route('admin.dashboard')->with('success', "Successfully submitted $submittedCount approved report(s) to the super admin!");
     }
 }

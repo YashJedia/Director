@@ -44,6 +44,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/reports/{report}/approve', [AdminController::class, 'approveReport'])->name('reports.approve');
         Route::post('/reports/{report}/send-for-revision', [AdminController::class, 'sendForRevision'])->name('reports.send-for-revision');
         Route::post('/reports/submit-quarterly-to-super-admin', [AdminController::class, 'submitQuarterlyReportsToSuperAdmin'])->name('reports.submit-quarterly-to-super-admin');
+        Route::post('/reports/submit-approved', [AdminController::class, 'submitApprovedReports'])->name('reports.submit-approved');
         Route::post('/reports/{report}/comment', [AdminController::class, 'addComment'])->name('reports.comment');
         Route::post('/reports/{report}/submit-to-super-admin', [AdminController::class, 'submitToSuperAdmin'])->name('reports.submit-to-super-admin');
         Route::get('/reports-aggregated', [AdminController::class, 'viewAggregatedReports'])->name('reports.aggregated');

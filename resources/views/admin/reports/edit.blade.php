@@ -1,14 +1,17 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit Report - GlobalRize Reporting')
+@section('title', '{{ isset($isReadOnly) && $isReadOnly ? "View" : "Edit" }} Report - GlobalRize Reporting')
 
 @section('content')
     <!-- Top Bar -->
     <div class="mb-8">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-1">Edit Report</h1>
-                <p class="text-gray-500">Update report information and data.</p>
+                <h1 class="text-3xl font-bold text-gray-900 mb-1">{{ isset($isReadOnly) && $isReadOnly ? "View" : "Edit" }} Report</h1>
+                <p class="text-gray-500">{{ isset($isReadOnly) && $isReadOnly ? "Viewing submitted report information." : "Update report information and data." }}</p>
+                @if(isset($isSuperAdmin) && $isSuperAdmin)
+                    <p class="text-yellow-600 text-sm mt-2"><i class="fa-solid fa-lock mr-1"></i>Read-only view - Super Admin cannot edit reports</p>
+                @endif
             </div>
             <a href="{{ route('admin.reports') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 <i class="fa-solid fa-arrow-left mr-2"></i>
@@ -690,6 +693,7 @@
             </div>
 
             <!-- Submit Buttons -->
+            @if(!isset($isReadOnly) || !$isReadOnly)
             <div class="mt-8 flex justify-between">
                 <form action="{{ route('admin.reports.submit-to-super-admin', $report->id) }}" method="POST" class="inline">
                     @csrf
@@ -703,6 +707,11 @@
                     <i class="fa-solid fa-save mr-2"></i>Update Report
                 </button>
             </div>
+            @else
+            <div class="mt-8 text-center">
+                <p class="text-gray-600 italic">This report is in read-only mode. Contact the admin for editing.</p>
+            </div>
+            @endif
         </form>
     </div>
 
@@ -779,5 +788,19 @@
                 alert('An error occurred while adding the comment.');
             });
         });
+
+        // Disable all form inputs if in read-only mode
+        @if(isset($isReadOnly) && $isReadOnly)
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('report-form');
+            if (form) {
+                const inputs = form.querySelectorAll('input, textarea, select');
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.classList.add('bg-gray-100', 'cursor-not-allowed');
+                });
+            }
+        });
+        @endif
     </script>
 @endsection

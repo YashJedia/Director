@@ -17,105 +17,86 @@
 
     <!-- Aggregated Reports Table -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full mb-8">
-        <h3 class="text-xl font-bold text-gray-900 mb-6">Quarterly Data Summary</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-6">Quarterly Data Summary - All Fields</h3>
+        <p class="text-gray-600 text-sm mb-6">All submitted reports data aggregated by section, field, language, and quarter</p>
         
         <div class="overflow-x-auto">
-            <table class="min-w-full border-collapse">
+            <table class="min-w-full border-collapse text-sm">
                 <thead>
-                    <tr class="bg-gray-50 border-b-2 border-gray-300">
-                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 border border-gray-200">Section</th>
+                    <tr class="bg-blue-600 text-white sticky top-0">
+                        <th class="px-4 py-3 text-left font-semibold border border-blue-700 w-48">Field</th>
+                        <th class="px-4 py-3 text-left font-semibold border border-blue-700 w-32">Language</th>
                         @foreach($quarters as $quarter)
-                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-900 border border-gray-200">{{ $quarter }}</th>
+                            <th class="px-4 py-3 text-center font-semibold border border-blue-700 w-24">{{ $quarter }}</th>
                         @endforeach
-                        <th class="px-4 py-3 text-center text-sm font-semibold text-gray-900 border border-gray-200">Total</th>
+                        <th class="px-4 py-3 text-center font-semibold border border-blue-700 w-24">Total</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($aggregatedData as $sectionName => $sectionData)
-                        <!-- Section Header Row -->
-                        <tr class="bg-blue-50 border-b border-gray-200">
-                            <td colspan="{{ count($quarters) + 2 }}" class="px-4 py-3 text-sm font-bold text-blue-900 border border-gray-200">
-                                {{ $sectionName }}
+                    @foreach($aggregatedData as $sectionName => $fieldsData)
+                        <!-- Section Header -->
+                        <tr class="bg-blue-100 border-b-2 border-blue-400">
+                            <td colspan="{{ count($quarters) + 3 }}" class="px-4 py-3 text-sm font-bold text-blue-900 border border-blue-300">
+                                📊 {{ $sectionName }}
                             </td>
                         </tr>
 
-                        @if(is_array(reset($sectionData)) && isset(reset($sectionData)['Q1']))
-                            <!-- Simple section with languages -->
-                            @foreach($sectionData as $languageName => $quarterData)
-                                <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                    <td class="px-4 py-3 text-sm text-gray-700 border border-gray-200">
-                                        <span class="ml-4">{{ $languageName }}</span>
+                        @foreach($fieldsData as $fieldLabel => $languagesData)
+                            @php $isFirstField = $loop->first; @endphp
+                            <!-- Field rows -->
+                            @foreach($languagesData as $languageName => $quarterData)
+                                <tr class="border-b border-gray-200 hover:bg-blue-50">
+                                    <!-- Field Name (only show on first language row) -->
+                                    @if($loop->first)
+                                        <td rowspan="{{ count($languagesData) }}" class="px-4 py-2 font-medium text-gray-800 border border-gray-300 bg-gray-50 align-top">
+                                            {{ $fieldLabel }}
+                                        </td>
+                                    @endif
+                                    
+                                    <!-- Language Name -->
+                                    <td class="px-4 py-2 text-gray-700 border border-gray-300">
+                                        <span class="inline-block px-2 py-1 bg-gray-200 rounded text-xs font-semibold">
+                                            {{ $languageName }}
+                                        </span>
                                     </td>
-                                    @php $total = 0; @endphp
+                                    
+                                    <!-- Quarter Data -->
+                                    @php $sectionTotal = 0; @endphp
                                     @foreach($quarters as $quarter)
                                         @php 
                                             $value = $quarterData[$quarter] ?? 0;
-                                            $total += (is_numeric($value) ? $value : 0);
+                                            $sectionTotal += (is_numeric($value) ? $value : 0);
                                         @endphp
-                                        <td class="px-4 py-3 text-sm text-gray-900 border border-gray-200 text-center">
-                                            {{ is_numeric($value) && strpos((string)$value, '.') !== false ? number_format($value, 2) : $value }}
+                                        <td class="px-4 py-2 text-center border border-gray-300">
+                                            <span class="font-semibold {{ $value > 0 ? 'text-green-700' : 'text-gray-500' }}">
+                                                @if(is_numeric($value))
+                                                    @if(strpos((string)$value, '.') !== false)
+                                                        {{ number_format($value, 2) }}
+                                                    @else
+                                                        {{ number_format($value) }}
+                                                    @endif
+                                                @else
+                                                    {{ $value }}
+                                                @endif
+                                            </span>
                                         </td>
                                     @endforeach
-                                    <td class="px-4 py-3 text-sm font-semibold text-gray-900 border border-gray-200 text-center bg-gray-50">
-                                        {{ is_numeric($total) && strpos((string)$total, '.') !== false ? number_format($total, 2) : $total }}
+                                    
+                                    <!-- Language Total -->
+                                    <td class="px-4 py-2 text-center font-bold border border-gray-300 bg-yellow-50">
+                                        @if(is_numeric($sectionTotal))
+                                            @if(strpos((string)$sectionTotal, '.') !== false)
+                                                {{ number_format($sectionTotal, 2) }}
+                                            @else
+                                                {{ number_format($sectionTotal) }}
+                                            @endif
+                                        @else
+                                            {{ $sectionTotal }}
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
-                        @else
-                            <!-- Complex section with subsections and languages -->
-                            @foreach($sectionData as $subsectionName => $languagesData)
-                                <!-- Subsection Header -->
-                                <tr class="bg-gray-100 border-b border-gray-200">
-                                    <td class="px-4 py-3 text-sm font-semibold text-gray-800 border border-gray-200">
-                                        <span class="ml-4">{{ $subsectionName }}</span>
-                                    </td>
-                                    @foreach($quarters as $quarter)
-                                        @php
-                                            $quarterTotal = 0;
-                                            foreach($languagesData as $langData) {
-                                                $quarterTotal += (is_numeric($langData[$quarter] ?? 0) ? $langData[$quarter] : 0);
-                                            }
-                                        @endphp
-                                        <td class="px-4 py-3 text-sm font-semibold text-gray-700 border border-gray-200 text-center">
-                                            {{ is_numeric($quarterTotal) && strpos((string)$quarterTotal, '.') !== false ? number_format($quarterTotal, 2) : $quarterTotal }}
-                                        </td>
-                                    @endforeach
-                                    @php
-                                        $subTotal = 0;
-                                        foreach($languagesData as $langData) {
-                                            foreach($langData as $val) {
-                                                $subTotal += (is_numeric($val) ? $val : 0);
-                                            }
-                                        }
-                                    @endphp
-                                    <td class="px-4 py-3 text-sm font-semibold text-gray-900 border border-gray-200 text-center bg-blue-50">
-                                        {{ is_numeric($subTotal) && strpos((string)$subTotal, '.') !== false ? number_format($subTotal, 2) : $subTotal }}
-                                    </td>
-                                </tr>
-
-                                <!-- Language rows for this subsection -->
-                                @foreach($languagesData as $languageName => $quarterData)
-                                    <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                        <td class="px-4 py-3 text-sm text-gray-600 border border-gray-200">
-                                            <span class="ml-8">• {{ $languageName }}</span>
-                                        </td>
-                                        @php $total = 0; @endphp
-                                        @foreach($quarters as $quarter)
-                                            @php 
-                                                $value = $quarterData[$quarter] ?? 0;
-                                                $total += (is_numeric($value) ? $value : 0);
-                                            @endphp
-                                            <td class="px-4 py-3 text-sm text-gray-700 border border-gray-200 text-center">
-                                                {{ is_numeric($value) && strpos((string)$value, '.') !== false ? number_format($value, 2) : $value }}
-                                            </td>
-                                        @endforeach
-                                        <td class="px-4 py-3 text-sm font-semibold text-gray-800 border border-gray-200 text-center bg-gray-50">
-                                            {{ is_numeric($total) && strpos((string)$total, '.') !== false ? number_format($total, 2) : $total }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endforeach
-                        @endif
+                        @endforeach
                     @endforeach
                 </tbody>
             </table>

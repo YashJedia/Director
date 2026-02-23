@@ -213,6 +213,61 @@
         </div>
     </div>
 
+    <!-- Approved Reports Section -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 w-full ml-0">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h4 class="text-xl font-bold text-gray-900 mb-1">Approved Reports Ready for Submission</h4>
+                <p class="text-gray-500 text-sm">Reports that have been approved and are ready to submit to super admin</p>
+            </div>
+            @if($approvedReports && $approvedReports->count() > 0)
+            <form action="{{ route('admin.reports.submit-approved') }}" method="POST" id="submit-approved-form">
+                @csrf
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition flex items-center space-x-2">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>Submit All ({{ $approvedReports->count() }})</span>
+                </button>
+            </form>
+            @endif
+        </div>
+
+        @if($approvedReports && $approvedReports->count() > 0)
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="text-left px-4 py-3 font-medium text-gray-700">Title</th>
+                            <th class="text-left px-4 py-3 font-medium text-gray-700">Language</th>
+                            <th class="text-left px-4 py-3 font-medium text-gray-700">Quarter</th>
+                            <th class="text-left px-4 py-3 font-medium text-gray-700">User</th>
+                            <th class="text-left px-4 py-3 font-medium text-gray-700">Modified</th>
+                            <th class="text-center px-4 py-3 font-medium text-gray-700">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach($approvedReports as $report)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 text-gray-900">{{ $report->title }}</td>
+                                <td class="px-4 py-3 text-gray-600">{{ $report->language->name ?? 'N/A' }}</td>
+                                <td class="px-4 py-3 text-gray-600">{{ $report->quarter }}</td>
+                                <td class="px-4 py-3 text-gray-600">{{ $report->user->name ?? 'N/A' }}</td>
+                                <td class="px-4 py-3 text-gray-600 text-sm">{{ $report->updated_at->format('M d, Y') }}</td>
+                                <td class="px-4 py-3 text-center">
+                                    <a href="{{ route('admin.reports.edit', $report->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="text-center py-8">
+                <p class="text-gray-500">No approved reports ready for submission.</p>
+            </div>
+        @endif
+    </div>
+
+
     <!-- Quick Actions -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 w-full ml-0">
         <h4 class="text-xl font-bold text-gray-900 mb-2">Quick Actions</h4>
@@ -604,6 +659,22 @@
         document.addEventListener('DOMContentLoaded', function() {
             fetchRevisionCount();
             setInterval(fetchRevisionCount, 10000);
+
+            // Handle submit approved reports form
+            const submitForm = document.getElementById('submit-approved-form');
+            if (submitForm) {
+                submitForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const count = document.querySelectorAll('table tbody tr').length;
+                    if (count === 0) {
+                        alert('No approved reports to submit.');
+                        return;
+                    }
+                    if (confirm(`Are you sure you want to submit ${count} approved report(s) to the super admin? This action cannot be undone.`)) {
+                        this.submit();
+                    }
+                });
+            }
         });
     </script>
 @endsection
