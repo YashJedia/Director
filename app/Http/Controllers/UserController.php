@@ -369,6 +369,8 @@ class UserController extends Controller
             'pastoral_connections' => 'nullable|integer|min:0|max:999999',
             'income_euros' => 'nullable|numeric|min:0|max:999999999999.99',
             'expenditure_euros' => 'nullable|numeric|min:0|max:999999999999.99',
+            'income_from_fundraising_euros' => 'nullable|numeric|min:0|max:999999999999.99',
+            'number_of_supporters' => 'nullable|integer|min:0|max:999999',
             'pr_total_organic_reach' => 'nullable|integer|min:0|max:999999999',
             'personal_fte' => 'nullable|numeric|min:0|max:999999.99',
             'new_activity' => 'nullable|string|max:1000',
@@ -426,6 +428,8 @@ class UserController extends Controller
             'pastoral_connections' => $request->pastoral_connections ?? 0,
             'income_euros' => $request->income_euros ?? 0.00,
             'expenditure_euros' => $request->expenditure_euros ?? 0.00,
+            'income_from_fundraising_euros' => $request->income_from_fundraising_euros ?? 0.00,
+            'number_of_supporters' => $request->number_of_supporters ?? 0,
             'pr_total_organic_reach' => $request->pr_total_organic_reach ?? 0,
             'personal_fte' => $request->personal_fte ?? 0.0,
             'new_activity' => $request->new_activity,
@@ -467,6 +471,8 @@ class UserController extends Controller
             'pastoral_connections' => 'nullable|integer|min:0|max:999999',
             'income_euros' => 'nullable|numeric|min:0|max:999999999999.99',
             'expenditure_euros' => 'nullable|numeric|min:0|max:999999999999.99',
+            'income_from_fundraising_euros' => 'nullable|numeric|min:0|max:999999999999.99',
+            'number_of_supporters' => 'nullable|integer|min:0|max:999999',
             'pr_total_organic_reach' => 'nullable|integer|min:0|max:999999999',
             'personal_fte' => 'nullable|numeric|min:0|max:999999.99',
             'new_activity' => 'nullable|string|max:1000',
@@ -509,7 +515,7 @@ class UserController extends Controller
             ])->withInput();
         }
 
-        // Update the report
+        // Update the report and clear revision flag if it was set
         $report->update([
             'title' => $request->title,
             'quarter' => $request->quarter,
@@ -533,12 +539,17 @@ class UserController extends Controller
             'pastoral_connections' => $request->pastoral_connections ?? 0,
             'income_euros' => $request->income_euros ?? 0.00,
             'expenditure_euros' => $request->expenditure_euros ?? 0.00,
+            'income_from_fundraising_euros' => $request->income_from_fundraising_euros ?? 0.00,
+            'number_of_supporters' => $request->number_of_supporters ?? 0,
             'pr_total_organic_reach' => $request->pr_total_organic_reach ?? 0,
             'personal_fte' => $request->personal_fte ?? 0.0,
             'new_activity' => $request->new_activity,
             'organizational_highlight' => $request->organizational_highlight,
             'organizational_concern' => $request->organizational_concern,
             'organizational_issues' => $request->organizational_issues,
+            'revision_requested' => false,
+            'revision_reason' => null,
+            'revision_requested_at' => null,
         ]);
 
         return redirect()->route('user.reports')->with('success', 'Report updated successfully!');
@@ -823,5 +834,18 @@ class UserController extends Controller
         ];
     }
 
-
+    public function getRevisionCount()
+    {
+        $user = Auth::user();
+        
+        // Get count of reports with revision_requested = true for this user
+        $revisionCount = Report::where('user_id', $user->id)
+            ->where('revision_requested', true)
+            ->count();
+        
+        return response()->json([
+            'success' => true,
+            'revision_count' => $revisionCount
+        ]);
+    }
 }

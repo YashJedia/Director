@@ -158,6 +158,26 @@
                         <input type="number" step="0.01" name="expenditure_euros" id="expenditure_euros" value="{{ old('expenditure_euros', 0) }}" min="0" required
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
+                    <div>
+                        <label for="income_from_fundraising_euros" class="block text-sm font-medium text-gray-700 mb-2">Income from Fundraising (Euros)</label>
+                        <input type="number" step="0.01" name="income_from_fundraising_euros" id="income_from_fundraising_euros" value="{{ old('income_from_fundraising_euros', 0) }}" min="0" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="number_of_supporters" class="block text-sm font-medium text-gray-700 mb-2">Number of Supporters</label>
+                        <input type="number" name="number_of_supporters" id="number_of_supporters" value="{{ old('number_of_supporters', 0) }}" min="0" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="pr_total_organic_reach" class="block text-sm font-medium text-gray-700 mb-2">PR Total Organic Reach</label>
+                        <input type="number" name="pr_total_organic_reach" id="pr_total_organic_reach" value="{{ old('pr_total_organic_reach', 0) }}" min="0" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="personal_fte" class="block text-sm font-medium text-gray-700 mb-2">Personal FTE</label>
+                        <input type="number" step="0.01" name="personal_fte" id="personal_fte" value="{{ old('personal_fte', 0) }}" min="0" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
                 </div>
             </div>
 

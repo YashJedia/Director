@@ -58,14 +58,18 @@
 
     <!-- Overview Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8 w-full max-w-5xl ml-0">
-                <div class="bg-white rounded-lg shadow-sm border border-red-200 p-6">
+                @php
+                    $revisionCount = $reportsForRevision ?? 0;
+                    $isRevisionNeeded = $revisionCount > 0;
+                @endphp
+                <div id="revision-tile" class="bg-white rounded-lg shadow-sm @if($isRevisionNeeded) border-red-200 @else border-gray-200 @endif p-6">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h6 class="text-red-600 text-sm font-medium mb-2">Reports for Revision</h6>
-                            <h4 class="text-3xl font-bold text-red-900">{{ $reportsForRevision ?? 0 }}</h4>
-                            <p class="text-red-500 text-sm mt-1">Needs user revision</p>
+                            <h6 id="revision-label" class="@if($isRevisionNeeded) text-red-600 @else text-gray-600 @endif text-sm font-medium mb-2">Reports for Revision</h6>
+                            <h4 id="revision-count" class="@if($isRevisionNeeded) text-red-900 @else text-gray-900 @endif text-3xl font-bold">{{ $revisionCount }}</h4>
+                            <p id="revision-subtext" class="@if($isRevisionNeeded) text-red-500 @else text-gray-500 @endif text-sm mt-1">Needs user revision</p>
                         </div>
-                        <div class="text-red-600 text-2xl">
+                        <div id="revision-icon" class="@if($isRevisionNeeded) text-red-600 @else text-gray-600 @endif text-2xl">
                             <i class="fa-solid fa-undo"></i>
                         </div>
                     </div>
@@ -179,6 +183,9 @@
                         <i class="fa-solid fa-eye mr-1"></i>View
                     </a>
                     @if($report->status === 'submitted')
+                    <button onclick="approveReportAction({{ $report->id }})" class="border border-green-300 text-green-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-green-50 transition-colors duration-200 flex items-center">
+                        <i class="fa-solid fa-check mr-1"></i>Approve
+                    </button>
                     <button onclick="openRevisionModal({{ $report->id }})" class="border border-orange-300 text-orange-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-orange-50 transition-colors duration-200 flex items-center">
                         <i class="fa-solid fa-redo mr-1"></i>Revision
                     </button>
@@ -188,6 +195,20 @@
                     </a>
                 </div>
             </div>
+            @endforeach
+        </div>
+    </div>
+
+    <!-- Submit Reports to Super Admin -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 w-full ml-0">
+        <h4 class="text-xl font-bold text-gray-900 mb-2">Submit Quarterly Reports to Super Admin</h4>
+        <p class="text-gray-500 text-sm mb-6">Submit all approved reports for a selected quarter cumulatively to the super admin</p>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            @foreach(['Q1', 'Q2', 'Q3', 'Q4'] as $quarter)
+            <button onclick="openSubmitModal('{{ $quarter }}')" class="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>Submit {{ $quarter }}</span>
+            </button>
             @endforeach
         </div>
     </div>
@@ -339,6 +360,54 @@
         </div>
     </div>
 
+    <!-- Submit to Super Admin Modal -->
+    <div id="submit-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900">
+                        <i class="fas fa-paper-plane text-purple-600 mr-2"></i>Submit <span id="submit-quarter"></span> Reports to Super Admin
+                    </h3>
+                    <button onclick="closeSubmitModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Submission Information -->
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-purple-900 mb-3">Submission Details</h4>
+                    <ul class="text-sm text-purple-800 space-y-2">
+                        <li><strong>Quarter:</strong> <span id="submit-quarter-display"></span></li>
+                        <li><strong>Action:</strong> Submit all approved reports for this quarter to the Super Admin</li>
+                        <li><strong>Note:</strong> Reports will be aggregated and submitted cumulatively</li>
+                    </ul>
+                </div>
+
+                <!-- Warning Alert -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 mr-3 mt-0.5"></i>
+                        <div>
+                            <h4 class="font-semibold text-yellow-900 mb-1">Important</h4>
+                            <p class="text-sm text-yellow-800">
+                                Once submitted, reports cannot be un-submitted. The Super Admin will receive all approved and reviewed reports for this quarter in a cumulative submission.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button onclick="closeSubmitModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                        Cancel
+                    </button>
+                    <button onclick="submitQuarterlyReports()" class="px-4 py-2 bg-purple-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 flex items-center">
+                        <i class="fa-solid fa-check mr-2"></i>Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentReportId = null;
 
@@ -398,5 +467,143 @@
             document.body.appendChild(form);
             form.submit();
         }
+
+        // Approve report action
+        function approveReportAction(reportId) {
+            if (confirm('Are you sure you want to approve this report? It will be ready for submission to the super admin.')) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                
+                fetch(`/admin/reports/${reportId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'Server error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message);
+                    setTimeout(() => location.reload(), 500);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(error.message || 'Failed to approve report');
+                });
+            }
+        }
+
+        // Submit to Super Admin functions
+        let selectedQuarter = null;
+
+        function openSubmitModal(quarter) {
+            selectedQuarter = quarter;
+            document.getElementById('submit-modal').classList.remove('hidden');
+            document.getElementById('submit-quarter').textContent = quarter;
+        }
+
+        function closeSubmitModal() {
+            document.getElementById('submit-modal').classList.add('hidden');
+            selectedQuarter = null;
+        }
+
+        function submitQuarterlyReports() {
+            if (!selectedQuarter) {
+                alert('Please select a quarter');
+                return;
+            }
+
+            const button = event.target;
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Submitting...';
+
+            fetch('{{ route("admin.reports.submit-quarterly-to-super-admin") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    quarter: selectedQuarter
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Server error');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    closeSubmitModal();
+                    // Reload page to show updated status
+                    setTimeout(() => location.reload(), 500);
+                } else {
+                    alert(data.message || 'Failed to submit reports');
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Submit';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message || 'An error occurred while submitting reports');
+                button.disabled = false;
+                button.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Submit';
+            });
+        }
+
+        // Fetch and update revision count dynamically
+        function fetchRevisionCount() {
+            fetch('{{ route("admin.reports.revision-count") }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const count = data.revision_count;
+                        const countElement = document.getElementById('revision-count');
+                        const tile = document.getElementById('revision-tile');
+                        const label = document.getElementById('revision-label');
+                        const subtext = document.getElementById('revision-subtext');
+                        const icon = document.getElementById('revision-icon');
+                        
+                        if (countElement) {
+                            countElement.textContent = count;
+                        }
+                        
+                        if (tile && label && subtext && icon) {
+                            if (count > 0) {
+                                // Apply red styling
+                                tile.className = 'bg-white rounded-lg shadow-sm border-red-200 p-6';
+                                label.className = 'text-red-600 text-sm font-medium mb-2';
+                                countElement.className = 'text-red-900 text-3xl font-bold';
+                                subtext.className = 'text-red-500 text-sm mt-1';
+                                icon.className = 'text-red-600 text-2xl';
+                            } else {
+                                // Apply gray styling
+                                tile.className = 'bg-white rounded-lg shadow-sm border-gray-200 p-6';
+                                label.className = 'text-gray-600 text-sm font-medium mb-2';
+                                countElement.className = 'text-gray-900 text-3xl font-bold';
+                                subtext.className = 'text-gray-500 text-sm mt-1';
+                                icon.className = 'text-gray-600 text-2xl';
+                            }
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching revision count:', error));
+        }
+
+        // Fetch revision count on page load and every 10 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchRevisionCount();
+            setInterval(fetchRevisionCount, 10000);
+        });
     </script>
 @endsection

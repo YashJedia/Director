@@ -24,6 +24,9 @@ class Report extends Model
         'revision_requested',
         'revision_requested_at',
         'revision_reason',
+        'submitted_to_super_admin',
+        'submitted_to_super_admin_at',
+        'submitted_to_super_admin_by',
         'languages_previous_year',
         'languages_goal_2025',
         'languages_goal_q1',
@@ -47,6 +50,8 @@ class Report extends Model
         'pastoral_connections',
         'income_euros',
         'expenditure_euros',
+        'income_from_fundraising_euros',
+        'number_of_supporters',
         'pr_total_organic_reach',
         'personal_fte',
         'new_activity',
@@ -60,6 +65,8 @@ class Report extends Model
         'reviewed_at' => 'datetime',
         'revision_requested' => 'boolean',
         'revision_requested_at' => 'datetime',
+        'submitted_to_super_admin' => 'boolean',
+        'submitted_to_super_admin_at' => 'datetime',
         'languages_previous_year' => 'integer',
         'languages_goal_2025' => 'integer',
         'languages_goal_q1' => 'integer',
@@ -83,6 +90,8 @@ class Report extends Model
         'pastoral_connections' => 'integer',
         'income_euros' => 'decimal:2',
         'expenditure_euros' => 'decimal:2',
+        'income_from_fundraising_euros' => 'decimal:2',
+        'number_of_supporters' => 'integer',
         'pr_total_organic_reach' => 'integer',
         'personal_fte' => 'decimal:1',
     ];
@@ -141,6 +150,14 @@ class Report extends Model
     public function reviewer()
     {
         return $this->belongsTo(Admin::class, 'reviewed_by');
+    }
+
+    /**
+     * Get the admin who submitted this report to super admin
+     */
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'submitted_to_super_admin_by');
     }
 
     /**

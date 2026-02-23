@@ -46,14 +46,14 @@
         </div>
     </div>
     
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div id="revision-tile" class="@if($reportStats['revision_reports'] > 0) bg-gradient-to-br from-red-50 to-red-100 border border-red-200 @else bg-white border border-gray-200 @endif rounded-lg shadow-sm p-6">
         <div class="flex justify-between items-start">
             <div>
-                <h6 class="text-gray-600 text-sm font-medium mb-2">Report for revision</h6>
-                <h4 class="text-3xl font-bold text-gray-900">{{ $reportStats['revision_reports'] }}</h4>
-                <p class="text-gray-500 text-sm mt-1">Reports not approved by admin but sent back for revision</p>
+                <h6 id="revision-label" class="@if($reportStats['revision_reports'] > 0) text-red-600 @else text-gray-600 @endif text-sm font-medium mb-2">Report for revision</h6>
+                <h4 id="revision-count" class="@if($reportStats['revision_reports'] > 0) text-red-900 @else text-gray-900 @endif text-3xl font-bold">{{ $reportStats['revision_reports'] }}</h4>
+                <p id="revision-subtext" class="@if($reportStats['revision_reports'] > 0) text-red-500 @else text-gray-500 @endif text-sm mt-1">Reports not approved by admin but sent back for revision</p>
             </div>
-            <div class="text-gray-400 text-2xl">
+            <div id="revision-icon" class="@if($reportStats['revision_reports'] > 0) text-red-600 @else text-gray-400 @endif text-2xl">
                 <i class="fa-solid fa-rotate-left"></i>
             </div>
         </div>
@@ -204,5 +204,46 @@
     </div>
 </div>
 
-
+<script>
+    // Fetch revision count dynamically
+    function fetchRevisionCount() {
+        fetch('{{ route("user.reports.revision-count") }}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const count = data.revision_count;
+                    const tile = document.getElementById('revision-tile');
+                    const label = document.getElementById('revision-label');
+                    const countElement = document.getElementById('revision-count');
+                    const subtext = document.getElementById('revision-subtext');
+                    const icon = document.getElementById('revision-icon');
+                    
+                    // Update the count
+                    countElement.textContent = count;
+                    
+                    // Update styling based on count
+                    if (count > 0) {
+                        tile.className = 'bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-lg shadow-sm p-6';
+                        label.className = 'text-red-600 text-sm font-medium mb-2';
+                        countElement.className = 'text-red-900 text-3xl font-bold';
+                        subtext.className = 'text-red-500 text-sm mt-1';
+                        icon.className = 'text-red-600 text-2xl';
+                    } else {
+                        tile.className = 'bg-white border border-gray-200 rounded-lg shadow-sm p-6';
+                        label.className = 'text-gray-600 text-sm font-medium mb-2';
+                        countElement.className = 'text-gray-900 text-3xl font-bold';
+                        subtext.className = 'text-gray-500 text-sm mt-1';
+                        icon.className = 'text-gray-400 text-2xl';
+                    }
+                }
+            })
+            .catch(error => console.error('Error fetching revision count:', error));
+    }
+    
+    // Fetch on page load and refresh every 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchRevisionCount();
+        setInterval(fetchRevisionCount, 5000);
+    });
+</script>
 @endsection 

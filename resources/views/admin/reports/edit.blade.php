@@ -373,6 +373,82 @@
                             </button>
                         </div>
                     </div>
+                    <div>
+                        <label for="income_from_fundraising_euros" class="block text-sm font-medium text-gray-700 mb-2">Income from Fundraising (Euros)</label>
+                        <input type="number" step="0.01" name="income_from_fundraising_euros" id="income_from_fundraising_euros" value="{{ old('income_from_fundraising_euros', $report->income_from_fundraising_euros) }}" min="0" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div class="mt-2 comment-section" data-field="income_from_fundraising_euros" data-section="organization">
+                            @if(isset($commentsByField['income_from_fundraising_euros']))
+                                @foreach($commentsByField['income_from_fundraising_euros'] as $comment)
+                                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-2 mb-2 text-xs">
+                                        <div class="font-semibold text-yellow-800">{{ $comment->admin->name }}</div>
+                                        <div class="text-yellow-700">{{ $comment->comment }}</div>
+                                        <div class="text-yellow-600 text-xs mt-1">{{ $comment->created_at->format('M d, Y H:i') }}</div>
+                                    </div>
+                                @endforeach
+                            @endif
+                            <button type="button" onclick="openCommentModal('organization', 'income_from_fundraising_euros')" class="text-xs text-blue-600 hover:text-blue-800 mt-1">
+                                <i class="fa-solid fa-comment mr-1"></i>Add Comment
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="number_of_supporters" class="block text-sm font-medium text-gray-700 mb-2">Number of Supporters</label>
+                        <input type="number" name="number_of_supporters" id="number_of_supporters" value="{{ old('number_of_supporters', $report->number_of_supporters) }}" min="0" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div class="mt-2 comment-section" data-field="number_of_supporters" data-section="organization">
+                            @if(isset($commentsByField['number_of_supporters']))
+                                @foreach($commentsByField['number_of_supporters'] as $comment)
+                                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-2 mb-2 text-xs">
+                                        <div class="font-semibold text-yellow-800">{{ $comment->admin->name }}</div>
+                                        <div class="text-yellow-700">{{ $comment->comment }}</div>
+                                        <div class="text-yellow-600 text-xs mt-1">{{ $comment->created_at->format('M d, Y H:i') }}</div>
+                                    </div>
+                                @endforeach
+                            @endif
+                            <button type="button" onclick="openCommentModal('organization', 'number_of_supporters')" class="text-xs text-blue-600 hover:text-blue-800 mt-1">
+                                <i class="fa-solid fa-comment mr-1"></i>Add Comment
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="pr_total_organic_reach" class="block text-sm font-medium text-gray-700 mb-2">PR Total Organic Reach</label>
+                        <input type="number" name="pr_total_organic_reach" id="pr_total_organic_reach" value="{{ old('pr_total_organic_reach', $report->pr_total_organic_reach) }}" min="0" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div class="mt-2 comment-section" data-field="pr_total_organic_reach" data-section="organization">
+                            @if(isset($commentsByField['pr_total_organic_reach']))
+                                @foreach($commentsByField['pr_total_organic_reach'] as $comment)
+                                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-2 mb-2 text-xs">
+                                        <div class="font-semibold text-yellow-800">{{ $comment->admin->name }}</div>
+                                        <div class="text-yellow-700">{{ $comment->comment }}</div>
+                                        <div class="text-yellow-600 text-xs mt-1">{{ $comment->created_at->format('M d, Y H:i') }}</div>
+                                    </div>
+                                @endforeach
+                            @endif
+                            <button type="button" onclick="openCommentModal('organization', 'pr_total_organic_reach')" class="text-xs text-blue-600 hover:text-blue-800 mt-1">
+                                <i class="fa-solid fa-comment mr-1"></i>Add Comment
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="personal_fte" class="block text-sm font-medium text-gray-700 mb-2">Personal FTE</label>
+                        <input type="number" step="0.01" name="personal_fte" id="personal_fte" value="{{ old('personal_fte', $report->personal_fte) }}" min="0" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div class="mt-2 comment-section" data-field="personal_fte" data-section="organization">
+                            @if(isset($commentsByField['personal_fte']))
+                                @foreach($commentsByField['personal_fte'] as $comment)
+                                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-2 mb-2 text-xs">
+                                        <div class="font-semibold text-yellow-800">{{ $comment->admin->name }}</div>
+                                        <div class="text-yellow-700">{{ $comment->comment }}</div>
+                                        <div class="text-yellow-600 text-xs mt-1">{{ $comment->created_at->format('M d, Y H:i') }}</div>
+                                    </div>
+                                @endforeach
+                            @endif
+                            <button type="button" onclick="openCommentModal('organization', 'personal_fte')" class="text-xs text-blue-600 hover:text-blue-800 mt-1">
+                                <i class="fa-solid fa-comment mr-1"></i>Add Comment
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

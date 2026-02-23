@@ -36,13 +36,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/reports/create', [AdminController::class, 'showCreateReport'])->name('reports.create');
         Route::post('/reports/store', [AdminController::class, 'storeReport'])->name('reports.store');
         Route::get('/reports/data', [AdminController::class, 'getReportData'])->name('reports.data');
+        Route::get('/reports/revision-count', [AdminController::class, 'getRevisionCount'])->name('reports.revision-count');
         Route::get('/reports/{report}/edit', [AdminController::class, 'showEditReport'])->name('reports.edit');
         Route::put('/reports/{report}/update', [AdminController::class, 'updateReport'])->name('reports.update');
         Route::delete('/reports/{report}', [AdminController::class, 'deleteReport'])->name('reports.delete');
         Route::post('/reports/{report}/review', [AdminController::class, 'reviewReport'])->name('reports.review');
+        Route::post('/reports/{report}/approve', [AdminController::class, 'approveReport'])->name('reports.approve');
         Route::post('/reports/{report}/send-for-revision', [AdminController::class, 'sendForRevision'])->name('reports.send-for-revision');
+        Route::post('/reports/submit-quarterly-to-super-admin', [AdminController::class, 'submitQuarterlyReportsToSuperAdmin'])->name('reports.submit-quarterly-to-super-admin');
         Route::post('/reports/{report}/comment', [AdminController::class, 'addComment'])->name('reports.comment');
         Route::post('/reports/{report}/submit-to-super-admin', [AdminController::class, 'submitToSuperAdmin'])->name('reports.submit-to-super-admin');
+        Route::get('/reports-aggregated', [AdminController::class, 'viewAggregatedReports'])->name('reports.aggregated');
         
         // Language management
         Route::get('/languages/{language}/edit', [AdminController::class, 'showEditLanguage'])->name('languages.edit');
@@ -91,6 +95,7 @@ Route::prefix('user')->group(function () {
         Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
         Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
         Route::get('/reports', [UserController::class, 'reports'])->name('user.reports');
+        Route::get('/reports/revision-count', [UserController::class, 'getRevisionCount'])->name('user.reports.revision-count');
         Route::get('/languages', [UserController::class, 'languages'])->name('user.languages');
         Route::get('/help', [UserController::class, 'help'])->name('user.help');
         

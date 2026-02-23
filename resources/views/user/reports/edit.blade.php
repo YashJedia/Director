@@ -42,7 +42,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Quarter *</label>
-                    <select name="quarter" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <select id="quarter" name="quarter" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <option value="">Select Quarter</option>
                         <option value="Q1 2025" {{ $report->quarter == 'Q1 2025' ? 'selected' : '' }}>Q1 2025</option>
                         <option value="Q2 2025" {{ $report->quarter == 'Q2 2025' ? 'selected' : '' }}>Q2 2025</option>
@@ -55,7 +55,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Language *</label>
-                    <select name="language" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <select id="language" name="language" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <option value="">Select Language</option>
                         @foreach($assignedLanguages as $language)
                             <option value="{{ $language->name }}" {{ $report->language->name == $language->name ? 'selected' : '' }}>{{ $language->name }}</option>
@@ -65,7 +65,7 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Report Title *</label>
-                    <input type="text" name="title" value="{{ $report->title }}" required placeholder="Enter report title" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <input type="text" id="title" name="title" value="{{ $report->title }}" required placeholder="Title will auto-generate based on quarter and language" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" readonly>
                 </div>
             </div>
         </div>
@@ -178,13 +178,14 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Expenditure (Euros)</label>
                     <input type="number" name="expenditure_euros" value="{{ $report->expenditure_euros }}" min="0" max="999999999999.99" step="0.01" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-            </div>
-        </div>
-        
-        <!-- Section VI: Public Relations & Staffing -->
-        <div class="border-b border-gray-200 pb-6 mb-6">
-            <h4 class="text-lg font-semibold text-gray-900 mb-4">Public Relations & Staffing</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Income from Fundraising (Euros)</label>
+                    <input type="number" name="income_from_fundraising_euros" value="{{ $report->income_from_fundraising_euros }}" min="0" max="999999999999.99" step="0.01" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Number of Supporters</label>
+                    <input type="number" name="number_of_supporters" value="{{ $report->number_of_supporters }}" min="0" max="999999" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">PR Total Organic Reach</label>
                     <input type="number" name="pr_total_organic_reach" value="{{ $report->pr_total_organic_reach }}" min="0" max="999999999" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
@@ -196,7 +197,7 @@
             </div>
         </div>
         
-        <!-- Section VII: Descriptive Text Fields -->
+        <!-- Section VI: Descriptive Text Fields -->
         <div class="border-b border-gray-200 pb-6 mb-6">
             <h4 class="text-lg font-semibold text-gray-900 mb-4">Additional Information</h4>
             <div class="space-y-4">
@@ -223,10 +224,48 @@
             <a href="{{ route('user.reports') }}" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
                 Cancel
             </a>
-            <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
-                <i class="fa-solid fa-save mr-2"></i>Update Report
-            </button>
+            <form id="edit-report-form" class="inline">
+                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
+                    <i class="fa-solid fa-save mr-2"></i>Update Report
+                </button>
+            </form>
         </div>
     </form>
 </div>
+
+<script>
+    function updateTitle() {
+        const quarter = document.getElementById('quarter').value;
+        const language = document.getElementById('language').value;
+        const titleInput = document.getElementById('title');
+        
+        if (quarter && language) {
+            titleInput.value = `${quarter} ${language}`;
+        }
+    }
+    
+    // Add event listeners
+    document.getElementById('quarter').addEventListener('change', updateTitle);
+    document.getElementById('language').addEventListener('change', updateTitle);
+    
+    // Initialize title on page load if both values are set
+    document.addEventListener('DOMContentLoaded', updateTitle);
+    
+    // Refresh revision count after form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form:not(#edit-report-form)');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Allow form to submit normally
+                // Then refresh the dashboard after redirect
+                setTimeout(function() {
+                    if (window.location.pathname.includes('reports')) {
+                        // Refresh the page after successful update
+                        window.location.reload();
+                    }
+                }, 500);
+            });
+        }
+    });
+</script>
 @endsection

@@ -49,7 +49,7 @@
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Quarter *</label>
-                    <select name="quarter" required class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <select id="quarter" name="quarter" required class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <option value="">Select Quarter</option>
                         <option value="Q1 2025">Q1 2025</option>
                         <option value="Q2 2025">Q2 2025</option>
@@ -62,7 +62,7 @@
             <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Language *</label>
-                    <select name="language" required class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <select id="language" name="language" required class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <option value="">Select Language</option>
                         @foreach($assignedLanguages as $language)
                             <option value="{{ $language->name }}">{{ $language->name }}</option>
@@ -72,7 +72,7 @@
                 
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Report Title *</label>
-                    <input type="text" name="title" required placeholder="Enter report title" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <input type="text" id="title" name="title" required placeholder="Title will auto-generate based on quarter and language" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500" readonly>
                 </div>
             </div>
         </div>
@@ -185,13 +185,14 @@
                     <label class="block mb-2 text-sm font-medium text-gray-700">Expenditure (Euros)</label>
                     <input type="number" name="expenditure_euros" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-            </div>
-        </div>
-        
-        <!-- Section VI: Public Relations & Staffing -->
-        <div class="pb-6 mb-6 border-b border-gray-200">
-            <h4 class="mb-4 text-lg font-semibold text-gray-900">Public Relations & Staffing</h4>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Income from Fundraising (Euros)</label>
+                    <input type="number" name="income_from_fundraising_euros" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Number of Supporters</label>
+                    <input type="number" name="number_of_supporters" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">PR Total Organic Reach</label>
                     <input type="number" name="pr_total_organic_reach" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
@@ -236,4 +237,29 @@
         </div>
     </form>
 </div>
+
+<script>
+    // Auto-generate report title based on quarter and language
+    const quarterSelect = document.getElementById('quarter');
+    const languageSelect = document.getElementById('language');
+    const titleInput = document.getElementById('title');
+
+    function updateTitle() {
+        const quarter = quarterSelect.value;
+        const language = languageSelect.value;
+
+        if (quarter && language) {
+            titleInput.value = `${quarter} ${language}`;
+        } else {
+            titleInput.value = '';
+        }
+    }
+
+    quarterSelect.addEventListener('change', updateTitle);
+    languageSelect.addEventListener('change', updateTitle);
+
+    // Update title on page load if values are already selected
+    window.addEventListener('load', updateTitle);
+</script>
+
 @endsection

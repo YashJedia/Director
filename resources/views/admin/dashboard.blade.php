@@ -27,6 +27,16 @@
                         <span>Dashboard</span>
                     </div>
                 </a>
+                @if(Auth::guard('admin')->user() && Auth::guard('admin')->user()->isSuperAdmin())
+                <a href="{{ route('admin.reports.aggregated') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-red-700 hover:text-white">
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span>Reports</span>
+                    </div>
+                </a>
+                @endif
                 <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-red-700 hover:text-white">
                     <div class="flex items-center space-x-2">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,16 +89,20 @@
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
                 <div class="container mx-auto px-6 py-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                                                @php
+                                                    $revisionCount = $reportsForRevision ?? 0;
+                                                    $isRevisionNeeded = $revisionCount > 0;
+                                                @endphp
                                                 <!-- Reports for Revision Tile -->
-                                                <div class="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-lg p-5 shadow-md">
+                                                <div id="revision-tile" class="@if($isRevisionNeeded) bg-gradient-to-br from-red-50 to-red-100 border border-red-200 @else bg-white border border-gray-200 @endif rounded-lg p-5 shadow-md">
                                                     <div class="flex items-center justify-between">
                                                         <div>
-                                                            <p class="text-sm font-medium text-red-600">Reports for Revision</p>
-                                                            <p class="text-2xl font-bold text-red-900" id="dashboard-reports-revision">{{ $reportsForRevision ?? 0 }}</p>
-                                                            <p class="text-xs text-red-500">Needs user revision</p>
+                                                            <p id="revision-label" class="@if($isRevisionNeeded) text-red-600 @else text-gray-600 @endif text-sm font-medium">Reports for Revision</p>
+                                                            <p id="revision-count" class="@if($isRevisionNeeded) text-red-900 @else text-gray-900 @endif text-2xl font-bold">{{ $revisionCount }}</p>
+                                                            <p id="revision-subtext" class="@if($isRevisionNeeded) text-red-500 @else text-gray-500 @endif text-xs">Needs user revision</p>
                                                         </div>
-                                                        <div class="bg-red-500 p-3 rounded-full">
-                                                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <div id="revision-icon-bg" class="@if($isRevisionNeeded) bg-red-500 @else bg-gray-500 @endif p-3 rounded-full">
+                                                            <svg id="revision-icon" class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h7V3m0 0l11 11-4 4-7-7z" />
                                                             </svg>
                                                         </div>
@@ -167,66 +181,56 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Recent Activity -->
-                    <div class="bg-white shadow rounded-lg">
-                        <div class="px-4 py-5 sm:p-6">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900">Recent Activity</h3>
-                            <div class="mt-5">
-                                <div class="flow-root">
-                                    <ul class="-mb-8">
-                                        <li>
-                                            <div class="relative pb-8">
-                                                <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
-                                                <div class="relative flex space-x-3">
-                                                    <div>
-                                                        <span class="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center ring-8 ring-white">
-                                                            <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                                                            </svg>
-                                                        </span>
-                                                    </div>
-                                                    <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                                        <div>
-                                                            <p class="text-sm text-gray-500">New user <span class="font-medium text-gray-900">John Doe</span> registered</p>
-                                                        </div>
-                                                        <div class="text-right text-sm whitespace-nowrap text-gray-500">
-                                                            <time>3h ago</time>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="relative pb-8">
-                                                <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
-                                                <div class="relative flex space-x-3">
-                                                    <div>
-                                                        <span class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
-                                                            <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-                                                            </svg>
-                                                        </span>
-                                                    </div>
-                                                    <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                                        <div>
-                                                            <p class="text-sm text-gray-500">System update completed</p>
-                                                        </div>
-                                                        <div class="text-right text-sm whitespace-nowrap text-gray-500">
-                                                            <time>5h ago</time>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </main>
         </div>
     </div>
+
+    <script>
+        // Fetch and update revision count dynamically
+        function fetchRevisionCount() {
+            fetch('{{ route("admin.reports.revision-count") }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const count = data.revision_count;
+                        const countElement = document.getElementById('revision-count');
+                        const tile = document.getElementById('revision-tile');
+                        const label = document.getElementById('revision-label');
+                        const subtext = document.getElementById('revision-subtext');
+                        const iconBg = document.getElementById('revision-icon-bg');
+                        
+                        if (countElement) {
+                            countElement.textContent = count;
+                        }
+                        
+                        if (tile && label && subtext && iconBg) {
+                            if (count > 0) {
+                                // Apply red styling
+                                tile.className = 'bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-lg p-5 shadow-md';
+                                label.className = 'text-red-600 text-sm font-medium';
+                                countElement.className = 'text-red-900 text-2xl font-bold';
+                                subtext.className = 'text-red-500 text-xs';
+                                iconBg.className = 'bg-red-500 p-3 rounded-full';
+                            } else {
+                                // Apply gray styling
+                                tile.className = 'bg-white border border-gray-200 rounded-lg p-5 shadow-md';
+                                label.className = 'text-gray-600 text-sm font-medium';
+                                countElement.className = 'text-gray-900 text-2xl font-bold';
+                                subtext.className = 'text-gray-500 text-xs';
+                                iconBg.className = 'bg-gray-500 p-3 rounded-full';
+                            }
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching revision count:', error));
+        }
+
+        // Fetch revision count on page load and every 10 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchRevisionCount();
+            setInterval(fetchRevisionCount, 10000);
+        });
+    </script>
 </body>
 </html> 

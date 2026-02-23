@@ -71,14 +71,18 @@
         </div>
 
         <!-- Reports for Revision -->
-        <div class="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-lg p-6 shadow-md">
+        @php
+            $revisionCount = 0; // This will be updated by JavaScript
+            $isRevisionNeeded = false; // Start as false, will be updated dynamically
+        @endphp
+        <div id="revision-tile" class="@if($isRevisionNeeded) bg-gradient-to-br from-red-50 to-red-100 border border-red-200 @else bg-white border border-gray-200 @endif rounded-lg p-6 shadow-md">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-red-600">Reports for Revision</p>
-                    <p class="text-2xl font-bold text-red-900" id="reports-revision">0</p>
-                    <p class="text-xs text-red-500">Needs user revision</p>
+                    <p id="revision-label" class="@if($isRevisionNeeded) text-red-600 @else text-gray-600 @endif text-sm font-medium">Reports for Revision</p>
+                    <p id="reports-revision" class="@if($isRevisionNeeded) text-red-900 @else text-gray-900 @endif text-2xl font-bold">0</p>
+                    <p id="revision-subtext" class="@if($isRevisionNeeded) text-red-500 @else text-gray-500 @endif text-xs">Needs user revision</p>
                 </div>
-                <div class="bg-red-500 p-3 rounded-full">
+                <div id="revision-icon" class="@if($isRevisionNeeded) bg-red-500 @else bg-gray-500 @endif p-3 rounded-full">
                     <i class="fas fa-undo text-white text-xl"></i>
                 </div>
             </div>
@@ -762,7 +766,33 @@
                     document.getElementById('year-reviewed').textContent = data.stats.year_reviewed || '0';
 
                     document.getElementById('year-approved').textContent = data.stats.year_approved || '0';
-                    document.getElementById('reports-revision').textContent = data.stats.reports_revision || '0';
+                    
+                    // Update reports for revision with dynamic styling
+                    const revisionCount = data.stats.reports_revision || 0;
+                    document.getElementById('reports-revision').textContent = revisionCount;
+                    
+                    // Update styling based on revision count
+                    const revisionTile = document.getElementById('revision-tile');
+                    const revisionLabel = document.getElementById('revision-label');
+                    const revisionSubtext = document.getElementById('revision-subtext');
+                    const revisionIcon = document.getElementById('revision-icon');
+                    const revisionText = document.getElementById('reports-revision');
+                    
+                    if (revisionCount > 0) {
+                        // Red styling for active revisions
+                        revisionTile.className = 'bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-lg p-6 shadow-md';
+                        revisionLabel.className = 'text-red-600 text-sm font-medium';
+                        revisionSubtext.className = 'text-red-500 text-xs';
+                        revisionIcon.className = 'bg-red-500 p-3 rounded-full';
+                        revisionText.className = 'text-red-900 text-2xl font-bold';
+                    } else {
+                        // Gray styling for no revisions
+                        revisionTile.className = 'bg-white border border-gray-200 rounded-lg p-6 shadow-md';
+                        revisionLabel.className = 'text-gray-600 text-sm font-medium';
+                        revisionSubtext.className = 'text-gray-500 text-xs';
+                        revisionIcon.className = 'bg-gray-500 p-3 rounded-full';
+                        revisionText.className = 'text-gray-900 text-2xl font-bold';
+                    }
                     
                     // Populate fields if report data exists
                     if (data.report_data && languageId) {
