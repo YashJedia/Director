@@ -24,11 +24,24 @@
         <div class="flex justify-between items-start">
             <div>
                 <h6 class="text-gray-600 text-sm font-medium mb-2">All Reports</h6>
+                <h4 class="text-3xl font-bold text-gray-900">{{ $reportStats['total_reports'] }}</h4>
+                <p class="text-gray-500 text-sm mt-1">Total reports created</p>
+            </div>
+            <div class="text-gray-400 text-2xl">
+                <i class="fa-solid fa-file-lines"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex justify-between items-start">
+            <div>
+                <h6 class="text-gray-600 text-sm font-medium mb-2">Submitted Reports</h6>
                 <h4 class="text-3xl font-bold text-gray-900">{{ $reportStats['submitted_reports'] }}</h4>
                 <p class="text-gray-500 text-sm mt-1">Reports submitted so far</p>
             </div>
             <div class="text-gray-400 text-2xl">
-                <i class="fa-solid fa-file-lines"></i>
+                <i class="fa-solid fa-check-circle"></i>
             </div>
         </div>
     </div>

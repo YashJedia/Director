@@ -655,6 +655,8 @@ class UserController extends Controller
                     'status' => $report->status,
                     'review_status' => $report->review_status ?? null,
                     'revision_requested' => $report->revision_requested ?? false,
+                    'revision_reason' => $report->revision_reason ?? null,
+                    'revision_requested_at' => $report->revision_requested_at ?? null,
                     'score' => $report->score,
                     'updated_at' => $report->updated_at,
                 ];

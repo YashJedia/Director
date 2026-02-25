@@ -78,7 +78,7 @@
             <div class="flex justify-between items-start">
                 <div>
                     <h6 class="text-gray-600 text-sm font-medium mb-2">Total Reports</h6>
-                    <h4 class="text-3xl font-bold text-gray-900">2</h4>
+                    <h4 class="text-3xl font-bold text-gray-900">{{ $totalReports ?? 0 }}</h4>
                     <p class="text-gray-500 text-sm mt-1">All time reports created</p>
                 </div>
                 <div class="text-blue-600 text-2xl">
@@ -91,7 +91,7 @@
             <div class="flex justify-between items-start">
                 <div>
                     <h6 class="text-gray-600 text-sm font-medium mb-2">Draft Reports</h6>
-                    <h4 class="text-3xl font-bold text-gray-900">0</h4>
+                    <h4 class="text-3xl font-bold text-gray-900">{{ $draftReports ?? 0 }}</h4>
                     <p class="text-gray-500 text-sm mt-1">Pending completion</p>
                 </div>
                 <div class="text-yellow-600 text-2xl">
@@ -104,7 +104,7 @@
             <div class="flex justify-between items-start">
                 <div>
                     <h6 class="text-gray-600 text-sm font-medium mb-2">Submitted</h6>
-                    <h4 class="text-3xl font-bold text-gray-900">2</h4>
+                    <h4 class="text-3xl font-bold text-gray-900">{{ $submittedReports ?? 0 }}</h4>
                     <p class="text-gray-500 text-sm mt-1">Completed reports</p>
                 </div>
                 <div class="text-green-600 text-2xl">

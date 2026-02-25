@@ -165,27 +165,56 @@
     
     <div class="space-y-4">
         @forelse($reports as $report)
-        <div class="p-6 rounded-lg border border-gray-200 transition-colors duration-200 hover:bg-gray-50">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <div class="flex justify-center items-center w-12 h-12 text-green-600 bg-green-100 rounded-lg">
-                        <i class="text-xl fa-solid fa-file-lines"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-1 font-semibold text-gray-900">{{ $report['title'] }}</h6>
-                        <div class="flex items-center space-x-4 text-sm text-gray-500">
-                            <span>{{ $report['quarter'] }}</span>
-                            <span class="px-2 py-1 rounded-full text-xs font-medium 
-                                @if($report['status'] === 'submitted') bg-green-100 text-green-800
-                                @elseif($report['status'] === 'draft') bg-yellow-100 text-yellow-800
-                                @else bg-blue-100 text-blue-800 @endif">
-                                {{ ucfirst($report['status']) }}
-                            </span>
+        <div class="p-6 rounded-lg border @if($report['revision_requested']) border-red-300 bg-red-50 @else border-gray-200 @endif transition-colors duration-200 hover:bg-gray-50">
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex justify-center items-center w-12 h-12 text-green-600 bg-green-100 rounded-lg">
+                                <i class="text-xl fa-solid fa-file-lines"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 font-semibold text-gray-900">{{ $report['title'] }}</h6>
+                                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                    <span>{{ $report['quarter'] }}</span>
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium 
+                                        @if($report['revision_requested']) bg-red-200 text-red-800
+                                        @elseif($report['status'] === 'submitted') bg-green-100 text-green-800
+                                        @elseif($report['status'] === 'draft') bg-yellow-100 text-yellow-800
+                                        @else bg-blue-100 text-blue-800 @endif">
+                                        @if($report['revision_requested'])
+                                            <i class="fa-solid fa-redo mr-1"></i>Revision Needed
+                                        @else
+                                            {{ ucfirst($report['status']) }}
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Show Revision Reason if exists -->
+                    @if($report['revision_requested'] && $report['revision_reason'])
+                    <div class="mt-4 pt-4 border-t border-red-200">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-comment text-red-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-red-900 mb-1">Admin's Revision Note:</p>
+                                <p class="text-sm text-red-800 bg-white rounded px-3 py-2 border border-red-200">
+                                    {{ $report['revision_reason'] }}
+                                </p>
+                                <p class="text-xs text-red-600 mt-2">
+                                    <i class="fa-solid fa-clock mr-1"></i>Requested on {{ $report['revision_requested_at'] ? $report['revision_requested_at']->format('M d, Y \a\t h:i A') : 'Unknown' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
                 
-                <div class="flex items-center space-x-3">
+                <div class="flex flex-col items-end space-y-3">
                     @if($report['score'])
                     <div class="text-right">
                         <div class="text-lg font-bold text-green-600">{{ $report['score'] }}/10</div>
@@ -199,7 +228,12 @@
                     </div>
                     
                     <div class="flex items-center space-x-2">
-                        @if($report['status'] === 'submitted')
+                        @if($report['revision_requested'])
+                            <!-- Revision mode - allow editing -->
+                            <a href="{{ route('user.reports.edit', $report['id']) }}" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded border border-blue-300 transition-colors duration-200 hover:bg-blue-700">
+                                <i class="mr-1 fa-solid fa-edit"></i>Edit & Fix
+                            </a>
+                        @elseif($report['status'] === 'submitted')
                             <button class="px-3 py-1 text-sm text-gray-600 rounded border border-gray-300 transition-colors duration-200 hover:text-gray-800 hover:bg-gray-50">
                                 <i class="mr-1 fa-solid fa-eye"></i>View
                             </button>

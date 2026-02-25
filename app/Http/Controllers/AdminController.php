@@ -126,6 +126,11 @@ class AdminController extends Controller
             ->latest()
             ->get();
 
+        // Calculate report statistics
+        $totalReports = \App\Models\Report::whereIn('language_id', $languages->pluck('id'))->count();
+        $draftReports = \App\Models\Report::whereIn('language_id', $languages->pluck('id'))->where('status', 'draft')->count();
+        $submittedReports = \App\Models\Report::whereIn('language_id', $languages->pluck('id'))->where('submitted_to_super_admin', true)->count();
+
         // Get all users assigned to the admin's languages
         $userIds = $languages->pluck('assigned_user_id')->filter()->unique();
         $users = User::whereIn('id', $userIds)->get();
@@ -143,7 +148,10 @@ class AdminController extends Controller
             'quarterlyReports',
             'quarterlyReportsCount',
             'users',
-            'approvedReports'
+            'approvedReports',
+            'totalReports',
+            'draftReports',
+            'submittedReports'
         ));
     }
 
