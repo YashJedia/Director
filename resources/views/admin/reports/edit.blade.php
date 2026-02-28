@@ -751,6 +751,56 @@
     </div>
 
     <script>
+        // Map quarter to quarter number
+        function getQuarterNumber(quarter) {
+            if (quarter.includes('Q1')) return '1';
+            if (quarter.includes('Q2')) return '2';
+            if (quarter.includes('Q3')) return '3';
+            if (quarter.includes('Q4')) return '4';
+            return '1';
+        }
+
+        // Update field labels and values based on selected quarter
+        function updateQuarterlyFields() {
+            const quarter = document.getElementById('quarter').value;
+            const quarterNum = getQuarterNumber(quarter);
+            
+            // List of all quarterly field mappings
+            const fieldMappings = [
+                { oldField: 'languages_goal_q1', newField: `languages_goal_q${quarterNum}` },
+                { oldField: 'languages_achieved_q1', newField: `languages_achieved_q${quarterNum}` },
+                { oldField: 'volunteers_goal_q1', newField: `volunteers_goal_q${quarterNum}` },
+                { oldField: 'volunteers_achieved_q1', newField: `volunteers_achieved_q${quarterNum}` },
+            ];
+            
+            // Update label and field names
+            fieldMappings.forEach(mapping => {
+                const oldLabel = document.querySelector(`label[for="${mapping.oldField}"]`);
+                const oldField = document.getElementById(mapping.oldField);
+                
+                if (oldLabel && oldField) {
+                    if (quarterNum !== '1') {
+                        // Update label text to show current quarter
+                        const labelText = oldLabel.textContent;
+                        const newLabelText = labelText.replace(/Q\d/g, `Q${quarterNum}`);
+                        oldLabel.textContent = newLabelText;
+                        oldLabel.setAttribute('for', mapping.newField);
+                    }
+                }
+            });
+        }
+
+        // Load correct quarterly data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateQuarterlyFields();
+        });
+
+        // Update when quarter changes
+        const quarterInput = document.getElementById('quarter');
+        if (quarterInput) {
+            quarterInput.addEventListener('change', updateQuarterlyFields);
+        }
+
         function openCommentModal(section, field) {
             document.getElementById('comment-section').value = section;
             document.getElementById('comment-field').value = field;

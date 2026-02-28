@@ -72,8 +72,27 @@
         
         <!-- Section I: Goal Progress -->
         <div class="border-b border-gray-200 pb-6 mb-6">
-            <h4 class="text-lg font-semibold text-gray-900 mb-4">Goal Progress</h4>
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-lg font-semibold text-gray-900">Goal Progress</h4>
+                <span class="text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-lg" id="edit-quarter-label">Q1</span>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Languages Previous Year</label>
+                    <input type="number" name="languages_previous_year" value="{{ $report->languages_previous_year ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Languages Goal 2025</label>
+                    <input type="number" name="languages_goal_2025" value="{{ $report->languages_goal_2025 ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Languages Goal <span id="user-edit-goal-quarter">Q1</span></label>
+                    <input type="number" id="user_languages_goal_input" value="{{ $report->languages_goal_q1 ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Languages Achieved <span id="user-edit-achieved-quarter">Q1</span></label>
+                    <input type="number" id="user_languages_achieved_input" value="{{ $report->languages_achieved_q1 ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers Previous Year</label>
                     <input type="number" name="volunteers_previous_year" value="{{ $report->volunteers_previous_year }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
@@ -83,28 +102,36 @@
                     <input type="number" name="volunteers_goal_2025" value="{{ $report->volunteers_goal_2025 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers Goal Q1</label>
-                    <input type="number" name="volunteers_goal_q1" value="{{ $report->volunteers_goal_q1 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers Goal <span id="user-edit-vol-goal-quarter">Q1</span></label>
+                    <input type="number" id="user_volunteers_goal_input" value="{{ $report->volunteers_goal_q1 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers Achieved Q1</label>
-                    <input type="number" name="volunteers_achieved_q1" value="{{ $report->volunteers_achieved_q1 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers Achieved <span id="user-edit-vol-achieved-quarter">Q1</span></label>
+                    <input type="number" id="user_volunteers_achieved_input" value="{{ $report->volunteers_achieved_q1 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers: Chatters</label>
-                    <input type="number" name="volunteers_chatters" value="{{ $report->volunteers_chatters ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers: Chatters (Goal <span id="user-edit-chat-goal-quarter">Q1</span>)</label>
+                    <input type="number" id="user_volunteers_chatters_goal_input" value="{{ $report->volunteers_chatters_goal_q1 ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers: Mentors</label>
-                    <input type="number" name="volunteers_mentors" value="{{ $report->volunteers_mentors ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers: Chatters (Achieved <span id="user-edit-chat-achieved-quarter">Q1</span>)</label>
+                    <input type="number" id="user_volunteers_chatters_achieved_input" value="{{ $report->volunteers_chatters_achieved_q1 ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers: Content Creators</label>
-                    <input type="number" name="volunteers_content_creators" value="{{ $report->volunteers_content_creators ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers: Mentors (Goal <span id="user-edit-mentor-goal-quarter">Q1</span>)</label>
+                    <input type="number" id="user_volunteers_mentors_goal_input" value="{{ $report->volunteers_mentors_goal_q1 ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers: Others</label>
-                    <input type="number" name="volunteers_others" value="{{ $report->volunteers_others ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers: Mentors (Achieved <span id="user-edit-mentor-achieved-quarter">Q1</span>)</label>
+                    <input type="number" id="user_volunteers_mentors_achieved_input" value="{{ $report->volunteers_mentors_achieved_q1 ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers: Content Creators (Goal <span id="user-edit-creator-goal-quarter">Q1</span>)</label>
+                    <input type="number" id="user_volunteers_creators_goal_input" value="{{ $report->volunteers_creators_goal_q1 ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Volunteers: Content Creators (Achieved <span id="user-edit-creator-achieved-quarter">Q1</span>)</label>
+                    <input type="number" id="user_volunteers_creators_achieved_input" value="{{ $report->volunteers_creators_achieved_q1 ?? 0 }}" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
             </div>
         </div>
@@ -234,6 +261,71 @@
 </div>
 
 <script>
+    // Map quarter to quarter number
+    function getQuarterNumber(quarter) {
+        if (quarter.includes('Q1')) return '1';
+        if (quarter.includes('Q2')) return '2';
+        if (quarter.includes('Q3')) return '3';
+        if (quarter.includes('Q4')) return '4';
+        return '1';
+    }
+
+    // Update labels based on selected quarter
+    function updateQuarterLabels() {
+        const quarter = document.getElementById('quarter').value;
+        const quarterNum = getQuarterNumber(quarter);
+        const quarterLabel = `Q${quarterNum}`;
+        
+        // Update quarter labels in Goal Progress section
+        document.getElementById('edit-quarter-label').textContent = quarterLabel;
+        document.getElementById('user-edit-goal-quarter').textContent = quarterLabel;
+        document.getElementById('user-edit-achieved-quarter').textContent = quarterLabel;
+        document.getElementById('user-edit-vol-goal-quarter').textContent = quarterLabel;
+        document.getElementById('user-edit-vol-achieved-quarter').textContent = quarterLabel;
+        document.getElementById('user-edit-chat-goal-quarter').textContent = quarterLabel;
+        document.getElementById('user-edit-chat-achieved-quarter').textContent = quarterLabel;
+        document.getElementById('user-edit-mentor-goal-quarter').textContent = quarterLabel;
+        document.getElementById('user-edit-mentor-achieved-quarter').textContent = quarterLabel;
+        document.getElementById('user-edit-creator-goal-quarter').textContent = quarterLabel;
+        document.getElementById('user-edit-creator-achieved-quarter').textContent = quarterLabel;
+    }
+
+    // Handle form submission to map fields to correct quarterly columns
+    document.querySelector('form:not(#edit-report-form)').addEventListener('submit', function(e) {
+        const quarter = document.getElementById('quarter').value;
+        const quarterNum = getQuarterNumber(quarter);
+        
+        // Create hidden inputs for quarterly data with correct field names
+        const quarterFields = [
+            { visibleId: 'user_languages_goal_input', hiddenName: `languages_goal_q${quarterNum}` },
+            { visibleId: 'user_languages_achieved_input', hiddenName: `languages_achieved_q${quarterNum}` },
+            { visibleId: 'user_volunteers_goal_input', hiddenName: `volunteers_goal_q${quarterNum}` },
+            { visibleId: 'user_volunteers_achieved_input', hiddenName: `volunteers_achieved_q${quarterNum}` },
+            { visibleId: 'user_volunteers_chatters_goal_input', hiddenName: `volunteers_chatters_goal_q${quarterNum}` },
+            { visibleId: 'user_volunteers_chatters_achieved_input', hiddenName: `volunteers_chatters_achieved_q${quarterNum}` },
+            { visibleId: 'user_volunteers_mentors_goal_input', hiddenName: `volunteers_mentors_goal_q${quarterNum}` },
+            { visibleId: 'user_volunteers_mentors_achieved_input', hiddenName: `volunteers_mentors_achieved_q${quarterNum}` },
+            { visibleId: 'user_volunteers_creators_goal_input', hiddenName: `volunteers_creators_goal_q${quarterNum}` },
+            { visibleId: 'user_volunteers_creators_achieved_input', hiddenName: `volunteers_creators_achieved_q${quarterNum}` },
+        ];
+        
+        quarterFields.forEach(field => {
+            const visibleInput = document.getElementById(field.visibleId);
+            const value = visibleInput.value || '0';
+            
+            // Remove existing if any
+            const existing = document.querySelector(`input[name="${field.hiddenName}"]`);
+            if (existing) existing.remove();
+            
+            // Create new hidden input
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = field.hiddenName;
+            hidden.value = value;
+            this.appendChild(hidden);
+        });
+    });
+
     function updateTitle() {
         const quarter = document.getElementById('quarter').value;
         const language = document.getElementById('language').value;
@@ -241,31 +333,14 @@
         
         if (quarter && language) {
             titleInput.value = `${quarter} ${language}`;
+            updateQuarterLabels();
         }
     }
     
-    // Add event listeners
     document.getElementById('quarter').addEventListener('change', updateTitle);
     document.getElementById('language').addEventListener('change', updateTitle);
     
-    // Initialize title on page load if both values are set
+    // Initialize on page load
     document.addEventListener('DOMContentLoaded', updateTitle);
-    
-    // Refresh revision count after form submission
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form:not(#edit-report-form)');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                // Allow form to submit normally
-                // Then refresh the dashboard after redirect
-                setTimeout(function() {
-                    if (window.location.pathname.includes('reports')) {
-                        // Refresh the page after successful update
-                        window.location.reload();
-                    }
-                }, 500);
-            });
-        }
-    });
 </script>
 @endsection

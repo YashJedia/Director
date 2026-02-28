@@ -108,6 +108,7 @@ Route::prefix('user')->group(function () {
         // Report management routes (no deletion allowed)
         Route::get('/reports/create', [UserController::class, 'showCreateForm'])->name('user.reports.create');
         Route::post('/reports/store', [UserController::class, 'storeReport'])->name('user.reports.store');
+        Route::get('/reports/{report}', [UserController::class, 'showReport'])->name('user.reports.show');
         Route::get('/reports/{report}/edit', [UserController::class, 'showEditForm'])->name('user.reports.edit');
         Route::put('/reports/{report}/update', [UserController::class, 'updateReport'])->name('user.reports.update');
         Route::post('/reports/{report}/submit', [UserController::class, 'submitReport'])->name('user.reports.submit');

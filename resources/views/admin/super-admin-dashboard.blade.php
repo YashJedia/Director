@@ -134,10 +134,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex items-center space-x-2 ml-4">
+                            <div class="flex flex-col items-end space-y-2 ml-4">
                                 <a href="{{ route('admin.reports.edit', $report->id) }}" class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
                                     <i class="fa-solid fa-eye mr-1"></i>View
                                 </a>
+                                <button onclick="deleteReport({{ $report->id }})" class="inline-flex items-center px-3 py-2 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors duration-200">
+                                    <i class="fa-solid fa-trash mr-1"></i>Delete
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -365,6 +368,31 @@
                 .catch(error => {
                     console.error('Error:', error);
                     alert('Error deleting language');
+                });
+            }
+        }
+
+        // Delete report for super admin
+        function deleteReport(reportId) {
+            if (confirm('Are you sure you want to delete this report? This action cannot be undone.')) {
+                fetch(`/admin/reports/${reportId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error deleting report: ' + error);
                 });
             }
         }

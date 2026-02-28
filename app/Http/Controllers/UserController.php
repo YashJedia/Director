@@ -203,6 +203,31 @@ class UserController extends Controller
         return view('user.reports.edit', compact('report', 'assignedLanguages', 'reportTemplates', 'userStats'));
     }
 
+    /**
+     * Show the report view (read-only)
+     */
+    public function showReport($reportId)
+    {
+        $user = Auth::user();
+        $report = Report::with('language')->where('id', $reportId)->where('user_id', $user->id)->first();
+        
+        if (!$report) {
+            return redirect()->route('user.reports')->with('error', 'Report not found or access denied.');
+        }
+        
+        $assignedLanguages = $user->assignedLanguages()->where('status', 'active')->get();
+        
+        // Add userStats for header compatibility
+        $userReports = $this->getUserReports($user->id);
+        $userStats = [
+            'total_reports' => count($userReports),
+            'submitted_reports' => count(array_filter($userReports, fn($r) => $r['status'] === 'submitted')),
+            'draft_reports' => count(array_filter($userReports, fn($r) => $r['status'] === 'draft'))
+        ];
+        
+        return view('user.reports.show', compact('report', 'assignedLanguages', 'userStats'));
+    }
+
     public function languages()
     {
         $user = Auth::user();
@@ -345,46 +370,63 @@ class UserController extends Controller
      */
     public function storeReport(Request $request)
     {
-        $request->validate([
+        // Build validation rules for all quarterly fields
+        $rules = [
             'type' => 'required|string',
             'quarter' => 'required|string',
             'language' => 'required|string',
             'title' => 'required|string|max:255',
             'volunteers_previous_year' => 'nullable|integer|min:0|max:999999',
             'volunteers_goal_2025' => 'nullable|integer|min:0|max:999999',
-            'volunteers_goal_q1' => 'nullable|integer|min:0|max:999999',
-            'volunteers_achieved_q1' => 'nullable|integer|min:0|max:999999',
-            'volunteers_chatters' => 'nullable|integer|min:0|max:999999',
-            'volunteers_mentors' => 'nullable|integer|min:0|max:999999',
-            'volunteers_content_creators' => 'nullable|integer|min:0|max:999999',
-            'volunteers_others' => 'nullable|integer|min:0|max:999999',
-            'facebook_reach' => 'nullable|integer|min:0|max:999999999',
-            'instagram_reach' => 'nullable|integer|min:0|max:999999999',
-            'youtube_reach' => 'nullable|integer|min:0|max:999999999',
-            'website_reach' => 'nullable|integer|min:0|max:999999999',
-            'evangelistic_students' => 'nullable|integer|min:0|max:999999',
-            'discipleship_students' => 'nullable|integer|min:0|max:999999',
-            'leadership_students' => 'nullable|integer|min:0|max:999999',
-            'evangelistic_conversations' => 'nullable|integer|min:0|max:999999',
-            'pastoral_connections' => 'nullable|integer|min:0|max:999999',
-            'income_euros' => 'nullable|numeric|min:0|max:999999999999.99',
-            'expenditure_euros' => 'nullable|numeric|min:0|max:999999999999.99',
-            'income_from_fundraising_euros' => 'nullable|numeric|min:0|max:999999999999.99',
-            'number_of_supporters' => 'nullable|integer|min:0|max:999999',
-            'pr_total_organic_reach' => 'nullable|integer|min:0|max:999999999',
-            'personal_fte' => 'nullable|numeric|min:0|max:999999.99',
             'new_activity' => 'nullable|string|max:1000',
             'organizational_highlight' => 'nullable|string|max:500',
             'organizational_concern' => 'nullable|string|max:500',
             'organizational_issues' => 'nullable|string|max:500'
-        ], [
-            'personal_fte.max' => 'Personal FTE cannot exceed 999,999.99',
-            'income_euros.max' => 'Income cannot exceed 999,999,999,999.99',
-            'expenditure_euros.max' => 'Expenditure cannot exceed 999,999,999,999.99',
-            'facebook_reach.max' => 'Facebook reach cannot exceed 999,999,999',
-            'instagram_reach.max' => 'Instagram reach cannot exceed 999,999,999',
-            'youtube_reach.max' => 'YouTube reach cannot exceed 999,999,999',
-            'website_reach.max' => 'Website reach cannot exceed 999,999,999'
+        ];
+
+        // Add quarterly validation rules (Q1-Q4) for all metrics
+        $quarterlyMetrics = [
+            'languages' => 'integer',
+            'volunteers' => 'integer',
+            'volunteers_mentors' => 'integer',
+            'volunteers_chatters' => 'integer',
+            'volunteers_creators' => 'integer',
+            'evangelistic_students' => 'integer',
+            'discipleship_students' => 'integer',
+            'leadership_students' => 'integer',
+            'evangelistic_conversations' => 'integer',
+            'pastoral_connections' => 'integer',
+            'facebook_reach' => 'integer',
+            'instagram_reach' => 'integer',
+            'youtube_reach' => 'integer',
+            'website_reach' => 'integer',
+            'income_euros' => 'numeric',
+            'expenditure_euros' => 'numeric',
+            'pr_total_organic_reach' => 'integer',
+            'personal_fte' => 'numeric',
+        ];
+
+        foreach ($quarterlyMetrics as $metric => $type) {
+            for ($q = 1; $q <= 4; $q++) {
+                if ($type === 'numeric') {
+                    $rules["{$metric}_goal_q{$q}"] = 'nullable|numeric|min:0|max:999999999999.99';
+                    $rules["{$metric}_achieved_q{$q}"] = 'nullable|numeric|min:0|max:999999999999.99';
+                } else {
+                    $rules["{$metric}_goal_q{$q}"] = 'nullable|integer|min:0|max:999999999';
+                    $rules["{$metric}_achieved_q{$q}"] = 'nullable|integer|min:0|max:999999999';
+                }
+            }
+        }
+
+        $request->validate($rules, [
+            'personal_fte_goal_q1.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_goal_q2.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_goal_q3.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_goal_q4.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_achieved_q1.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_achieved_q2.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_achieved_q3.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_achieved_q4.max' => 'Personal FTE cannot exceed 999,999.99',
         ]);
 
         // Check for duplicate report
@@ -402,8 +444,8 @@ class UserController extends Controller
             ])->withInput();
         }
 
-        // Create the report
-        $report = Report::create([
+        // Build report data - includes all quarterly fields
+        $reportData = [
             'title' => $request->title,
             'quarter' => $request->quarter,
             'user_id' => Auth::id(),
@@ -411,32 +453,25 @@ class UserController extends Controller
             'status' => 'draft',
             'volunteers_previous_year' => $request->volunteers_previous_year ?? 0,
             'volunteers_goal_2025' => $request->volunteers_goal_2025 ?? 0,
-            'volunteers_goal_q1' => $request->volunteers_goal_q1 ?? 0,
-            'volunteers_achieved_q1' => $request->volunteers_achieved_q1 ?? 0,
-            'volunteers_chatters' => $request->volunteers_chatters ?? 0,
-            'volunteers_mentors' => $request->volunteers_mentors ?? 0,
-            'volunteers_content_creators' => $request->volunteers_content_creators ?? 0,
-            'volunteers_others' => $request->volunteers_others ?? 0,
-            'facebook_reach' => $request->facebook_reach ?? 0,
-            'instagram_reach' => $request->instagram_reach ?? 0,
-            'youtube_reach' => $request->youtube_reach ?? 0,
-            'website_reach' => $request->website_reach ?? 0,
-            'evangelistic_students' => $request->evangelistic_students ?? 0,
-            'discipleship_students' => $request->discipleship_students ?? 0,
-            'leadership_students' => $request->leadership_students ?? 0,
-            'evangelistic_conversations' => $request->evangelistic_conversations ?? 0,
-            'pastoral_connections' => $request->pastoral_connections ?? 0,
-            'income_euros' => $request->income_euros ?? 0.00,
-            'expenditure_euros' => $request->expenditure_euros ?? 0.00,
-            'income_from_fundraising_euros' => $request->income_from_fundraising_euros ?? 0.00,
-            'number_of_supporters' => $request->number_of_supporters ?? 0,
-            'pr_total_organic_reach' => $request->pr_total_organic_reach ?? 0,
-            'personal_fte' => $request->personal_fte ?? 0.0,
             'new_activity' => $request->new_activity,
             'organizational_highlight' => $request->organizational_highlight,
             'organizational_concern' => $request->organizational_concern,
             'organizational_issues' => $request->organizational_issues,
-        ]);
+        ];
+
+        // Add all quarterly field values
+        foreach ($quarterlyMetrics as $metric => $type) {
+            for ($q = 1; $q <= 4; $q++) {
+                $goalKey = "{$metric}_goal_q{$q}";
+                $achievedKey = "{$metric}_achieved_q{$q}";
+                
+                $reportData[$goalKey] = $request->input($goalKey) ?? ($type === 'numeric' ? 0.00 : 0);
+                $reportData[$achievedKey] = $request->input($achievedKey) ?? ($type === 'numeric' ? 0.00 : 0);
+            }
+        }
+
+        // Create the report
+        $report = Report::create($reportData);
 
         // ...existing code...
 
@@ -448,45 +483,62 @@ class UserController extends Controller
      */
     public function updateReport(Request $request, $reportId)
     {
-        $request->validate([
+        // Build validation rules for all quarterly fields
+        $rules = [
             'quarter' => 'required|string',
             'language' => 'required|string',
             'title' => 'required|string|max:255',
             'volunteers_previous_year' => 'nullable|integer|min:0|max:999999',
             'volunteers_goal_2025' => 'nullable|integer|min:0|max:999999',
-            'volunteers_goal_q1' => 'nullable|integer|min:0|max:999999',
-            'volunteers_achieved_q1' => 'nullable|integer|min:0|max:999999',
-            'volunteers_chatters' => 'nullable|integer|min:0|max:999999',
-            'volunteers_mentors' => 'nullable|integer|min:0|max:999999',
-            'volunteers_content_creators' => 'nullable|integer|min:0|max:999999',
-            'volunteers_others' => 'nullable|integer|min:0|max:999999',
-            'facebook_reach' => 'nullable|integer|min:0|max:999999999',
-            'instagram_reach' => 'nullable|integer|min:0|max:999999999',
-            'youtube_reach' => 'nullable|integer|min:0|max:999999999',
-            'website_reach' => 'nullable|integer|min:0|max:999999999',
-            'evangelistic_students' => 'nullable|integer|min:0|max:999999',
-            'discipleship_students' => 'nullable|integer|min:0|max:999999',
-            'leadership_students' => 'nullable|integer|min:0|max:999999',
-            'evangelistic_conversations' => 'nullable|integer|min:0|max:999999',
-            'pastoral_connections' => 'nullable|integer|min:0|max:999999',
-            'income_euros' => 'nullable|numeric|min:0|max:999999999999.99',
-            'expenditure_euros' => 'nullable|numeric|min:0|max:999999999999.99',
-            'income_from_fundraising_euros' => 'nullable|numeric|min:0|max:999999999999.99',
-            'number_of_supporters' => 'nullable|integer|min:0|max:999999',
-            'pr_total_organic_reach' => 'nullable|integer|min:0|max:999999999',
-            'personal_fte' => 'nullable|numeric|min:0|max:999999.99',
             'new_activity' => 'nullable|string|max:1000',
             'organizational_highlight' => 'nullable|string|max:500',
             'organizational_concern' => 'nullable|string|max:500',
             'organizational_issues' => 'nullable|string|max:500'
-        ], [
-            'personal_fte.max' => 'Personal FTE cannot exceed 999,999.99',
-            'income_euros.max' => 'Income cannot exceed 999,999,999,999.99',
-            'expenditure_euros.max' => 'Expenditure cannot exceed 999,999,999,999.99',
-            'facebook_reach.max' => 'Facebook reach cannot exceed 999,999,999',
-            'instagram_reach.max' => 'Instagram reach cannot exceed 999,999,999',
-            'youtube_reach.max' => 'YouTube reach cannot exceed 999,999,999',
-            'website_reach.max' => 'Website reach cannot exceed 999,999,999'
+        ];
+
+        // Add quarterly validation rules (Q1-Q4) for all metrics
+        $quarterlyMetrics = [
+            'languages' => 'integer',
+            'volunteers' => 'integer',
+            'volunteers_mentors' => 'integer',
+            'volunteers_chatters' => 'integer',
+            'volunteers_creators' => 'integer',
+            'evangelistic_students' => 'integer',
+            'discipleship_students' => 'integer',
+            'leadership_students' => 'integer',
+            'evangelistic_conversations' => 'integer',
+            'pastoral_connections' => 'integer',
+            'facebook_reach' => 'integer',
+            'instagram_reach' => 'integer',
+            'youtube_reach' => 'integer',
+            'website_reach' => 'integer',
+            'income_euros' => 'numeric',
+            'expenditure_euros' => 'numeric',
+            'pr_total_organic_reach' => 'integer',
+            'personal_fte' => 'numeric',
+        ];
+
+        foreach ($quarterlyMetrics as $metric => $type) {
+            for ($q = 1; $q <= 4; $q++) {
+                if ($type === 'numeric') {
+                    $rules["{$metric}_goal_q{$q}"] = 'nullable|numeric|min:0|max:999999999999.99';
+                    $rules["{$metric}_achieved_q{$q}"] = 'nullable|numeric|min:0|max:999999999999.99';
+                } else {
+                    $rules["{$metric}_goal_q{$q}"] = 'nullable|integer|min:0|max:999999999';
+                    $rules["{$metric}_achieved_q{$q}"] = 'nullable|integer|min:0|max:999999999';
+                }
+            }
+        }
+
+        $request->validate($rules, [
+            'personal_fte_goal_q1.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_goal_q2.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_goal_q3.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_goal_q4.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_achieved_q1.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_achieved_q2.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_achieved_q3.max' => 'Personal FTE cannot exceed 999,999.99',
+            'personal_fte_achieved_q4.max' => 'Personal FTE cannot exceed 999,999.99',
         ]);
 
         // Check for duplicate report (excluding current one)
@@ -515,34 +567,13 @@ class UserController extends Controller
             ])->withInput();
         }
 
-        // Update the report and clear revision flag if it was set
-        $report->update([
+        // Update the report with all quarterly fields
+        $updateData = [
             'title' => $request->title,
             'quarter' => $request->quarter,
             'language_id' => $language->id,
             'volunteers_previous_year' => $request->volunteers_previous_year ?? 0,
             'volunteers_goal_2025' => $request->volunteers_goal_2025 ?? 0,
-            'volunteers_goal_q1' => $request->volunteers_goal_q1 ?? 0,
-            'volunteers_achieved_q1' => $request->volunteers_achieved_q1 ?? 0,
-            'volunteers_chatters' => $request->volunteers_chatters ?? 0,
-            'volunteers_mentors' => $request->volunteers_mentors ?? 0,
-            'volunteers_content_creators' => $request->volunteers_content_creators ?? 0,
-            'volunteers_others' => $request->volunteers_others ?? 0,
-            'facebook_reach' => $request->facebook_reach ?? 0,
-            'instagram_reach' => $request->instagram_reach ?? 0,
-            'youtube_reach' => $request->youtube_reach ?? 0,
-            'website_reach' => $request->website_reach ?? 0,
-            'evangelistic_students' => $request->evangelistic_students ?? 0,
-            'discipleship_students' => $request->discipleship_students ?? 0,
-            'leadership_students' => $request->leadership_students ?? 0,
-            'evangelistic_conversations' => $request->evangelistic_conversations ?? 0,
-            'pastoral_connections' => $request->pastoral_connections ?? 0,
-            'income_euros' => $request->income_euros ?? 0.00,
-            'expenditure_euros' => $request->expenditure_euros ?? 0.00,
-            'income_from_fundraising_euros' => $request->income_from_fundraising_euros ?? 0.00,
-            'number_of_supporters' => $request->number_of_supporters ?? 0,
-            'pr_total_organic_reach' => $request->pr_total_organic_reach ?? 0,
-            'personal_fte' => $request->personal_fte ?? 0.0,
             'new_activity' => $request->new_activity,
             'organizational_highlight' => $request->organizational_highlight,
             'organizational_concern' => $request->organizational_concern,
@@ -550,7 +581,21 @@ class UserController extends Controller
             'revision_requested' => false,
             'revision_reason' => null,
             'revision_requested_at' => null,
-        ]);
+        ];
+
+        // Add all quarterly field values
+        foreach ($quarterlyMetrics as $metric => $type) {
+            for ($q = 1; $q <= 4; $q++) {
+                $goalKey = "{$metric}_goal_q{$q}";
+                $achievedKey = "{$metric}_achieved_q{$q}";
+                
+                $updateData[$goalKey] = $request->input($goalKey) ?? ($type === 'numeric' ? 0.00 : 0);
+                $updateData[$achievedKey] = $request->input($achievedKey) ?? ($type === 'numeric' ? 0.00 : 0);
+            }
+        }
+
+        // Update the report and clear revision flag if it was set
+        $report->update($updateData);
 
         return redirect()->route('user.reports')->with('success', 'Report updated successfully!');
     }

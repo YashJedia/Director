@@ -92,7 +92,10 @@
 
             <!-- Goal Progress Section -->
             <div class="mb-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-4">Goal Progress</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900">Goal Progress</h3>
+                    <span class="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-lg" id="admin-quarter-label">Select Quarter to Update</span>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                         <label for="languages_previous_year" class="block text-sm font-medium text-gray-700 mb-2">Languages Previous Year</label>
@@ -105,13 +108,13 @@
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
-                        <label for="languages_goal_q1" class="block text-sm font-medium text-gray-700 mb-2">Languages Goal Q1</label>
-                        <input type="number" name="languages_goal_q1" id="languages_goal_q1" value="{{ old('languages_goal_q1', 0) }}" min="0" required
+                        <label for="languages_goal_input" class="block text-sm font-medium text-gray-700 mb-2">Languages Goal <span id="admin-goal-quarter-label">Q1</span></label>
+                        <input type="number" id="languages_goal_input" value="{{ old('languages_goal_q1', 0) }}" min="0" required
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
-                        <label for="languages_achieved_q1" class="block text-sm font-medium text-gray-700 mb-2">Languages Achieved Q1</label>
-                        <input type="number" name="languages_achieved_q1" id="languages_achieved_q1" value="{{ old('languages_achieved_q1', 0) }}" min="0" required
+                        <label for="languages_achieved_input" class="block text-sm font-medium text-gray-700 mb-2">Languages Achieved <span id="admin-achieved-quarter-label">Q1</span></label>
+                        <input type="number" id="languages_achieved_input" value="{{ old('languages_achieved_q1', 0) }}" min="0" required
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                 </div>
@@ -192,6 +195,51 @@
     </div>
     
     <script>
+        // Map quarter to quarter number
+        function getQuarterNumber(quarter) {
+            if (quarter.includes('Q1')) return '1';
+            if (quarter.includes('Q2')) return '2';
+            if (quarter.includes('Q3')) return '3';
+            if (quarter.includes('Q4')) return '4';
+            return '1';
+        }
+
+        // Update dynamic field labels based on quarter
+        function updateAdminGoalProgressLabels(quarter) {
+            const quarterNum = getQuarterNumber(quarter);
+            const quarterLabel = `Q${quarterNum}`;
+            
+            document.getElementById('admin-quarter-label').textContent = `Goals for ${quarter}`;
+            document.getElementById('admin-goal-quarter-label').textContent = quarterLabel;
+            document.getElementById('admin-achieved-quarter-label').textContent = quarterLabel;
+        }
+
+        // Handle form submission - update hidden inputs with correct field names
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const quarter = document.getElementById('quarter').value;
+            const quarterNum = getQuarterNumber(quarter);
+            
+            // Get current values from visible inputs
+            const languagesGoal = document.getElementById('languages_goal_input').value || '0';
+            const languagesAchieved = document.getElementById('languages_achieved_input').value || '0';
+            
+            // Remove old quarterly inputs
+            document.querySelectorAll('input[type="hidden"][name*="_goal_q"], input[type="hidden"][name*="_achieved_q"]').forEach(input => input.remove());
+            
+            // Create new hidden inputs with correct field names
+            const hidden1 = document.createElement('input');
+            hidden1.type = 'hidden';
+            hidden1.name = `languages_goal_q${quarterNum}`;
+            hidden1.value = languagesGoal;
+            this.appendChild(hidden1);
+            
+            const hidden2 = document.createElement('input');
+            hidden2.type = 'hidden';
+            hidden2.name = `languages_achieved_q${quarterNum}`;
+            hidden2.value = languagesAchieved;
+            this.appendChild(hidden2);
+        });
+
         // Auto-generate title when language and quarter are selected
         document.addEventListener('DOMContentLoaded', function() {
             const languageSelect = document.getElementById('language_id');
@@ -205,6 +253,7 @@
                 if (languageId && quarter && !titleInput.value) {
                     const languageName = languageSelect.options[languageSelect.selectedIndex].text;
                     titleInput.value = languageName + ' ' + quarter + ' Report';
+                    updateAdminGoalProgressLabels(quarter);
                 }
             }
             

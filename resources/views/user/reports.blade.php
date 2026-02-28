@@ -234,9 +234,9 @@
                                 <i class="mr-1 fa-solid fa-edit"></i>Edit & Fix
                             </a>
                         @elseif($report['status'] === 'submitted')
-                            <button class="px-3 py-1 text-sm text-gray-600 rounded border border-gray-300 transition-colors duration-200 hover:text-gray-800 hover:bg-gray-50">
+                            <a href="{{ route('user.reports.show', $report['id']) }}" class="px-3 py-1 text-sm text-gray-600 rounded border border-gray-300 transition-colors duration-200 hover:text-gray-800 hover:bg-gray-50">
                                 <i class="mr-1 fa-solid fa-eye"></i>View
-                            </button>
+                            </a>
                             <a href="{{ route('user.reports.edit', $report['id']) }}" class="px-3 py-1 text-sm text-gray-600 rounded border border-gray-300 transition-colors duration-200 hover:text-gray-800 hover:bg-green-50">
                                 <i class="mr-1 fa-solid fa-edit"></i>Edit
                             </a>
@@ -251,9 +251,9 @@
                                 </button>
                             </form>
                         @else
-                            <button class="px-3 py-1 text-sm text-gray-600 rounded border border-gray-300 transition-colors duration-200 hover:text-gray-800 hover:bg-gray-50">
+                            <a href="{{ route('user.reports.show', $report['id']) }}" class="px-3 py-1 text-sm text-gray-600 rounded border border-gray-300 transition-colors duration-200 hover:text-gray-800 hover:bg-gray-50">
                                 <i class="mr-1 fa-solid fa-eye"></i>View
-                            </button>
+                            </a>
                         @endif
                     </div>
                 </div>

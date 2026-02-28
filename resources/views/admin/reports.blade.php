@@ -619,9 +619,11 @@
                                 <a href="{{ route('admin.reports.edit', $report->id) }}" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200">
                                     <i class="fas fa-edit mr-1"></i>Edit
                                 </a>
+                                @if(!$report->submitted_to_super_admin)
                                 <button onclick="deleteReport({{ $report->id }})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200">
                                     <i class="fas fa-trash mr-1"></i>Delete
                                 </button>
+                                @endif
                             </div>
                         </td>
                     </tr>

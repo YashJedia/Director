@@ -5,6 +5,18 @@
 @section('page_title', 'Create New Quarterly Report')
 
 @section('content')
+<style>
+    /* Hide all quarterly fields by default */
+    .quarter-field {
+        display: none;
+    }
+    
+    /* Show Q1 fields by default */
+    .quarter-field[data-quarter="Q1"] {
+        display: block;
+    }
+</style>
+
 <div class="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
     @if($errors->any())
         <div class="p-4 mb-6 bg-red-50 rounded-lg border border-red-200">
@@ -79,8 +91,31 @@
         
         <!-- Section I: Goal Progress -->
         <div class="pb-6 mb-6 border-b border-gray-200">
-            <h4 class="mb-4 text-lg font-semibold text-gray-900">Goal Progress</h4>
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-lg font-semibold text-gray-900">Goal Progress</h4>
+                <span class="text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-lg" id="quarter-label">Select Quarter to Update</span>
+            </div>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Languages Previous Year</label>
+                    <input type="number" name="languages_previous_year" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Languages Goal 2025</label>
+                    <input type="number" name="languages_goal_2025" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                
+                <!-- Languages Goal/Achieved - Quarterly -->
+                @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Languages Goal {{ $qLabel }}</label>
+                    <input type="number" name="languages_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Languages Achieved {{ $qLabel }}</label>
+                    <input type="number" name="languages_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                @endforeach
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Previous Year</label>
                     <input type="number" name="volunteers_previous_year" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
@@ -89,30 +124,42 @@
                     <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Goal 2025</label>
                     <input type="number" name="volunteers_goal_2025" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Goal Q1</label>
-                    <input type="number" name="volunteers_goal_q1" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                
+                <!-- Volunteers Goal/Achieved - Quarterly -->
+                @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Goal {{ $qLabel }}</label>
+                    <input type="number" name="volunteers_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Achieved Q1</label>
-                    <input type="number" name="volunteers_achieved_q1" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Achieved {{ $qLabel }}</label>
+                    <input type="number" name="volunteers_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Chatters</label>
-                    <input type="number" name="volunteers_chatters" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Chatters (Goal {{ $qLabel }})</label>
+                    <input type="number" name="volunteers_chatters_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Mentors</label>
-                    <input type="number" name="volunteers_mentors" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Chatters (Achieved {{ $qLabel }})</label>
+                    <input type="number" name="volunteers_chatters_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Content Creators</label>
-                    <input type="number" name="volunteers_content_creators" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Mentors (Goal {{ $qLabel }})</label>
+                    <input type="number" name="volunteers_mentors_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Others</label>
-                    <input type="number" name="volunteers_others" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Mentors (Achieved {{ $qLabel }})</label>
+                    <input type="number" name="volunteers_mentors_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Content Creators (Goal {{ $qLabel }})</label>
+                    <input type="number" name="volunteers_creators_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Content Creators (Achieved {{ $qLabel }})</label>
+                    <input type="number" name="volunteers_creators_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                @endforeach
             </div>
         </div>
         
@@ -120,22 +167,40 @@
         <div class="pb-6 mb-6 border-b border-gray-200">
             <h4 class="mb-4 text-lg font-semibold text-gray-900">Organic Reach (Per Language & Platform)</h4>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Facebook Reach</label>
-                    <input type="number" name="facebook_reach" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Facebook Reach Goal {{ $qLabel }}</label>
+                    <input type="number" name="facebook_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Instagram Reach</label>
-                    <input type="number" name="instagram_reach" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Facebook Reach Achieved {{ $qLabel }}</label>
+                    <input type="number" name="facebook_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">YouTube Reach</label>
-                    <input type="number" name="youtube_reach" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Instagram Reach Goal {{ $qLabel }}</label>
+                    <input type="number" name="instagram_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Website Reach</label>
-                    <input type="number" name="website_reach" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Instagram Reach Achieved {{ $qLabel }}</label>
+                    <input type="number" name="instagram_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">YouTube Reach Goal {{ $qLabel }}</label>
+                    <input type="number" name="youtube_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">YouTube Reach Achieved {{ $qLabel }}</label>
+                    <input type="number" name="youtube_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Website Reach Goal {{ $qLabel }}</label>
+                    <input type="number" name="website_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Website Reach Achieved {{ $qLabel }}</label>
+                    <input type="number" name="website_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                @endforeach
             </div>
         </div>
         
@@ -143,18 +208,32 @@
         <div class="pb-6 mb-6 border-b border-gray-200">
             <h4 class="mb-4 text-lg font-semibold text-gray-900">Bible Course Students</h4>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Students</label>
-                    <input type="number" name="evangelistic_students" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Students Goal {{ $qLabel }}</label>
+                    <input type="number" name="evangelistic_students_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Discipleship Students</label>
-                    <input type="number" name="discipleship_students" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Students Achieved {{ $qLabel }}</label>
+                    <input type="number" name="evangelistic_students_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Leadership Students</label>
-                    <input type="number" name="leadership_students" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Discipleship Students Goal {{ $qLabel }}</label>
+                    <input type="number" name="discipleship_students_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Discipleship Students Achieved {{ $qLabel }}</label>
+                    <input type="number" name="discipleship_students_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Leadership Students Goal {{ $qLabel }}</label>
+                    <input type="number" name="leadership_students_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Leadership Students Achieved {{ $qLabel }}</label>
+                    <input type="number" name="leadership_students_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                @endforeach
             </div>
         </div>
         
@@ -162,14 +241,24 @@
         <div class="pb-6 mb-6 border-b border-gray-200">
             <h4 class="mb-4 text-lg font-semibold text-gray-900">Chat Conversations</h4>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Conversations</label>
-                    <input type="number" name="evangelistic_conversations" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Conversations Goal {{ $qLabel }}</label>
+                    <input type="number" name="evangelistic_conversations_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Pastoral Connections</label>
-                    <input type="number" name="pastoral_connections" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Conversations Achieved {{ $qLabel }}</label>
+                    <input type="number" name="evangelistic_conversations_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Pastoral Connections Goal {{ $qLabel }}</label>
+                    <input type="number" name="pastoral_connections_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Pastoral Connections Achieved {{ $qLabel }}</label>
+                    <input type="number" name="pastoral_connections_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                @endforeach
             </div>
         </div>
         
@@ -177,14 +266,40 @@
         <div class="pb-6 mb-6 border-b border-gray-200">
             <h4 class="mb-4 text-lg font-semibold text-gray-900">Organization</h4>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Income (Euros)</label>
-                    <input type="number" name="income_euros" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Income (Euros) Goal {{ $qLabel }}</label>
+                    <input type="number" name="income_euros_goal_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Expenditure (Euros)</label>
-                    <input type="number" name="expenditure_euros" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Income (Euros) Achieved {{ $qLabel }}</label>
+                    <input type="number" name="income_euros_achieved_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Expenditure (Euros) Goal {{ $qLabel }}</label>
+                    <input type="number" name="expenditure_euros_goal_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Expenditure (Euros) Achieved {{ $qLabel }}</label>
+                    <input type="number" name="expenditure_euros_achieved_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">PR Total Organic Reach Goal {{ $qLabel }}</label>
+                    <input type="number" name="pr_total_organic_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">PR Total Organic Reach Achieved {{ $qLabel }}</label>
+                    <input type="number" name="pr_total_organic_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Personal FTE Goal {{ $qLabel }}</label>
+                    <input type="number" name="personal_fte_goal_q{{ $qNum }}" min="0" max="999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Personal FTE Achieved {{ $qLabel }}</label>
+                    <input type="number" name="personal_fte_achieved_q{{ $qNum }}" min="0" max="999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                @endforeach
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Income from Fundraising (Euros)</label>
                     <input type="number" name="income_from_fundraising_euros" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
@@ -192,14 +307,6 @@
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Number of Supporters</label>
                     <input type="number" name="number_of_supporters" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">PR Total Organic Reach</label>
-                    <input type="number" name="pr_total_organic_reach" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Personal FTE</label>
-                    <input type="number" name="personal_fte" min="0" max="999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
             </div>
         </div>
@@ -239,7 +346,32 @@
 </div>
 
 <script>
-    // Auto-generate report title based on quarter and language
+    // Show/hide quarterly fields based on selected quarter
+    function showQuarterFields(quarterValue) {
+        if (!quarterValue) return;
+
+        // Determine quarter label from value (e.g., "Q1 2025" → "Q1")
+        const quarterNum = quarterValue.match(/Q\d/)?.[0];
+        if (!quarterNum) return;
+
+        // Hide all quarter fields first
+        document.querySelectorAll('.quarter-field').forEach(el => {
+            el.style.display = 'none';
+        });
+
+        // Show only the selected quarter fields
+        document.querySelectorAll(`.quarter-field[data-quarter="${quarterNum}"]`).forEach(el => {
+            el.style.display = 'block';
+        });
+
+        // Update header label
+        const headerLabel = document.getElementById('quarter-label');
+        if (headerLabel) {
+            headerLabel.textContent = `Goals for ${quarterValue}`;
+        }
+    }
+
+    // Auto-generate report title and show/hide fields
     const quarterSelect = document.getElementById('quarter');
     const languageSelect = document.getElementById('language');
     const titleInput = document.getElementById('title');
@@ -250,6 +382,7 @@
 
         if (quarter && language) {
             titleInput.value = `${quarter} ${language}`;
+            showQuarterFields(quarter);
         } else {
             titleInput.value = '';
         }
@@ -258,7 +391,7 @@
     quarterSelect.addEventListener('change', updateTitle);
     languageSelect.addEventListener('change', updateTitle);
 
-    // Update title on page load if values are already selected
+    // Update on page load if values are already selected
     window.addEventListener('load', updateTitle);
 </script>
 
