@@ -193,11 +193,43 @@
                     <a href="{{ route('admin.reports.edit', $report->id) }}" class="border border-gray-300 text-gray-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-gray-50 transition-colors duration-200 flex items-center">
                         <i class="fa-solid fa-edit mr-1"></i>Edit
                     </a>
+                    @if($report->status !== 'approved')
+                    <button onclick="deleteReport({{ $report->id }})" class="border border-red-300 text-red-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-red-50 transition-colors duration-200 flex items-center">
+                        <i class="fa-solid fa-trash mr-1"></i>Delete
+                    </button>
+                    @endif
                 </div>
             </div>
             @endforeach
         </div>
     </div>
+
+    <script>
+        function deleteReport(reportId) {
+            if (confirm('Are you sure you want to delete this report?')) {
+                fetch(`{{ url('/admin/reports') }}/${reportId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Report deleted successfully');
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Failed to delete report');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the report');
+                });
+            }
+        }
+    </script>
 
     <!-- Submit Reports to Super Admin -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 w-full ml-0">

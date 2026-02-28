@@ -50,6 +50,7 @@
                                 <thead>
                                     <tr class="bg-blue-100 border-b border-gray-300">
                                         <th class="px-4 py-2 text-left font-semibold text-gray-800 border-r border-gray-300 w-32 md:w-40">{{ $sectionName }}</th>
+                                        <th class="px-4 py-2 text-left font-semibold text-gray-800 border-r border-gray-300 w-24">Language</th>
                                         <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">End 2024</th>
                                         <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">Goal</th>
                                         <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">Achieved</th>
@@ -71,13 +72,9 @@
                                                         @php $isFirstInField = false; @endphp
                                                     @endif
 
-                                                    <!-- Language Name (or Total) -->
-                                                    <td class="px-4 py-2 text-gray-700 border-r border-gray-300">
-                                                        @if($languageName === 'Total')
-                                                            <span class="font-bold text-blue-800">{{ $languageName }}</span>
-                                                        @else
-                                                            <span class="text-gray-600 ml-4">{{ $languageName }}</span>
-                                                        @endif
+                                                    <!-- Language Name Column -->
+                                                    <td class="px-4 py-2 border-r border-gray-300 {{ $languageName === 'Total' ? 'font-bold text-blue-800 bg-blue-50' : 'text-gray-600 ml-4' }}">
+                                                        {{ $languageName }}
                                                     </td>
 
                                                     <!-- Data Columns -->
@@ -104,6 +101,9 @@
                                             <tr class="border-b border-gray-200 hover:bg-blue-50">
                                                 <td class="px-4 py-2 font-semibold text-gray-800 border-r border-gray-300 bg-gray-50">
                                                     {{ $fieldLabel }}
+                                                </td>
+                                                <td class="px-4 py-2 border-r border-gray-300 text-gray-600">
+                                                    -
                                                 </td>
                                                 <td class="px-4 py-2 text-center border-r border-gray-300">
                                                     {{ is_numeric($fieldData['data']['end_2024']) ? number_format($fieldData['data']['end_2024'], 0) : '-' }}
