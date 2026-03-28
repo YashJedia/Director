@@ -61,12 +61,12 @@
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Quarter *</label>
-                    <select id="quarter" name="quarter" required class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <select id="quarter" name="quarter" required class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500" style="overflow-y: auto; max-height: 300px;">
                         <option value="">Select Quarter</option>
-                        <option value="Q1 2025">Q1 2025</option>
-                        <option value="Q2 2025">Q2 2025</option>
-                        <option value="Q3 2025">Q3 2025</option>
-                        <option value="Q4 2025">Q4 2025</option>
+                        <option value="Q1 2026">Q1 2026</option>
+                        <option value="Q2 2026">Q2 2026</option>
+                        <option value="Q3 2026">Q3 2026</option>
+                        <option value="Q4 2026">Q4 2026</option>
                     </select>
                 </div>
             </div>

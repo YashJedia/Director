@@ -51,6 +51,22 @@ class UserController extends Controller
     {
         $user = Auth::user();
         
+        // Dynamically calculate current quarter and year
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        
+        if ($currentMonth >= 1 && $currentMonth <= 3) {
+            $currentQuarterNum = 1;
+        } elseif ($currentMonth >= 4 && $currentMonth <= 6) {
+            $currentQuarterNum = 2;
+        } elseif ($currentMonth >= 7 && $currentMonth <= 9) {
+            $currentQuarterNum = 3;
+        } else {
+            $currentQuarterNum = 4;
+        }
+        
+        $currentQuarter = 'Q' . $currentQuarterNum . ' ' . $currentYear;
+        
         // Simulate user report data (in a real app, this would come from a reports table)
         $userReports = $this->getUserReports($user->id);
         $reportStats = [
@@ -58,7 +74,7 @@ class UserController extends Controller
             'draft_reports' => count(array_filter($userReports, fn($r) => $r['status'] === 'draft')),
             'submitted_reports' => count(array_filter($userReports, fn($r) => $r['status'] === 'submitted')),
             'revision_reports' => count(array_filter($userReports, fn($r) => isset($r['revision_requested']) && $r['revision_requested'] === true)),
-            'this_quarter' => count(array_filter($userReports, fn($r) => $r['quarter'] === 'Q3 2025'))
+            'this_quarter' => count(array_filter($userReports, fn($r) => $r['quarter'] === $currentQuarter))
         ];
 
         // Add userStats for header compatibility
@@ -80,7 +96,8 @@ class UserController extends Controller
             'userStats',
             'recentActivity',
             'quickActions',
-            'assignedLanguages'
+            'assignedLanguages',
+            'currentQuarter'
         ));
     }
 

@@ -11,48 +11,13 @@
             <p class="text-gray-500">International Director Dashboard</p>
         </div>
         <div class="flex items-center space-x-4">
-            <span class="bg-white border border-gray-300 text-gray-700 rounded-full px-4 py-2 text-sm font-medium">Q3 2025</span>
-            <button onclick="openAdminNewReportModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200">
+            <span class="bg-white border border-gray-300 text-gray-700 rounded-full px-4 py-2 text-sm font-medium">{{ $currentQuarter ?? 'Q3 2025' }}</span>
+            <a href="{{ route('admin.reports.aggregated-admin') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200 inline-flex items-center">
+                <i class="fa-solid fa-chart-bar mr-2"></i>Aggregated Reports
+            </a>
+            <a href="{{ route('admin.reports.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200 inline-flex items-center">
                 <i class="fa-solid fa-plus mr-2"></i>New Report
-            </button>
-            <!-- Admin New Report Modal -->
-            <div id="adminNewReportModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden">
-                <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
-                    <button onclick="closeAdminNewReportModal()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
-                        <i class="fa-solid fa-times text-xl"></i>
-                    </button>
-                    <h3 class="text-xl font-bold mb-4 text-blue-700">Create Report on Behalf of User</h3>
-                    <form id="adminNewReportForm" method="GET" action="{{ route('admin.reports.create') }}">
-                        <div class="mb-4">
-                            <label for="modal_user_id" class="block text-sm font-medium text-gray-700 mb-2">Select User</label>
-                            <select name="user_id" id="modal_user_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                                <option value="">Select User</option>
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-6">
-                            <label for="modal_language_id" class="block text-sm font-medium text-gray-700 mb-2">Select Language</label>
-                            <select name="language_id" id="modal_language_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                                <option value="">Select Language</option>
-                                @foreach($languages as $language)
-                                    <option value="{{ $language->id }}">{{ $language->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">Continue</button>
-                    </form>
-                </div>
-            </div>
-            <script>
-            function openAdminNewReportModal() {
-                document.getElementById('adminNewReportModal').classList.remove('hidden');
-            }
-            function closeAdminNewReportModal() {
-                document.getElementById('adminNewReportModal').classList.add('hidden');
-            }
-            </script>
+            </a>
         </div>
     </div>
 
@@ -118,7 +83,7 @@
                 <div>
                     <h6 class="text-purple-600 text-sm font-medium mb-2">This Quarter</h6>
                     <h4 class="text-3xl font-bold text-gray-900">{{ $quarterlyReportsCount ?? 0 }}</h4>
-                    <p class="text-purple-500 text-sm mt-1">Q3 2025 reports</p>
+                    <p class="text-purple-500 text-sm mt-1">{{ $currentQuarter ?? 'Q3 2025' }} reports</p>
                 </div>
                 <div class="text-purple-600 text-2xl">
                     <i class="fa-solid fa-calendar"></i>
@@ -157,11 +122,25 @@
 
     <!-- Recent Reports -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 w-full ml-0">
-        <h4 class="text-xl font-bold text-gray-900 mb-2">Recent Reports</h4>
-        <p class="text-gray-500 text-sm mb-6">Your latest quarterly reporting activities</p>
-        <div class="space-y-4">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h4 class="text-xl font-bold text-gray-900 mb-2">Recent Reports</h4>
+                <p class="text-gray-500 text-sm">Your latest quarterly reporting activities</p>
+            </div>
+            <div class="w-48">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Filter by Quarter</label>
+                <select id="quarterFilter" onchange="filterReportsByQuarter()" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">All Quarters</option>
+                    <option value="Q1">Q1</option>
+                    <option value="Q2">Q2</option>
+                    <option value="Q3">Q3</option>
+                    <option value="Q4">Q4</option>
+                </select>
+            </div>
+        </div>
+        <div class="space-y-4" id="reportsContainer">
             @foreach($recentReports as $report)
-            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div class="report-row flex items-center justify-between p-4 border border-gray-200 rounded-lg" data-quarter="{{ $report->quarter }}">
                 <div class="flex items-center space-x-4">
                     <div class="text-blue-600 text-xl">
                         <i class="fa-solid fa-file-lines"></i>
@@ -179,7 +158,8 @@
                         @else bg-gray-100 text-gray-800 @endif">
                         {{ ucfirst(str_replace('_', ' ', $report->status)) }}
                     </span>
-                    <a href="{{ route('admin.reports.edit', $report->id) }}" class="border border-gray-300 text-gray-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-gray-50 transition-colors duration-200 flex items-center">
+                    <!-- View Button: Available for all reports -->
+                    <a href="{{ route('admin.reports.show', $report->id) }}" class="border border-gray-300 text-gray-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-gray-50 transition-colors duration-200 flex items-center">
                         <i class="fa-solid fa-eye mr-1"></i>View
                     </a>
                     @if($report->status === 'submitted')
@@ -190,9 +170,12 @@
                         <i class="fa-solid fa-redo mr-1"></i>Revision
                     </button>
                     @endif
+                    <!-- Edit Button: Only visible if NOT approved OR NOT submitted to super admin -->
+                    @if($report->status !== 'approved' || !$report->submitted_to_super_admin)
                     <a href="{{ route('admin.reports.edit', $report->id) }}" class="border border-gray-300 text-gray-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-gray-50 transition-colors duration-200 flex items-center">
                         <i class="fa-solid fa-edit mr-1"></i>Edit
                     </a>
+                    @endif
                     @if($report->status !== 'approved')
                     <button onclick="deleteReport({{ $report->id }})" class="border border-red-300 text-red-700 text-xs font-medium px-3 py-1 rounded-full hover:bg-red-50 transition-colors duration-200 flex items-center">
                         <i class="fa-solid fa-trash mr-1"></i>Delete
@@ -203,6 +186,48 @@
             @endforeach
         </div>
     </div>
+
+    <script>
+        function filterReportsByQuarter() {
+            const selectedQuarter = document.getElementById('quarterFilter').value;
+            const reportRows = document.querySelectorAll('.report-row');
+            let visibleCount = 0;
+
+            reportRows.forEach(row => {
+                const reportQuarter = row.dataset.quarter; // e.g., "Q1 2025"
+                
+                // If no filter selected, show all
+                if (selectedQuarter === '') {
+                    row.style.display = 'flex';
+                    visibleCount++;
+                } 
+                // Check if the report quarter starts with the selected quarter (e.g., "Q1")
+                else if (reportQuarter && reportQuarter.startsWith(selectedQuarter)) {
+                    row.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Show "No reports" message if none are visible
+            const container = document.getElementById('reportsContainer');
+            let noReportsMsg = container.querySelector('.no-reports-message');
+            
+            if (visibleCount === 0) {
+                if (!noReportsMsg) {
+                    noReportsMsg = document.createElement('div');
+                    noReportsMsg.className = 'no-reports-message text-center py-8';
+                    noReportsMsg.innerHTML = '<p class="text-gray-500">No reports found for the selected quarter.</p>';
+                    container.appendChild(noReportsMsg);
+                }
+            } else {
+                if (noReportsMsg) {
+                    noReportsMsg.remove();
+                }
+            }
+        }
+    </script>
 
     <script>
         function deleteReport(reportId) {
@@ -230,20 +255,6 @@
             }
         }
     </script>
-
-    <!-- Submit Reports to Super Admin -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 w-full ml-0">
-        <h4 class="text-xl font-bold text-gray-900 mb-2">Submit Quarterly Reports to Super Admin</h4>
-        <p class="text-gray-500 text-sm mb-6">Submit all approved reports for a selected quarter cumulatively to the super admin</p>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            @foreach(['Q1', 'Q2', 'Q3', 'Q4'] as $quarter)
-            <button onclick="openSubmitModal('{{ $quarter }}')" class="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm">
-                <i class="fa-solid fa-paper-plane"></i>
-                <span>Submit {{ $quarter }}</span>
-            </button>
-            @endforeach
-        </div>
-    </div>
 
     <!-- Approved Reports Section -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 w-full ml-0">

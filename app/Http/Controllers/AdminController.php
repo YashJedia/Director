@@ -106,8 +106,23 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
+        // Dynamically calculate current quarter and year
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        
+        if ($currentMonth >= 1 && $currentMonth <= 3) {
+            $currentQuarterNum = 1;
+        } elseif ($currentMonth >= 4 && $currentMonth <= 6) {
+            $currentQuarterNum = 2;
+        } elseif ($currentMonth >= 7 && $currentMonth <= 9) {
+            $currentQuarterNum = 3;
+        } else {
+            $currentQuarterNum = 4;
+        }
+        
+        $currentQuarter = 'Q' . $currentQuarterNum . ' ' . $currentYear;
+        
         // Quarterly reports for this quarter
-        $currentQuarter = 'Q3 2025'; // You may want to make this dynamic
         $quarterlyReports = \App\Models\Report::with(['user', 'language'])
             ->whereIn('language_id', $languages->pluck('id'))
             ->where('quarter', $currentQuarter)
@@ -118,9 +133,10 @@ class AdminController extends Controller
         $reportsForRevision = \App\Models\Report::whereIn('language_id', $languages->pluck('id'))
             ->where('revision_requested', true)->count();
 
-        // Get approved reports (not requesting revision and not yet submitted to super admin)
+        // Get approved reports (status = approved, not requesting revision and not yet submitted to super admin)
         $approvedReports = \App\Models\Report::with(['user', 'language'])
             ->whereIn('language_id', $languages->pluck('id'))
+            ->where('status', 'approved')
             ->where('revision_requested', false)
             ->where('submitted_to_super_admin', false)
             ->latest()
@@ -147,6 +163,7 @@ class AdminController extends Controller
             'reportsForRevision',
             'quarterlyReports',
             'quarterlyReportsCount',
+            'currentQuarter',
             'users',
             'approvedReports',
             'totalReports',
@@ -1240,6 +1257,7 @@ class AdminController extends Controller
             'year' => $request->get('year', ''),
             'quarter' => $request->get('quarter', ''),
             'language_id' => $request->get('language_id', ''),
+            'user_id' => $request->get('user_id', ''),
         ];
         
         return view('admin.reports.create', compact('languages', 'users', 'prefill'));
@@ -1431,7 +1449,7 @@ class AdminController extends Controller
         
         $report = \App\Models\Report::with(['comments.admin', 'user', 'language'])->findOrFail($id);
         
-        // Super Admin can view all reports (read-only)
+        // Super Admin can view all reports
         if ($admin->isSuperAdmin()) {
             $users = \App\Models\User::all();
             $languages = \App\Models\Language::all();
@@ -1441,10 +1459,7 @@ class AdminController extends Controller
                 ->with('isSuperAdmin', true);
         }
         
-        // Regular Admin cannot edit reports - they can only view submitted reports
-        return redirect()->route('admin.reports')->with('error', 'You can only view reports for languages assigned to you.');
-        
-        // Verify the report's language is assigned to this admin
+        // Regular Admin: Verify the report's language is assigned to this admin
         if ($report->language->assigned_admin_id !== $admin->id) {
             return redirect()->route('admin.reports')->with('error', 'You can only edit reports for languages assigned to you.');
         }
@@ -1457,6 +1472,21 @@ class AdminController extends Controller
         $commentsByField = $report->comments->groupBy('field') ?? collect();
         
         return view('admin.reports.edit', compact('report', 'languages', 'users', 'commentsByField'));
+    }
+
+    public function showAdminReport($id)
+    {
+        $admin = Auth::guard('admin')->user();
+        
+        $report = \App\Models\Report::with(['comments.admin', 'user', 'language'])->findOrFail($id);
+        
+        // Verify the reporter's language is assigned to this admin
+        if (!$admin->isSuperAdmin() && $report->language->assigned_admin_id !== $admin->id) {
+            return redirect()->route('admin.reports')->with('error', 'You can only view reports for languages assigned to you.');
+        }
+        
+        // Return admin-specific read-only view (available for all status reports)
+        return view('admin.reports.show', compact('report'));
     }
 
     public function updateReport(Request $request, $id)
@@ -2080,5 +2110,255 @@ class AdminController extends Controller
         }
         
         return redirect()->route('admin.dashboard')->with('success', "Successfully submitted $submittedCount approved report(s) to the super admin!");
+    }
+
+    /**
+     * View aggregated reports for Admin (filtered by assigned languages)
+     */
+    public function viewAdminAggregatedReports()
+    {
+        $admin = Auth::guard('admin')->user();
+        
+        // Super Admin: Show all aggregated reports
+        if ($admin->isSuperAdmin()) {
+            return $this->viewAggregatedReports();
+        }
+
+        // Regular Admin: Get only languages assigned to them
+        $assignedLanguages = \App\Models\Language::where('assigned_admin_id', $admin->id)->pluck('id');
+
+        // Get reports submitted to super admin for this admin's languages
+        $submittedReports = Report::where('submitted_to_super_admin', true)
+            ->whereIn('language_id', $assignedLanguages)
+            ->with(['language', 'user'])
+            ->get();
+
+        $quarters = ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'];
+        
+        // Get unique languages from submitted reports for this admin
+        $languages = $submittedReports->pluck('language')->unique('id')->sortBy('name');
+        
+        // Define sections with their fields and database mappings per quarter (same as super admin)
+        $sections = [
+            'Ministry' => [
+                'Number of Languages' => [
+                    'end_2024' => 'languages_previous_year',
+                    'goal' => ['languages_goal_q1', 'languages_goal_q2', 'languages_goal_q3', 'languages_goal_q4'],
+                    'achieved' => ['languages_achieved_q1', 'languages_achieved_q2', 'languages_achieved_q3', 'languages_achieved_q4'],
+                    'by_language' => false,
+                ],
+                'Number of Volunteers' => [
+                    'end_2024' => 'volunteers_previous_year',
+                    'goal' => ['volunteers_goal_q1', 'volunteers_goal_q2', 'volunteers_goal_q3', 'volunteers_goal_q4'],
+                    'achieved' => ['volunteers_achieved_q1', 'volunteers_achieved_q2', 'volunteers_achieved_q3', 'volunteers_achieved_q4'],
+                    'by_language' => false,
+                ],
+                'Bible Mentors' => [
+                    'end_2024' => null,
+                    'goal' => ['volunteers_mentors_goal_q1', 'volunteers_mentors_goal_q2', 'volunteers_mentors_goal_q3', 'volunteers_mentors_goal_q4'],
+                    'achieved' => ['volunteers_mentors_achieved_q1', 'volunteers_mentors_achieved_q2', 'volunteers_mentors_achieved_q3', 'volunteers_mentors_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Chat Volunteers' => [
+                    'end_2024' => null,
+                    'goal' => ['volunteers_chatters_goal_q1', 'volunteers_chatters_goal_q2', 'volunteers_chatters_goal_q3', 'volunteers_chatters_goal_q4'],
+                    'achieved' => ['volunteers_chatters_achieved_q1', 'volunteers_chatters_achieved_q2', 'volunteers_chatters_achieved_q3', 'volunteers_chatters_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Content Creators' => [
+                    'end_2024' => null,
+                    'goal' => ['volunteers_creators_goal_q1', 'volunteers_creators_goal_q2', 'volunteers_creators_goal_q3', 'volunteers_creators_goal_q4'],
+                    'achieved' => ['volunteers_creators_achieved_q1', 'volunteers_creators_achieved_q2', 'volunteers_creators_achieved_q3', 'volunteers_creators_achieved_q4'],
+                    'by_language' => true,
+                ],
+            ],
+            'Outreach & Engagement' => [
+                'Evangelistic Students' => [
+                    'end_2024' => null,
+                    'goal' => ['evangelistic_students_goal_q1', 'evangelistic_students_goal_q2', 'evangelistic_students_goal_q3', 'evangelistic_students_goal_q4'],
+                    'achieved' => ['evangelistic_students_achieved_q1', 'evangelistic_students_achieved_q2', 'evangelistic_students_achieved_q3', 'evangelistic_students_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Discipleship Students' => [
+                    'end_2024' => null,
+                    'goal' => ['discipleship_students_goal_q1', 'discipleship_students_goal_q2', 'discipleship_students_goal_q3', 'discipleship_students_goal_q4'],
+                    'achieved' => ['discipleship_students_achieved_q1', 'discipleship_students_achieved_q2', 'discipleship_students_achieved_q3', 'discipleship_students_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Leadership Students' => [
+                    'end_2024' => null,
+                    'goal' => ['leadership_students_goal_q1', 'leadership_students_goal_q2', 'leadership_students_goal_q3', 'leadership_students_goal_q4'],
+                    'achieved' => ['leadership_students_achieved_q1', 'leadership_students_achieved_q2', 'leadership_students_achieved_q3', 'leadership_students_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Evangelistic Conversations' => [
+                    'end_2024' => null,
+                    'goal' => ['evangelistic_conversations_goal_q1', 'evangelistic_conversations_goal_q2', 'evangelistic_conversations_goal_q3', 'evangelistic_conversations_goal_q4'],
+                    'achieved' => ['evangelistic_conversations_achieved_q1', 'evangelistic_conversations_achieved_q2', 'evangelistic_conversations_achieved_q3', 'evangelistic_conversations_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Pastoral Connections' => [
+                    'end_2024' => null,
+                    'goal' => ['pastoral_connections_goal_q1', 'pastoral_connections_goal_q2', 'pastoral_connections_goal_q3', 'pastoral_connections_goal_q4'],
+                    'achieved' => ['pastoral_connections_achieved_q1', 'pastoral_connections_achieved_q2', 'pastoral_connections_achieved_q3', 'pastoral_connections_achieved_q4'],
+                    'by_language' => true,
+                ],
+            ],
+            'Social Media Reach' => [
+                'Facebook Reach' => [
+                    'end_2024' => null,
+                    'goal' => ['facebook_reach_goal_q1', 'facebook_reach_goal_q2', 'facebook_reach_goal_q3', 'facebook_reach_goal_q4'],
+                    'achieved' => ['facebook_reach_achieved_q1', 'facebook_reach_achieved_q2', 'facebook_reach_achieved_q3', 'facebook_reach_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Instagram Reach' => [
+                    'end_2024' => null,
+                    'goal' => ['instagram_reach_goal_q1', 'instagram_reach_goal_q2', 'instagram_reach_goal_q3', 'instagram_reach_goal_q4'],
+                    'achieved' => ['instagram_reach_achieved_q1', 'instagram_reach_achieved_q2', 'instagram_reach_achieved_q3', 'instagram_reach_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'YouTube Reach' => [
+                    'end_2024' => null,
+                    'goal' => ['youtube_reach_goal_q1', 'youtube_reach_goal_q2', 'youtube_reach_goal_q3', 'youtube_reach_goal_q4'],
+                    'achieved' => ['youtube_reach_achieved_q1', 'youtube_reach_achieved_q2', 'youtube_reach_achieved_q3', 'youtube_reach_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Website Reach' => [
+                    'end_2024' => null,
+                    'goal' => ['website_reach_goal_q1', 'website_reach_goal_q2', 'website_reach_goal_q3', 'website_reach_goal_q4'],
+                    'achieved' => ['website_reach_achieved_q1', 'website_reach_achieved_q2', 'website_reach_achieved_q3', 'website_reach_achieved_q4'],
+                    'by_language' => true,
+                ],
+            ],
+            'Financial & Operations' => [
+                'Income (€)' => [
+                    'end_2024' => null,
+                    'goal' => ['income_euros_goal_q1', 'income_euros_goal_q2', 'income_euros_goal_q3', 'income_euros_goal_q4'],
+                    'achieved' => ['income_euros_achieved_q1', 'income_euros_achieved_q2', 'income_euros_achieved_q3', 'income_euros_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Expenditure (€)' => [
+                    'end_2024' => null,
+                    'goal' => ['expenditure_euros_goal_q1', 'expenditure_euros_goal_q2', 'expenditure_euros_goal_q3', 'expenditure_euros_goal_q4'],
+                    'achieved' => ['expenditure_euros_achieved_q1', 'expenditure_euros_achieved_q2', 'expenditure_euros_achieved_q3', 'expenditure_euros_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'PR Total Organic Reach' => [
+                    'end_2024' => null,
+                    'goal' => ['pr_total_organic_reach_goal_q1', 'pr_total_organic_reach_goal_q2', 'pr_total_organic_reach_goal_q3', 'pr_total_organic_reach_goal_q4'],
+                    'achieved' => ['pr_total_organic_reach_achieved_q1', 'pr_total_organic_reach_achieved_q2', 'pr_total_organic_reach_achieved_q3', 'pr_total_organic_reach_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Personnel FTE' => [
+                    'end_2024' => null,
+                    'goal' => ['personal_fte_goal_q1', 'personal_fte_goal_q2', 'personal_fte_goal_q3', 'personal_fte_goal_q4'],
+                    'achieved' => ['personal_fte_achieved_q1', 'personal_fte_achieved_q2', 'personal_fte_achieved_q3', 'personal_fte_achieved_q4'],
+                    'by_language' => true,
+                ],
+            ]
+        ];
+
+        // Build aggregated data structure organized by quarters
+        $aggregatedData = [];
+        
+        foreach ($quarters as $quarterIndex => $quarter) {
+            $aggregatedData[$quarter] = [];
+            
+            foreach ($sections as $sectionName => $fields) {
+                $aggregatedData[$quarter][$sectionName] = [];
+                
+                foreach ($fields as $fieldLabel => $fieldConfig) {
+                    $aggregatedData[$quarter][$sectionName][$fieldLabel] = [
+                        'by_language' => $fieldConfig['by_language'],
+                        'data' => []
+                    ];
+                    
+                    if ($fieldConfig['by_language']) {
+                        // For language-specific fields, show breakdown by language + total
+                        foreach ($languages as $language) {
+                            $languageKey = $language->name;
+                            $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey] = [
+                                'end_2024' => 0,
+                                'goal' => 0,
+                                'achieved' => 0,
+                                'percentage' => 0,
+                            ];
+                            
+                            // Get report for this language and quarter
+                            $report = $submittedReports->filter(function($r) use ($language, $quarter) {
+                                return $r->language_id === $language->id && $r->quarter === $quarter;
+                            })->first();
+                            
+                            if ($report) {
+                                $endValue = $fieldConfig['end_2024'] ? ($report->{$fieldConfig['end_2024']} ?? 0) : 0;
+                                $goalValue = $report->{$fieldConfig['goal'][$quarterIndex]} ?? 0;
+                                $achievedValue = $report->{$fieldConfig['achieved'][$quarterIndex]} ?? 0;
+                                $percentage = ($goalValue > 0) ? round(($achievedValue / $goalValue) * 100, 2) : 0;
+                                
+                                $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey] = [
+                                    'end_2024' => $endValue,
+                                    'goal' => $goalValue,
+                                    'achieved' => $achievedValue,
+                                    'percentage' => $percentage,
+                                ];
+                            }
+                        }
+                        
+                        // Calculate total for this field
+                        $totalEnd = 0;
+                        $totalGoal = 0;
+                        $totalAchieved = 0;
+                        
+                        foreach ($languages as $language) {
+                            $languageKey = $language->name;
+                            $totalEnd += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['end_2024'];
+                            $totalGoal += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['goal'];
+                            $totalAchieved += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['achieved'];
+                        }
+                        
+                        $totalPercentage = ($totalGoal > 0) ? round(($totalAchieved / $totalGoal) * 100, 2) : 0;
+                        
+                        $aggregatedData[$quarter][$sectionName][$fieldLabel]['data']['Total'] = [
+                            'end_2024' => $totalEnd,
+                            'goal' => $totalGoal,
+                            'achieved' => $totalAchieved,
+                            'percentage' => $totalPercentage,
+                        ];
+                    } else {
+                        // For non-language-specific fields, aggregate across all languages
+                        $totalEnd = 0;
+                        $totalGoal = 0;
+                        $totalAchieved = 0;
+                        
+                        foreach ($submittedReports->where('quarter', $quarter) as $report) {
+                            $endValue = $fieldConfig['end_2024'] ? ($report->{$fieldConfig['end_2024']} ?? 0) : 0;
+                            $goalValue = $report->{$fieldConfig['goal'][$quarterIndex]} ?? 0;
+                            $achievedValue = $report->{$fieldConfig['achieved'][$quarterIndex]} ?? 0;
+                            
+                            $totalEnd += $endValue;
+                            $totalGoal += $goalValue;
+                            $totalAchieved += $achievedValue;
+                        }
+                        
+                        $totalPercentage = ($totalGoal > 0) ? round(($totalAchieved / $totalGoal) * 100, 2) : 0;
+                        
+                        $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'] = [
+                            'end_2024' => $totalEnd,
+                            'goal' => $totalGoal,
+                            'achieved' => $totalAchieved,
+                            'percentage' => $totalPercentage,
+                        ];
+                    }
+                }
+            }
+        }
+
+        return view('admin.reports-aggregated-admin', [
+            'aggregatedData' => $aggregatedData,
+            'languages' => $languages,
+            'quarters' => $quarters,
+            'submittedReports' => $submittedReports,
+            'isAdminPanel' => true,
+        ]);
     }
 }

@@ -17,7 +17,7 @@
         </div>
         <div class="flex items-center space-x-4">
             <div class="text-gray-500 text-sm border border-gray-300 rounded-full px-4 py-2 flex items-center space-x-3">
-                <span>Current Period: <strong>Q3 2025</strong></span>
+                <span>Current Period: <strong>{{ $currentQuarter ?? 'Q3 2025' }}</strong></span>
                 <span class="text-gray-300">|</span>
                 <span id="currentTime"></span>
             </div>

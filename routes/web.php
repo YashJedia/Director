@@ -38,6 +38,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/reports/data', [AdminController::class, 'getReportData'])->name('reports.data');
         Route::get('/reports/revision-count', [AdminController::class, 'getRevisionCount'])->name('reports.revision-count');
         Route::get('/reports/{report}/edit', [AdminController::class, 'showEditReport'])->name('reports.edit');
+        Route::get('/reports/{report}/show', [AdminController::class, 'showAdminReport'])->name('reports.show');
         Route::put('/reports/{report}/update', [AdminController::class, 'updateReport'])->name('reports.update');
         Route::delete('/reports/{report}', [AdminController::class, 'deleteReport'])->name('reports.delete');
         Route::post('/reports/{report}/review', [AdminController::class, 'reviewReport'])->name('reports.review');
@@ -48,6 +49,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/reports/{report}/comment', [AdminController::class, 'addComment'])->name('reports.comment');
         Route::post('/reports/{report}/submit-to-super-admin', [AdminController::class, 'submitToSuperAdmin'])->name('reports.submit-to-super-admin');
         Route::get('/reports-aggregated', [AdminController::class, 'viewAggregatedReports'])->name('reports.aggregated');
+        Route::get('/reports-aggregated-admin', [AdminController::class, 'viewAdminAggregatedReports'])->name('reports.aggregated-admin');
         
         // Language management
         Route::get('/languages/{language}/edit', [AdminController::class, 'showEditLanguage'])->name('languages.edit');
