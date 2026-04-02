@@ -15,6 +15,88 @@
         </a>
     </div>
 
+    <!-- Admin Submissions Tiles -->
+    @if($allAdmins && count($allAdmins) > 0)
+    <div class="w-full max-w-7xl mb-8">
+        <div class="mb-4">
+            <h2 class="text-2xl font-bold text-gray-900">📋 Admin Submissions</h2>
+            <p class="text-gray-600 text-sm">Click on an admin to view their aggregated reports</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- View All Option -->
+            <div 
+                onclick="selectAdmin('')"
+                class="admin-tile cursor-pointer bg-white rounded-lg shadow-sm border-2 border-gray-300 p-5 hover:shadow-md transition-all duration-200 {{ !$selectedAdminId ? 'border-blue-600 bg-blue-50' : '' }}"
+            >
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-bold text-gray-900">All Submissions</h3>
+                    <i class="fa-solid fa-list text-blue-600 text-2xl"></i>
+                </div>
+                <!-- Get total submissions count -->
+                @php
+                    $totalSubmissions = 0;
+                    foreach($allAdmins as $admin) {
+                        if(isset($adminSubmissions[$admin->id])) {
+                            $totalSubmissions += $adminSubmissions[$admin->id]->count();
+                        }
+                    }
+                @endphp
+                <p class="text-gray-600 text-sm"><strong>Total Submissions:</strong> {{ $totalSubmissions }}</p>
+            </div>
+
+            <!-- Admin Tiles -->
+            @foreach($allAdmins as $admin)
+                @php
+                    $submissions = $adminSubmissions[$admin->id] ?? collect();
+                    $submissionCount = $submissions->count();
+                @endphp
+                <div 
+                    onclick="selectAdmin({{ $admin->id }})"
+                    class="admin-tile cursor-pointer bg-white rounded-lg shadow-sm border-2 border-gray-200 p-5 hover:shadow-md transition-all duration-200 {{ $selectedAdminId == $admin->id ? 'border-green-600 bg-green-50' : '' }}"
+                >
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-900">{{ $admin->name }}</h3>
+                        @if($submissionCount > 0)
+                            <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">{{ $submissionCount }}</span>
+                        @endif
+                    </div>
+                    
+                    <p class="text-gray-600 text-sm mb-2">
+                        <strong>Languages:</strong> {{ $admin->assignedLanguages->count() }}
+                    </p>
+                    
+                    @if($submissionCount > 0)
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p><strong>Submitted Quarters:</strong></p>
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($submissions as $submission)
+                                    <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-semibold">
+                                        {{ $submission->quarter }}
+                                    </span>
+                                @endforeach
+                            </div>
+                            <p class="mt-2"><strong>Latest:</strong> {{ $submissions->first()->submitted_at->format('M d, Y H:i') }}</p>
+                        </div>
+                    @else
+                        <p class="text-gray-400 text-sm italic">No submissions yet</p>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    <script>
+        function selectAdmin(adminId) {
+            if (adminId === '') {
+                window.location.href = "{{ route('admin.reports.aggregated') }}";
+            } else {
+                window.location.href = "{{ route('admin.reports.aggregated') }}?admin_id=" + adminId;
+            }
+        }
+    </script>
+
     <!-- Quarter Selection Buttons -->
     <div class="flex gap-4 mb-8 w-full max-w-7xl flex-wrap">
         @foreach($quarters as $index => $quarter)
@@ -51,7 +133,8 @@
                                     <tr class="bg-blue-100 border-b border-gray-300">
                                         <th class="px-4 py-2 text-left font-semibold text-gray-800 border-r border-gray-300 w-32 md:w-40">{{ $sectionName }}</th>
                                         <th class="px-4 py-2 text-left font-semibold text-gray-800 border-r border-gray-300 w-24">Language</th>
-                                        <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">End 2024</th>
+                                        <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">End {{ date('Y') }}</th>
+                                        <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">Goal {{ date('Y') }}</th>
                                         <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">Goal</th>
                                         <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">Achieved</th>
                                         <th class="px-4 py-2 text-center font-semibold text-gray-800 w-20">%</th>
@@ -82,6 +165,9 @@
                                                         {{ is_numeric($values['end_2024']) ? number_format($values['end_2024'], 0) : '-' }}
                                                     </td>
                                                     <td class="px-4 py-2 text-center border-r border-gray-300 {{ $languageName === 'Total' ? 'font-bold bg-blue-50' : '' }}">
+                                                        {{ is_numeric($values['goal_year']) ? number_format($values['goal_year'], 0) : '-' }}
+                                                    </td>
+                                                    <td class="px-4 py-2 text-center border-r border-gray-300 {{ $languageName === 'Total' ? 'font-bold bg-blue-50' : '' }}">
                                                         {{ is_numeric($values['goal']) ? number_format($values['goal'], 0) : '-' }}
                                                     </td>
                                                     <td class="px-4 py-2 text-center border-r border-gray-300 {{ $languageName === 'Total' ? 'font-bold bg-blue-50' : '' }} {{ $values['achieved'] > 0 ? 'text-green-700' : 'text-gray-500' }}">
@@ -107,6 +193,9 @@
                                                 </td>
                                                 <td class="px-4 py-2 text-center border-r border-gray-300">
                                                     {{ is_numeric($fieldData['data']['end_2024']) ? number_format($fieldData['data']['end_2024'], 0) : '-' }}
+                                                </td>
+                                                <td class="px-4 py-2 text-center border-r border-gray-300">
+                                                    {{ is_numeric($fieldData['data']['goal_year']) ? number_format($fieldData['data']['goal_year'], 0) : '-' }}
                                                 </td>
                                                 <td class="px-4 py-2 text-center border-r border-gray-300">
                                                     {{ is_numeric($fieldData['data']['goal']) ? number_format($fieldData['data']['goal'], 0) : '-' }}
@@ -226,5 +315,40 @@ function switchQuarter(quarter) {
         selectedButton.classList.add('bg-blue-600', 'text-white', 'shadow-lg', 'active');
     }
 }
+
+function filterByAdmin(adminId) {
+    // Update URL with admin_id parameter
+    if (adminId === null) {
+        // Remove admin_id parameter to show all
+        window.location.href = '{{ route("admin.reports.aggregated") }}';
+    } else {
+        window.location.href = '{{ route("admin.reports.aggregated") }}?admin_id=' + adminId;
+    }
+    
+    // Remove active state from all admin filter buttons
+    const allAdminBtns = document.querySelectorAll('.admin-filter-btn');
+    allAdminBtns.forEach(btn => {
+        btn.classList.remove('bg-green-600', 'text-white', 'shadow-lg', 'active');
+        btn.classList.add('bg-gray-200', 'text-gray-800');
+    });
+
+    // Activate clicked button
+    const selectedAdminBtn = document.querySelector(`[data-admin-id="${adminId || 'all'}"]`);
+    if (selectedAdminBtn) {
+        selectedAdminBtn.classList.remove('bg-gray-200', 'text-gray-800');
+        selectedAdminBtn.classList.add('bg-green-600', 'text-white', 'shadow-lg', 'active');
+    }
+}
+
+// Set active admin filter button on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedAdminId = '{{ $selectedAdminId }}';
+    if (selectedAdminId) {
+        const activeBtn = document.querySelector(`[data-admin-id="${selectedAdminId}"]`);
+        if (activeBtn) {
+            activeBtn.click();
+        }
+    }
+});
 </script>
 @endsection

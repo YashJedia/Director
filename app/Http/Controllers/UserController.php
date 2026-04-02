@@ -423,6 +423,26 @@ class UserController extends Controller
             'personal_fte' => 'numeric',
         ];
 
+        // Add goal_year validation rules for all metrics
+        foreach ($quarterlyMetrics as $metric => $type) {
+            if ($type === 'numeric') {
+                $rules["{$metric}_goal_year"] = 'nullable|numeric|min:0|max:999999999999.99';
+            } else {
+                $rules["{$metric}_goal_year"] = 'nullable|integer|min:0|max:999999999';
+            }
+        }
+
+        // Add end_year validation rules for metrics that have them
+        $endYearMetrics = ['volunteers', 'volunteers_mentors', 'volunteers_chatters', 'volunteers_creators', 'evangelistic_students', 'discipleship_students', 'leadership_students', 'evangelistic_conversations', 'pastoral_connections', 'facebook_reach', 'instagram_reach', 'youtube_reach', 'website_reach', 'income_euros', 'expenditure_euros', 'pr_total_organic_reach', 'personal_fte'];
+        foreach ($endYearMetrics as $metric) {
+            $metricType = isset($quarterlyMetrics[$metric]) ? $quarterlyMetrics[$metric] : 'integer';
+            if ($metricType === 'numeric') {
+                $rules["{$metric}_end_year"] = 'nullable|numeric|min:0|max:999999999999.99';
+            } else {
+                $rules["{$metric}_end_year"] = 'nullable|integer|min:0|max:999999999';
+            }
+        }
+
         foreach ($quarterlyMetrics as $metric => $type) {
             for ($q = 1; $q <= 4; $q++) {
                 if ($type === 'numeric') {
@@ -478,6 +498,17 @@ class UserController extends Controller
 
         // Add all quarterly field values
         foreach ($quarterlyMetrics as $metric => $type) {
+            // Add goal_year values
+            $goalYearKey = "{$metric}_goal_year";
+            $reportData[$goalYearKey] = $request->input($goalYearKey) ?? ($type === 'numeric' ? 0.00 : 0);
+            
+            // Add end_year values for metrics that have them
+            $endYearKey = "{$metric}_end_year";
+            if (in_array($metric, $endYearMetrics)) {
+                $reportData[$endYearKey] = $request->input($endYearKey) ?? ($type === 'numeric' ? 0.00 : 0);
+            }
+            
+            // Add quarterly goal/achieved values
             for ($q = 1; $q <= 4; $q++) {
                 $goalKey = "{$metric}_goal_q{$q}";
                 $achievedKey = "{$metric}_achieved_q{$q}";
@@ -534,6 +565,26 @@ class UserController extends Controller
             'pr_total_organic_reach' => 'integer',
             'personal_fte' => 'numeric',
         ];
+
+        // Add goal_year validation rules for all metrics
+        foreach ($quarterlyMetrics as $metric => $type) {
+            if ($type === 'numeric') {
+                $rules["{$metric}_goal_year"] = 'nullable|numeric|min:0|max:999999999999.99';
+            } else {
+                $rules["{$metric}_goal_year"] = 'nullable|integer|min:0|max:999999999';
+            }
+        }
+
+        // Add end_year validation rules for metrics that have them
+        $endYearMetrics = ['volunteers', 'volunteers_mentors', 'volunteers_chatters', 'volunteers_creators', 'evangelistic_students', 'discipleship_students', 'leadership_students', 'evangelistic_conversations', 'pastoral_connections', 'facebook_reach', 'instagram_reach', 'youtube_reach', 'website_reach', 'income_euros', 'expenditure_euros', 'pr_total_organic_reach', 'personal_fte'];
+        foreach ($endYearMetrics as $metric) {
+            $metricType = isset($quarterlyMetrics[$metric]) ? $quarterlyMetrics[$metric] : 'integer';
+            if ($metricType === 'numeric') {
+                $rules["{$metric}_end_year"] = 'nullable|numeric|min:0|max:999999999999.99';
+            } else {
+                $rules["{$metric}_end_year"] = 'nullable|integer|min:0|max:999999999';
+            }
+        }
 
         foreach ($quarterlyMetrics as $metric => $type) {
             for ($q = 1; $q <= 4; $q++) {
@@ -602,6 +653,17 @@ class UserController extends Controller
 
         // Add all quarterly field values
         foreach ($quarterlyMetrics as $metric => $type) {
+            // Add goal_year values
+            $goalYearKey = "{$metric}_goal_year";
+            $updateData[$goalYearKey] = $request->input($goalYearKey) ?? ($type === 'numeric' ? 0.00 : 0);
+            
+            // Add end_year values for metrics that have them
+            $endYearKey = "{$metric}_end_year";
+            if (in_array($metric, $endYearMetrics)) {
+                $updateData[$endYearKey] = $request->input($endYearKey) ?? ($type === 'numeric' ? 0.00 : 0);
+            }
+            
+            // Add quarterly goal/achieved values
             for ($q = 1; $q <= 4; $q++) {
                 $goalKey = "{$metric}_goal_q{$q}";
                 $achievedKey = "{$metric}_achieved_q{$q}";

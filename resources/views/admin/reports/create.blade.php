@@ -122,104 +122,148 @@
                     <input type="number" name="languages_previous_year" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('languages_previous_year') }}">
                 </div>
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Languages Goal 2025</label>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Languages Goal <span id="languages-goal-year">____</span></label>
                     <input type="number" name="languages_goal_2025" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('languages_goal_2025') }}">
                 </div>
                 
                 <!-- Languages Goal/Achieved - Quarterly -->
-                @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
-                <div class="quarter-field" data-quarter="{{ $qLabel }}">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Languages Goal {{ $qLabel }}</label>
-                    <input type="number" name="languages_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('languages_goal_q' . $qNum) }}">
+                <div class="col-span-full">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Languages Goal {{ $qLabel }}</label>
+                            <input type="number" name="languages_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('languages_goal_q' . $qNum) }}">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Languages Achieved {{ $qLabel }}</label>
+                            <input type="number" name="languages_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('languages_achieved_q' . $qNum) }}">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                            <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="languages_goal_q{{ $qNum }}" data-achieved-field="languages_achieved_q{{ $qNum }}" value="N/A">
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
-                <div class="quarter-field" data-quarter="{{ $qLabel }}">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Languages Achieved {{ $qLabel }}</label>
-                    <input type="number" name="languages_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('languages_achieved_q' . $qNum) }}">
-                </div>
-                @endforeach
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Previous Year</label>
                     <input type="number" name="volunteers_previous_year" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_previous_year') }}">
                 </div>
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Goal 2025</label>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Goal <span id="volunteers-goal-year">____</span></label>
                     <input type="number" name="volunteers_goal_2025" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_goal_2025') }}">
                 </div>
                 
                 <!-- Volunteers Goal/Achieved - Quarterly -->
-                @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
-                <div class="quarter-field" data-quarter="{{ $qLabel }}">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Goal {{ $qLabel }}</label>
-                    <input type="number" name="volunteers_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_goal_q' . $qNum) }}">
+                <div class="col-span-full">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Goal {{ $qLabel }}</label>
+                            <input type="number" name="volunteers_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_goal_q' . $qNum) }}">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Achieved {{ $qLabel }}</label>
+                            <input type="number" name="volunteers_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_achieved_q' . $qNum) }}">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                            <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="volunteers_goal_q{{ $qNum }}" data-achieved-field="volunteers_achieved_q{{ $qNum }}" value="N/A">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Chatters (Goal {{ $qLabel }})</label>
+                            <input type="number" name="volunteers_chatters_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_chatters_goal_q' . $qNum) }}">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Chatters (Achieved {{ $qLabel }})</label>
+                            <input type="number" name="volunteers_chatters_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_chatters_achieved_q' . $qNum) }}">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                            <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="volunteers_chatters_goal_q{{ $qNum }}" data-achieved-field="volunteers_chatters_achieved_q{{ $qNum }}" value="N/A">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Mentors (Goal {{ $qLabel }})</label>
+                            <input type="number" name="volunteers_mentors_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_mentors_goal_q' . $qNum) }}">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Mentors (Achieved {{ $qLabel }})</label>
+                            <input type="number" name="volunteers_mentors_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_mentors_achieved_q' . $qNum) }}">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                            <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="volunteers_mentors_goal_q{{ $qNum }}" data-achieved-field="volunteers_mentors_achieved_q{{ $qNum }}" value="N/A">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Content Creators (Goal {{ $qLabel }})</label>
+                            <input type="number" name="volunteers_creators_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_creators_goal_q' . $qNum) }}">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Content Creators (Achieved {{ $qLabel }})</label>
+                            <input type="number" name="volunteers_creators_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_creators_achieved_q' . $qNum) }}">
+                        </div>
+                        <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                            <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="volunteers_creators_goal_q{{ $qNum }}" data-achieved-field="volunteers_creators_achieved_q{{ $qNum }}" value="N/A">
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
-                <div class="quarter-field" data-quarter="{{ $qLabel }}">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers Achieved {{ $qLabel }}</label>
-                    <input type="number" name="volunteers_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_achieved_q' . $qNum) }}">
-                </div>
-                <div class="quarter-field" data-quarter="{{ $qLabel }}">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Chatters (Goal {{ $qLabel }})</label>
-                    <input type="number" name="volunteers_chatters_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_chatters_goal_q' . $qNum) }}">
-                </div>
-                <div class="quarter-field" data-quarter="{{ $qLabel }}">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Chatters (Achieved {{ $qLabel }})</label>
-                    <input type="number" name="volunteers_chatters_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_chatters_achieved_q' . $qNum) }}">
-                </div>
-                <div class="quarter-field" data-quarter="{{ $qLabel }}">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Mentors (Goal {{ $qLabel }})</label>
-                    <input type="number" name="volunteers_mentors_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_mentors_goal_q' . $qNum) }}">
-                </div>
-                <div class="quarter-field" data-quarter="{{ $qLabel }}">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Mentors (Achieved {{ $qLabel }})</label>
-                    <input type="number" name="volunteers_mentors_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_mentors_achieved_q' . $qNum) }}">
-                </div>
-                <div class="quarter-field" data-quarter="{{ $qLabel }}">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Content Creators (Goal {{ $qLabel }})</label>
-                    <input type="number" name="volunteers_creators_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_creators_goal_q' . $qNum) }}">
-                </div>
-                <div class="quarter-field" data-quarter="{{ $qLabel }}">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Volunteers: Content Creators (Achieved {{ $qLabel }})</label>
-                    <input type="number" name="volunteers_creators_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('volunteers_creators_achieved_q' . $qNum) }}">
-                </div>
-                @endforeach
             </div>
         </div>
         
         <!-- Section II: Organic Reach -->
         <div class="pb-6 mb-6 border-b border-gray-200">
             <h4 class="mb-4 text-lg font-semibold text-gray-900">Organic Reach (Per Language & Platform)</h4>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                 @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Facebook Reach Goal {{ $qLabel }}</label>
-                    <input type="number" name="facebook_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('facebook_reach_goal_q' . $qNum) }}">
+                    <input type="number" name="facebook_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('facebook_reach_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Facebook Reach Achieved {{ $qLabel }}</label>
-                    <input type="number" name="facebook_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('facebook_reach_achieved_q' . $qNum) }}">
+                    <input type="number" name="facebook_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('facebook_reach_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="facebook_reach_goal_q{{ $qNum }}" data-achieved-field="facebook_reach_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Instagram Reach Goal {{ $qLabel }}</label>
-                    <input type="number" name="instagram_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('instagram_reach_goal_q' . $qNum) }}">
+                    <input type="number" name="instagram_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('instagram_reach_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Instagram Reach Achieved {{ $qLabel }}</label>
-                    <input type="number" name="instagram_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('instagram_reach_achieved_q' . $qNum) }}">
+                    <input type="number" name="instagram_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('instagram_reach_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="instagram_reach_goal_q{{ $qNum }}" data-achieved-field="instagram_reach_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">YouTube Reach Goal {{ $qLabel }}</label>
-                    <input type="number" name="youtube_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('youtube_reach_goal_q' . $qNum) }}">
+                    <input type="number" name="youtube_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('youtube_reach_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">YouTube Reach Achieved {{ $qLabel }}</label>
-                    <input type="number" name="youtube_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('youtube_reach_achieved_q' . $qNum) }}">
+                    <input type="number" name="youtube_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('youtube_reach_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="youtube_reach_goal_q{{ $qNum }}" data-achieved-field="youtube_reach_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Website Reach Goal {{ $qLabel }}</label>
-                    <input type="number" name="website_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('website_reach_goal_q' . $qNum) }}">
+                    <input type="number" name="website_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('website_reach_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Website Reach Achieved {{ $qLabel }}</label>
-                    <input type="number" name="website_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('website_reach_achieved_q' . $qNum) }}">
+                    <input type="number" name="website_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('website_reach_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="website_reach_goal_q{{ $qNum }}" data-achieved-field="website_reach_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 @endforeach
             </div>
@@ -228,31 +272,43 @@
         <!-- Section III: Bible Course Students -->
         <div class="pb-6 mb-6 border-b border-gray-200">
             <h4 class="mb-4 text-lg font-semibold text-gray-900">Bible Course Students</h4>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                 @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Students Goal {{ $qLabel }}</label>
-                    <input type="number" name="evangelistic_students_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('evangelistic_students_goal_q' . $qNum) }}">
+                    <input type="number" name="evangelistic_students_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('evangelistic_students_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Students Achieved {{ $qLabel }}</label>
-                    <input type="number" name="evangelistic_students_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('evangelistic_students_achieved_q' . $qNum) }}">
+                    <input type="number" name="evangelistic_students_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('evangelistic_students_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="evangelistic_students_goal_q{{ $qNum }}" data-achieved-field="evangelistic_students_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Discipleship Students Goal {{ $qLabel }}</label>
-                    <input type="number" name="discipleship_students_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('discipleship_students_goal_q' . $qNum) }}">
+                    <input type="number" name="discipleship_students_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('discipleship_students_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Discipleship Students Achieved {{ $qLabel }}</label>
-                    <input type="number" name="discipleship_students_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('discipleship_students_achieved_q' . $qNum) }}">
+                    <input type="number" name="discipleship_students_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('discipleship_students_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="discipleship_students_goal_q{{ $qNum }}" data-achieved-field="discipleship_students_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Leadership Students Goal {{ $qLabel }}</label>
-                    <input type="number" name="leadership_students_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('leadership_students_goal_q' . $qNum) }}">
+                    <input type="number" name="leadership_students_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('leadership_students_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Leadership Students Achieved {{ $qLabel }}</label>
-                    <input type="number" name="leadership_students_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('leadership_students_achieved_q' . $qNum) }}">
+                    <input type="number" name="leadership_students_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('leadership_students_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="leadership_students_goal_q{{ $qNum }}" data-achieved-field="leadership_students_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 @endforeach
             </div>
@@ -261,7 +317,7 @@
         <!-- Section IV: Chat Conversations -->
         <div class="pb-6 mb-6 border-b border-gray-200">
             <h4 class="mb-4 text-lg font-semibold text-gray-900">Chat Conversations</h4>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                 @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Conversations Goal {{ $qLabel }}</label>
@@ -272,12 +328,20 @@
                     <input type="number" name="evangelistic_conversations_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('evangelistic_conversations_achieved_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="evangelistic_conversations_goal_q{{ $qNum }}" data-achieved-field="evangelistic_conversations_achieved_q{{ $qNum }}" value="N/A">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Pastoral Connections Goal {{ $qLabel }}</label>
                     <input type="number" name="pastoral_connections_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('pastoral_connections_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Pastoral Connections Achieved {{ $qLabel }}</label>
                     <input type="number" name="pastoral_connections_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('pastoral_connections_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="pastoral_connections_goal_q{{ $qNum }}" data-achieved-field="pastoral_connections_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 @endforeach
             </div>
@@ -286,39 +350,55 @@
         <!-- Section V: Organization -->
         <div class="pb-6 mb-6 border-b border-gray-200">
             <h4 class="mb-4 text-lg font-semibold text-gray-900">Organization</h4>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                 @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Income (Euros) Goal {{ $qLabel }}</label>
-                    <input type="number" name="income_euros_goal_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('income_euros_goal_q' . $qNum) }}">
+                    <input type="number" name="income_euros_goal_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('income_euros_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Income (Euros) Achieved {{ $qLabel }}</label>
-                    <input type="number" name="income_euros_achieved_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('income_euros_achieved_q' . $qNum) }}">
+                    <input type="number" name="income_euros_achieved_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('income_euros_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="income_euros_goal_q{{ $qNum }}" data-achieved-field="income_euros_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Expenditure (Euros) Goal {{ $qLabel }}</label>
-                    <input type="number" name="expenditure_euros_goal_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('expenditure_euros_goal_q' . $qNum) }}">
+                    <input type="number" name="expenditure_euros_goal_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('expenditure_euros_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Expenditure (Euros) Achieved {{ $qLabel }}</label>
-                    <input type="number" name="expenditure_euros_achieved_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('expenditure_euros_achieved_q' . $qNum) }}">
+                    <input type="number" name="expenditure_euros_achieved_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('expenditure_euros_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="expenditure_euros_goal_q{{ $qNum }}" data-achieved-field="expenditure_euros_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">PR Total Organic Reach Goal {{ $qLabel }}</label>
-                    <input type="number" name="pr_total_organic_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('pr_total_organic_reach_goal_q' . $qNum) }}">
+                    <input type="number" name="pr_total_organic_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('pr_total_organic_reach_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">PR Total Organic Reach Achieved {{ $qLabel }}</label>
-                    <input type="number" name="pr_total_organic_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('pr_total_organic_reach_achieved_q' . $qNum) }}">
+                    <input type="number" name="pr_total_organic_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('pr_total_organic_reach_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="pr_total_organic_reach_goal_q{{ $qNum }}" data-achieved-field="pr_total_organic_reach_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Personal FTE Goal {{ $qLabel }}</label>
-                    <input type="number" name="personal_fte_goal_q{{ $qNum }}" min="0" max="999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('personal_fte_goal_q' . $qNum) }}">
+                    <input type="number" name="personal_fte_goal_q{{ $qNum }}" min="0" max="999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" value="{{ old('personal_fte_goal_q' . $qNum) }}">
                 </div>
                 <div class="quarter-field" data-quarter="{{ $qLabel }}">
                     <label class="block mb-2 text-sm font-medium text-gray-700">Personal FTE Achieved {{ $qLabel }}</label>
-                    <input type="number" name="personal_fte_achieved_q{{ $qNum }}" min="0" max="999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('personal_fte_achieved_q' . $qNum) }}">
+                    <input type="number" name="personal_fte_achieved_q{{ $qNum }}" min="0" max="999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" value="{{ old('personal_fte_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="personal_fte_goal_q{{ $qNum }}" data-achieved-field="personal_fte_achieved_q{{ $qNum }}" value="N/A">
                 </div>
                 @endforeach
                 <div>
@@ -328,6 +408,157 @@
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Number of Supporters</label>
                     <input type="number" name="number_of_supporters" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('number_of_supporters') }}">
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- Section VI: Descriptive Text Fields -->
+        <div class="pb-6 mb-6 border-b border-gray-200">
+            <h4 class="mb-4 text-lg font-semibold text-gray-900">Additional Information</h4>
+            <div class="space-y-4">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">New Activity (max 100 words)</label>
+                    <textarea name="new_activity" rows="3" placeholder="Describe any new activities or initiatives" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Language Team Highlight (max 50 words)</label>
+                    <textarea name="organizational_highlight" rows="2" placeholder="Key Language Team highlights" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Language Team Concern (max 50 words)</label>
+                    <textarea name="organizational_concern" rows="2" placeholder="Any Language Team concerns" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Language Team Issues (max 50 words)</label>
+                    <textarea name="organizational_issues" rows="2" placeholder="Any Language Team issues" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section IV: Chat Conversations -->
+        <div class="pb-6 mb-6 border-b border-gray-200">
+            <h4 class="mb-4 text-lg font-semibold text-gray-900">Chat Conversations</h4>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Conversations Goal {{ $qLabel }}</label>
+                    <input type="number" name="evangelistic_conversations_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" data-metric="evangelistic_conversations" value="{{ old('evangelistic_conversations_goal_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Evangelistic Conversations Achieved {{ $qLabel }}</label>
+                    <input type="number" name="evangelistic_conversations_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" data-metric="evangelistic_conversations" value="{{ old('evangelistic_conversations_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="evangelistic_conversations_goal_q{{ $qNum }}" data-achieved-field="evangelistic_conversations_achieved_q{{ $qNum }}" value="N/A">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Pastoral Connections Goal {{ $qLabel }}</label>
+                    <input type="number" name="pastoral_connections_goal_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" data-metric="pastoral_connections" value="{{ old('pastoral_connections_goal_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Pastoral Connections Achieved {{ $qLabel }}</label>
+                    <input type="number" name="pastoral_connections_achieved_q{{ $qNum }}" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" data-metric="pastoral_connections" value="{{ old('pastoral_connections_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="pastoral_connections_goal_q{{ $qNum }}" data-achieved-field="pastoral_connections_achieved_q{{ $qNum }}" value="N/A">
+                </div>
+                @endforeach
+            </div>
+        </div>
+        
+        <!-- Section V: Organization -->
+        <div class="pb-6 mb-6 border-b border-gray-200">
+            <h4 class="mb-4 text-lg font-semibold text-gray-900">Organization</h4>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Income (Euros) Goal {{ $qLabel }}</label>
+                    <input type="number" name="income_euros_goal_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" data-metric="income" value="{{ old('income_euros_goal_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Income (Euros) Achieved {{ $qLabel }}</label>
+                    <input type="number" name="income_euros_achieved_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" data-metric="income" value="{{ old('income_euros_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="income_euros_goal_q{{ $qNum }}" data-achieved-field="income_euros_achieved_q{{ $qNum }}" value="N/A">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Expenditure (Euros) Goal {{ $qLabel }}</label>
+                    <input type="number" name="expenditure_euros_goal_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" data-metric="expenditure" value="{{ old('expenditure_euros_goal_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Expenditure (Euros) Achieved {{ $qLabel }}</label>
+                    <input type="number" name="expenditure_euros_achieved_q{{ $qNum }}" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" data-metric="expenditure" value="{{ old('expenditure_euros_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="expenditure_euros_goal_q{{ $qNum }}" data-achieved-field="expenditure_euros_achieved_q{{ $qNum }}" value="N/A">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">PR Total Organic Reach Goal {{ $qLabel }}</label>
+                    <input type="number" name="pr_total_organic_reach_goal_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" data-metric="pr_reach" value="{{ old('pr_total_organic_reach_goal_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">PR Total Organic Reach Achieved {{ $qLabel }}</label>
+                    <input type="number" name="pr_total_organic_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" data-metric="pr_reach" value="{{ old('pr_total_organic_reach_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="pr_total_organic_reach_goal_q{{ $qNum }}" data-achieved-field="pr_total_organic_reach_achieved_q{{ $qNum }}" value="N/A">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Personal FTE Goal {{ $qLabel }}</label>
+                    <input type="number" name="personal_fte_goal_q{{ $qNum }}" min="0" max="999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" data-metric="fte" value="{{ old('personal_fte_goal_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Personal FTE Achieved {{ $qLabel }}</label>
+                    <input type="number" name="personal_fte_achieved_q{{ $qNum }}" min="0" max="999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" data-metric="fte" value="{{ old('personal_fte_achieved_q' . $qNum) }}">
+                </div>
+                <div class="quarter-field" data-quarter="{{ $qLabel }}">
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="personal_fte_goal_q{{ $qNum }}" data-achieved-field="personal_fte_achieved_q{{ $qNum }}" value="N/A">
+                </div>
+                @endforeach
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Income from Fundraising (Euros) Goal</label>
+                    <input type="number" name="income_fundraising_goal" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" data-metric="income_fundraising" value="{{ old('income_fundraising_goal') }}">
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Income from Fundraising (Euros) Achieved</label>
+                    <input type="number" name="income_fundraising_achieved" min="0" max="999999999999.99" step="0.01" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" data-metric="income_fundraising" value="{{ old('income_fundraising_achieved') }}">
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="income_fundraising_goal" data-achieved-field="income_fundraising_achieved" value="N/A">
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Number of Supporters Goal</label>
+                    <input type="number" name="number_of_supporters_goal" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 goal-input" data-metric="supporters" value="{{ old('number_of_supporters_goal') }}">
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Number of Supporters Achieved</label>
+                    <input type="number" name="number_of_supporters_achieved" min="0" max="999999" class="px-3 py-2 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 achieved-input" data-metric="supporters" value="{{ old('number_of_supporters_achieved') }}">
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Percentage %</label>
+                    <input type="text" readonly class="px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display" data-goal-field="number_of_supporters_goal" data-achieved-field="number_of_supporters_achieved" value="N/A">
+                </div>
+            </div>
+        </div>
+
+        <!-- Section VI: Goal Achievement Percentages -->
+        <div class="pb-6 mb-6 border-b border-gray-200">
+            <h4 class="mb-4 text-lg font-semibold text-gray-900">Goal Achievement Percentages</h4>
+            <p class="mb-4 text-sm text-gray-600">Real-time calculation based on goal and achievement inputs</p>
+            <div id="percentages-container" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Percentages will be dynamically populated here -->
+                <div class="text-center text-gray-500 py-8 col-span-full">
+                    <i class="mb-2 text-2xl text-gray-400 fa-solid fa-chart-pie"></i>
+                    <p>Select a quarter and enter goals & achievements to see percentages</p>
                 </div>
             </div>
         </div>
@@ -390,6 +621,14 @@
         if (headerLabel) {
             headerLabel.textContent = `Goals for ${quarterValue}`;
         }
+
+        // Update year in goal labels
+        if (year) {
+            const languagesYearSpan = document.getElementById('languages-goal-year');
+            const volunteersYearSpan = document.getElementById('volunteers-goal-year');
+            if (languagesYearSpan) languagesYearSpan.textContent = year;
+            if (volunteersYearSpan) volunteersYearSpan.textContent = year;
+        }
     }
 
     // Auto-generate report title and show/hide fields
@@ -414,6 +653,62 @@
 
     // Update on page load if values are already selected
     window.addEventListener('load', updateTitle);
+
+    // Inline percentage calculation
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('goal-input') || e.target.classList.contains('achieved-input')) {
+            updatePercentageFieldsInline();
+        }
+    });
+
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('goal-input') || e.target.classList.contains('achieved-input')) {
+            updatePercentageFieldsInline();
+        }
+    });
+
+    function updatePercentageFieldsInline() {
+        const percentageFields = document.querySelectorAll('.percentage-display');
+        
+        percentageFields.forEach(field => {
+            const goalFieldName = field.dataset.goalField;
+            const achievedFieldName = field.dataset.achievedField;
+            
+            const goalInput = document.querySelector(`input[name="${goalFieldName}"]`);
+            const achievedInput = document.querySelector(`input[name="${achievedFieldName}"]`);
+            
+            if (goalInput && achievedInput) {
+                const goal = parseFloat(goalInput.value) || 0;
+                const achieved = parseFloat(achievedInput.value) || 0;
+                
+                let displayText = 'N/A';
+                let bgColor = 'bg-gray-50';
+                let textColor = 'text-gray-600';
+                
+                if (goal > 0) {
+                    const percentage = (achieved / goal) * 100;
+                    displayText = percentage.toFixed(1) + '%';
+                    
+                    if (percentage < 50) {
+                        bgColor = 'bg-red-100';
+                        textColor = 'text-red-700';
+                    } else if (percentage < 100) {
+                        bgColor = 'bg-yellow-100';
+                        textColor = 'text-yellow-700';
+                    } else {
+                        bgColor = 'bg-green-100';
+                        textColor = 'text-green-700';
+                    }
+                }
+                
+                field.value = displayText;
+                field.className = 'px-3 py-2 w-full rounded-lg border-2 border-gray-300 bg-gray-50 text-center font-semibold percentage-display ' + bgColor + ' ' + textColor;
+            }
+        });
+    }
+
+    // Initial update on page load
+    window.addEventListener('load', updatePercentageFieldsInline);
 </script>
 
 @endsection

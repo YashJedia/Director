@@ -111,4 +111,12 @@ class Admin extends Authenticatable
     {
         return $this->role !== 'super_admin';
     }
+
+    /**
+     * Get the aggregated report submissions from this admin
+     */
+    public function aggregatedSubmissions()
+    {
+        return $this->hasMany(AdminAggregatedSubmission::class, 'admin_id');
+    }
 }

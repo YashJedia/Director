@@ -4,6 +4,25 @@
 
 @section('content')
 <div class="w-full flex flex-col items-start px-2 md:px-0">
+    <!-- Session Messages -->
+    @if($message = Session::get('success'))
+        <div class="w-full max-w-7xl mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex justify-between items-center">
+            <div>
+                <i class="fa-solid fa-check mr-2"></i>{{ $message }}
+            </div>
+            <button onclick="this.parentElement.style.display='none';" class="text-green-700 hover:text-green-900 font-bold">×</button>
+        </div>
+    @endif
+
+    @if($message = Session::get('error'))
+        <div class="w-full max-w-7xl mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg flex justify-between items-center">
+            <div>
+                <i class="fa-solid fa-exclamation-circle mr-2"></i>{{ $message }}
+            </div>
+            <button onclick="this.parentElement.style.display='none';" class="text-red-700 hover:text-red-900 font-bold">×</button>
+        </div>
+    @endif
+
     <!-- Top Bar -->
     <div class="flex justify-between items-center mb-8 w-full max-w-7xl">
         <div>
@@ -18,13 +37,28 @@
     <!-- Quarter Selection Buttons -->
     <div class="flex gap-4 mb-8 w-full max-w-7xl flex-wrap">
         @foreach($quarters as $index => $quarter)
-            <button 
-                onclick="switchQuarter('{{ $quarter }}')"
-                class="quarter-btn px-6 py-2 rounded-lg font-semibold transition-all duration-200 {{ $index === 0 ? 'bg-blue-600 text-white shadow-lg active' : 'bg-gray-200 text-gray-800 hover:bg-gray-300' }}"
-                data-quarter="{{ $quarter }}"
-            >
-                {{ $quarter }}
-            </button>
+            <div class="relative flex flex-col items-center">
+                <button 
+                    onclick="switchQuarter('{{ $quarter }}')"
+                    class="quarter-btn px-6 py-2 rounded-lg font-semibold transition-all duration-200 {{ $index === 0 ? 'bg-blue-600 text-white shadow-lg active' : 'bg-gray-200 text-gray-800 hover:bg-gray-300' }}"
+                    data-quarter="{{ $quarter }}"
+                >
+                    {{ $quarter }}
+                </button>
+                @if(isset($submissions[$quarter]))
+                    <span class="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center" title="Submitted on {{ $submissions[$quarter]->submitted_at->format('M d, Y') }}">
+                        <i class="fa-solid fa-check"></i>
+                    </span>
+                @else
+                    <form action="{{ route('admin.submit-aggregated-report') }}" method="POST" class="inline mt-2">
+                        @csrf
+                        <input type="hidden" name="quarter" value="{{ $quarter }}">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200" onclick="return confirm('Submit aggregated report for {{ $quarter }}?')">
+                            <i class="fa-solid fa-paper-plane mr-1"></i>Submit
+                        </button>
+                    </form>
+                @endif
+            </div>
         @endforeach
     </div>
 
@@ -51,7 +85,8 @@
                                     <tr class="bg-blue-100 border-b border-gray-300">
                                         <th class="px-4 py-2 text-left font-semibold text-gray-800 border-r border-gray-300 w-32 md:w-40">{{ $sectionName }}</th>
                                         <th class="px-4 py-2 text-left font-semibold text-gray-800 border-r border-gray-300 w-24">Language</th>
-                                        <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">End 2024</th>
+                                        <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">End Year</th>
+                                        <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">Goal {{ date('Y') }}</th>
                                         <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">Goal</th>
                                         <th class="px-4 py-2 text-center font-semibold text-gray-800 border-r border-gray-300 w-20">Achieved</th>
                                         <th class="px-4 py-2 text-center font-semibold text-gray-800 w-20">%</th>
@@ -82,6 +117,9 @@
                                                         {{ is_numeric($values['end_2024']) ? number_format($values['end_2024'], 0) : '-' }}
                                                     </td>
                                                     <td class="px-4 py-2 text-center border-r border-gray-300 {{ $languageName === 'Total' ? 'font-bold bg-blue-50' : '' }}">
+                                                        {{ is_numeric($values['goal_year']) ? number_format($values['goal_year'], 0) : '-' }}
+                                                    </td>
+                                                    <td class="px-4 py-2 text-center border-r border-gray-300 {{ $languageName === 'Total' ? 'font-bold bg-blue-50' : '' }}">
                                                         {{ is_numeric($values['goal']) ? number_format($values['goal'], 0) : '-' }}
                                                     </td>
                                                     <td class="px-4 py-2 text-center border-r border-gray-300 {{ $languageName === 'Total' ? 'font-bold bg-blue-50' : '' }} {{ $values['achieved'] > 0 ? 'text-green-700' : 'text-gray-500' }}">
@@ -109,6 +147,9 @@
                                                     {{ is_numeric($fieldData['data']['end_2024']) ? number_format($fieldData['data']['end_2024'], 0) : '-' }}
                                                 </td>
                                                 <td class="px-4 py-2 text-center border-r border-gray-300">
+                                                    {{ is_numeric($fieldData['data']['goal_year']) ? number_format($fieldData['data']['goal_year'], 0) : '-' }}
+                                                </td>
+                                                <td class="px-4 py-2 text-center border-r border-gray-300">
                                                     {{ is_numeric($fieldData['data']['goal']) ? number_format($fieldData['data']['goal'], 0) : '-' }}
                                                 </td>
                                                 <td class="px-4 py-2 text-center border-r border-gray-300 {{ $fieldData['data']['achieved'] > 0 ? 'text-green-700' : 'text-gray-500' }}">
@@ -131,44 +172,6 @@
                 @endforeach
             </div>
         @endforeach
-    </div>
-
-    <!-- Report Details -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full max-w-7xl">
-        <h3 class="text-xl font-bold text-gray-900 mb-6">Submitted Reports Details</h3>
-        <p class="text-gray-600 text-sm mb-4">Below is a summary of all reports you've submitted to the Super Admin for your assigned languages:</p>
-        
-        <div class="space-y-4">
-            @forelse($submittedReports as $report)
-                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <h4 class="font-semibold text-gray-900">{{ $report->title }}</h4>
-                            <p class="text-sm text-gray-600 mt-1">
-                                <span class="font-medium">Leader:</span> {{ $report->user->name ?? 'N/A' }}
-                            </p>
-                            <p class="text-sm text-gray-600">
-                                <span class="font-medium">Language:</span> {{ $report->language->name ?? 'N/A' }}
-                            </p>
-                            <p class="text-sm text-gray-600">
-                                <span class="font-medium">Quarter:</span> {{ $report->quarter }}
-                            </p>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                                <i class="fa-solid fa-check mr-1"></i>Submitted
-                            </span>
-                            <a href="{{ route('admin.reports.show', $report->id) }}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                                <i class="fa-solid fa-eye mr-1"></i>View
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <p class="text-gray-500 text-center py-8">No reports submitted yet. Submit approved reports from the dashboard to see them here.</p>
-            @endforelse
-        </div>
-    </div>
 </div>
 
 <script>

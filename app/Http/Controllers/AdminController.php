@@ -1643,13 +1643,19 @@ class AdminController extends Controller
             return redirect()->route('admin.reports')->with('error', 'You can only submit reports for languages assigned to you.');
         }
         
-        // Update report status to pending_super_admin_review
+        // Verify report is approved before submission
+        if ($report->review_status !== 'approved' && $report->status !== 'approved') {
+            return redirect()->back()->with('error', 'Only approved reports can be submitted to super admin.');
+        }
+
+        // Update report to mark as submitted to super admin
         $report->update([
-            'status' => 'pending_super_admin_review',
-            'review_status' => 'pending',
+            'submitted_to_super_admin' => true,
+            'submitted_to_super_admin_at' => now(),
+            'submitted_to_super_admin_by' => $admin->id,
         ]);
         
-        return redirect()->route('admin.reports')->with('success', 'Report submitted to Super Admin for review successfully!');
+        return redirect()->route('admin.reports.aggregated-admin')->with('success', 'Report submitted to Super Admin successfully!');
     }
 
     public function deleteReport($id)
@@ -1828,7 +1834,7 @@ class AdminController extends Controller
     /**
      * View aggregated reports submitted by admins (Super Admin only)
      */
-    public function viewAggregatedReports()
+    public function viewAggregatedReports(Request $request)
     {
         $admin = Auth::guard('admin')->user();
         
@@ -1837,12 +1843,39 @@ class AdminController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        // Get all reports submitted to super admin with language and user info
-        $submittedReports = Report::where('submitted_to_super_admin', true)
-            ->with(['language', 'user'])
+        // Get all admin submissions with their details
+        $adminSubmissions = \App\Models\AdminAggregatedSubmission::with('admin')
+            ->orderBy('submitted_at', 'desc')
+            ->get()
+            ->groupBy('admin_id');
+
+        // Get all admins (non-super) even if they haven't submitted yet
+        $allAdmins = \App\Models\Admin::where('role', 'admin')
+            ->with(['assignedLanguages'])
             ->get();
 
-        $quarters = ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'];
+        // Optional admin filter
+        $selectedAdminId = $request->query('admin_id');
+        $selectedAdmin = null;
+
+        // Get all reports submitted to super admin with language and user info
+        $query = Report::where('submitted_to_super_admin', true);
+        
+        // If filtering by admin, only get reports from users assigned to that admin
+        if ($selectedAdminId) {
+            $selectedAdmin = \App\Models\Admin::find($selectedAdminId);
+            if (!$selectedAdmin || $selectedAdmin->role !== 'admin') {
+                abort(404, 'Admin not found');
+            }
+            // Get assigned languages for this admin
+            $assignedLanguages = $selectedAdmin->assignedLanguages()->pluck('id');
+            $query->whereIn('language_id', $assignedLanguages);
+        }
+        
+        $submittedReports = $query->with(['language', 'user'])->get();
+
+        $currentYear = date('Y');
+        $quarters = ["Q1 {$currentYear}", "Q2 {$currentYear}", "Q3 {$currentYear}", "Q4 {$currentYear}"];
         
         // Get all unique languages from submitted reports
         $languages = $submittedReports->pluck('language')->unique('id')->sortBy('name');
@@ -1850,32 +1883,30 @@ class AdminController extends Controller
         // Define sections with their fields and database mappings per quarter
         $sections = [
             'Ministry' => [
-                'Number of Languages' => [
-                    'end_2024' => 'languages_previous_year',
-                    'goal' => ['languages_goal_q1', 'languages_goal_q2', 'languages_goal_q3', 'languages_goal_q4'],
-                    'achieved' => ['languages_achieved_q1', 'languages_achieved_q2', 'languages_achieved_q3', 'languages_achieved_q4'],
-                    'by_language' => false,
-                ],
                 'Number of Volunteers' => [
                     'end_2024' => 'volunteers_previous_year',
+                    'goal_year' => 'volunteers_goal_year',
                     'goal' => ['volunteers_goal_q1', 'volunteers_goal_q2', 'volunteers_goal_q3', 'volunteers_goal_q4'],
                     'achieved' => ['volunteers_achieved_q1', 'volunteers_achieved_q2', 'volunteers_achieved_q3', 'volunteers_achieved_q4'],
                     'by_language' => false,
                 ],
                 'Bible Mentors' => [
                     'end_2024' => null,
+                    'goal_year' => 'volunteers_mentors_goal_year',
                     'goal' => ['volunteers_mentors_goal_q1', 'volunteers_mentors_goal_q2', 'volunteers_mentors_goal_q3', 'volunteers_mentors_goal_q4'],
                     'achieved' => ['volunteers_mentors_achieved_q1', 'volunteers_mentors_achieved_q2', 'volunteers_mentors_achieved_q3', 'volunteers_mentors_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Chat Volunteers' => [
                     'end_2024' => null,
+                    'goal_year' => 'volunteers_chatters_goal_year',
                     'goal' => ['volunteers_chatters_goal_q1', 'volunteers_chatters_goal_q2', 'volunteers_chatters_goal_q3', 'volunteers_chatters_goal_q4'],
                     'achieved' => ['volunteers_chatters_achieved_q1', 'volunteers_chatters_achieved_q2', 'volunteers_chatters_achieved_q3', 'volunteers_chatters_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Content Creators' => [
                     'end_2024' => null,
+                    'goal_year' => 'volunteers_creators_goal_year',
                     'goal' => ['volunteers_creators_goal_q1', 'volunteers_creators_goal_q2', 'volunteers_creators_goal_q3', 'volunteers_creators_goal_q4'],
                     'achieved' => ['volunteers_creators_achieved_q1', 'volunteers_creators_achieved_q2', 'volunteers_creators_achieved_q3', 'volunteers_creators_achieved_q4'],
                     'by_language' => true,
@@ -1884,30 +1915,35 @@ class AdminController extends Controller
             'Outreach & Engagement' => [
                 'Evangelistic Students' => [
                     'end_2024' => null,
+                    'goal_year' => 'evangelistic_students_goal_year',
                     'goal' => ['evangelistic_students_goal_q1', 'evangelistic_students_goal_q2', 'evangelistic_students_goal_q3', 'evangelistic_students_goal_q4'],
                     'achieved' => ['evangelistic_students_achieved_q1', 'evangelistic_students_achieved_q2', 'evangelistic_students_achieved_q3', 'evangelistic_students_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Discipleship Students' => [
                     'end_2024' => null,
+                    'goal_year' => 'discipleship_students_goal_year',
                     'goal' => ['discipleship_students_goal_q1', 'discipleship_students_goal_q2', 'discipleship_students_goal_q3', 'discipleship_students_goal_q4'],
                     'achieved' => ['discipleship_students_achieved_q1', 'discipleship_students_achieved_q2', 'discipleship_students_achieved_q3', 'discipleship_students_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Leadership Students' => [
                     'end_2024' => null,
+                    'goal_year' => 'leadership_students_goal_year',
                     'goal' => ['leadership_students_goal_q1', 'leadership_students_goal_q2', 'leadership_students_goal_q3', 'leadership_students_goal_q4'],
                     'achieved' => ['leadership_students_achieved_q1', 'leadership_students_achieved_q2', 'leadership_students_achieved_q3', 'leadership_students_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Evangelistic Conversations' => [
                     'end_2024' => null,
+                    'goal_year' => 'evangelistic_conversations_goal_year',
                     'goal' => ['evangelistic_conversations_goal_q1', 'evangelistic_conversations_goal_q2', 'evangelistic_conversations_goal_q3', 'evangelistic_conversations_goal_q4'],
                     'achieved' => ['evangelistic_conversations_achieved_q1', 'evangelistic_conversations_achieved_q2', 'evangelistic_conversations_achieved_q3', 'evangelistic_conversations_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Pastoral Connections' => [
                     'end_2024' => null,
+                    'goal_year' => 'pastoral_connections_goal_year',
                     'goal' => ['pastoral_connections_goal_q1', 'pastoral_connections_goal_q2', 'pastoral_connections_goal_q3', 'pastoral_connections_goal_q4'],
                     'achieved' => ['pastoral_connections_achieved_q1', 'pastoral_connections_achieved_q2', 'pastoral_connections_achieved_q3', 'pastoral_connections_achieved_q4'],
                     'by_language' => true,
@@ -1916,24 +1952,28 @@ class AdminController extends Controller
             'Social Media Reach' => [
                 'Facebook Reach' => [
                     'end_2024' => null,
+                    'goal_year' => 'facebook_reach_goal_year',
                     'goal' => ['facebook_reach_goal_q1', 'facebook_reach_goal_q2', 'facebook_reach_goal_q3', 'facebook_reach_goal_q4'],
                     'achieved' => ['facebook_reach_achieved_q1', 'facebook_reach_achieved_q2', 'facebook_reach_achieved_q3', 'facebook_reach_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Instagram Reach' => [
                     'end_2024' => null,
+                    'goal_year' => 'instagram_reach_goal_year',
                     'goal' => ['instagram_reach_goal_q1', 'instagram_reach_goal_q2', 'instagram_reach_goal_q3', 'instagram_reach_goal_q4'],
                     'achieved' => ['instagram_reach_achieved_q1', 'instagram_reach_achieved_q2', 'instagram_reach_achieved_q3', 'instagram_reach_achieved_q4'],
                     'by_language' => true,
                 ],
                 'YouTube Reach' => [
                     'end_2024' => null,
+                    'goal_year' => 'youtube_reach_goal_year',
                     'goal' => ['youtube_reach_goal_q1', 'youtube_reach_goal_q2', 'youtube_reach_goal_q3', 'youtube_reach_goal_q4'],
                     'achieved' => ['youtube_reach_achieved_q1', 'youtube_reach_achieved_q2', 'youtube_reach_achieved_q3', 'youtube_reach_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Website Reach' => [
                     'end_2024' => null,
+                    'goal_year' => 'website_reach_goal_year',
                     'goal' => ['website_reach_goal_q1', 'website_reach_goal_q2', 'website_reach_goal_q3', 'website_reach_goal_q4'],
                     'achieved' => ['website_reach_achieved_q1', 'website_reach_achieved_q2', 'website_reach_achieved_q3', 'website_reach_achieved_q4'],
                     'by_language' => true,
@@ -1942,24 +1982,28 @@ class AdminController extends Controller
             'Financial & Operations' => [
                 'Income (€)' => [
                     'end_2024' => null,
+                    'goal_year' => 'income_euros_goal_year',
                     'goal' => ['income_euros_goal_q1', 'income_euros_goal_q2', 'income_euros_goal_q3', 'income_euros_goal_q4'],
                     'achieved' => ['income_euros_achieved_q1', 'income_euros_achieved_q2', 'income_euros_achieved_q3', 'income_euros_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Expenditure (€)' => [
                     'end_2024' => null,
+                    'goal_year' => 'expenditure_euros_goal_year',
                     'goal' => ['expenditure_euros_goal_q1', 'expenditure_euros_goal_q2', 'expenditure_euros_goal_q3', 'expenditure_euros_goal_q4'],
                     'achieved' => ['expenditure_euros_achieved_q1', 'expenditure_euros_achieved_q2', 'expenditure_euros_achieved_q3', 'expenditure_euros_achieved_q4'],
                     'by_language' => true,
                 ],
                 'PR Total Organic Reach' => [
                     'end_2024' => null,
+                    'goal_year' => 'pr_total_organic_reach_goal_year',
                     'goal' => ['pr_total_organic_reach_goal_q1', 'pr_total_organic_reach_goal_q2', 'pr_total_organic_reach_goal_q3', 'pr_total_organic_reach_goal_q4'],
                     'achieved' => ['pr_total_organic_reach_achieved_q1', 'pr_total_organic_reach_achieved_q2', 'pr_total_organic_reach_achieved_q3', 'pr_total_organic_reach_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Personnel FTE' => [
                     'end_2024' => null,
+                    'goal_year' => 'personal_fte_goal_year',
                     'goal' => ['personal_fte_goal_q1', 'personal_fte_goal_q2', 'personal_fte_goal_q3', 'personal_fte_goal_q4'],
                     'achieved' => ['personal_fte_achieved_q1', 'personal_fte_achieved_q2', 'personal_fte_achieved_q3', 'personal_fte_achieved_q4'],
                     'by_language' => true,
@@ -1988,6 +2032,7 @@ class AdminController extends Controller
                             $languageKey = $language->name;
                             $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey] = [
                                 'end_2024' => 0,
+                                'goal_year' => 0,
                                 'goal' => 0,
                                 'achieved' => 0,
                                 'percentage' => 0,
@@ -2000,12 +2045,14 @@ class AdminController extends Controller
                             
                             if ($report) {
                                 $endValue = $fieldConfig['end_2024'] ? ($report->{$fieldConfig['end_2024']} ?? 0) : 0;
+                                $goalYearValue = ($fieldConfig['goal_year'] ?? false) ? ($report->{$fieldConfig['goal_year']} ?? 0) : 0;
                                 $goalValue = $report->{$fieldConfig['goal'][$quarterIndex]} ?? 0;
                                 $achievedValue = $report->{$fieldConfig['achieved'][$quarterIndex]} ?? 0;
                                 $percentage = ($goalValue > 0) ? round(($achievedValue / $goalValue) * 100, 2) : 0;
                                 
                                 $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey] = [
                                     'end_2024' => $endValue,
+                                    'goal_year' => $goalYearValue,
                                     'goal' => $goalValue,
                                     'achieved' => $achievedValue,
                                     'percentage' => $percentage,
@@ -2015,12 +2062,14 @@ class AdminController extends Controller
                         
                         // Calculate total for this field
                         $totalEnd = 0;
+                        $totalGoalYear = 0;
                         $totalGoal = 0;
                         $totalAchieved = 0;
                         
                         foreach ($languages as $language) {
                             $languageKey = $language->name;
                             $totalEnd += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['end_2024'];
+                            $totalGoalYear += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['goal_year'];
                             $totalGoal += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['goal'];
                             $totalAchieved += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['achieved'];
                         }
@@ -2029,6 +2078,7 @@ class AdminController extends Controller
                         
                         $aggregatedData[$quarter][$sectionName][$fieldLabel]['data']['Total'] = [
                             'end_2024' => $totalEnd,
+                            'goal_year' => $totalGoalYear,
                             'goal' => $totalGoal,
                             'achieved' => $totalAchieved,
                             'percentage' => $totalPercentage,
@@ -2036,15 +2086,18 @@ class AdminController extends Controller
                     } else {
                         // For non-language-specific fields, aggregate across all languages
                         $totalEnd = 0;
+                        $totalGoalYear = 0;
                         $totalGoal = 0;
                         $totalAchieved = 0;
                         
                         foreach ($submittedReports->where('quarter', $quarter) as $report) {
                             $endValue = $fieldConfig['end_2024'] ? ($report->{$fieldConfig['end_2024']} ?? 0) : 0;
+                            $goalYearValue = ($fieldConfig['goal_year'] ?? false) ? ($report->{$fieldConfig['goal_year']} ?? 0) : 0;
                             $goalValue = $report->{$fieldConfig['goal'][$quarterIndex]} ?? 0;
                             $achievedValue = $report->{$fieldConfig['achieved'][$quarterIndex]} ?? 0;
                             
                             $totalEnd += $endValue;
+                            $totalGoalYear += $goalYearValue;
                             $totalGoal += $goalValue;
                             $totalAchieved += $achievedValue;
                         }
@@ -2053,6 +2106,7 @@ class AdminController extends Controller
                         
                         $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'] = [
                             'end_2024' => $totalEnd,
+                            'goal_year' => $totalGoalYear,
                             'goal' => $totalGoal,
                             'achieved' => $totalAchieved,
                             'percentage' => $totalPercentage,
@@ -2062,11 +2116,24 @@ class AdminController extends Controller
             }
         }
 
+        // Get all admins that have submitted aggregated reports
+        $submittedAdmins = \App\Models\AdminAggregatedSubmission::select('admin_id')
+            ->distinct()
+            ->with('admin')
+            ->get()
+            ->pluck('admin')
+            ->sortBy('name');
+
         return view('admin.reports-aggregated', [
             'aggregatedData' => $aggregatedData,
             'languages' => $languages,
             'quarters' => $quarters,
             'submittedReports' => $submittedReports,
+            'submittedAdmins' => $submittedAdmins,
+            'allAdmins' => $allAdmins,
+            'adminSubmissions' => $adminSubmissions,
+            'selectedAdminId' => $selectedAdminId,
+            'selectedAdmin' => $selectedAdmin,
         ]);
     }
 
@@ -2127,13 +2194,18 @@ class AdminController extends Controller
         // Regular Admin: Get only languages assigned to them
         $assignedLanguages = \App\Models\Language::where('assigned_admin_id', $admin->id)->pluck('id');
 
-        // Get reports submitted to super admin for this admin's languages
-        $submittedReports = Report::where('submitted_to_super_admin', true)
+        // Get reports with status 'approved' for this admin's languages (not yet submitted to super admin)
+        $submittedReports = Report::where(function($query) {
+                $query->where('review_status', 'approved')
+                      ->orWhere('status', 'approved');
+            })
+            ->where('submitted_to_super_admin', false)  // Not yet submitted to super admin
             ->whereIn('language_id', $assignedLanguages)
             ->with(['language', 'user'])
             ->get();
 
-        $quarters = ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'];
+        $currentYear = date('Y');
+        $quarters = ["Q1 {$currentYear}", "Q2 {$currentYear}", "Q3 {$currentYear}", "Q4 {$currentYear}"];
         
         // Get unique languages from submitted reports for this admin
         $languages = $submittedReports->pluck('language')->unique('id')->sortBy('name');
@@ -2143,30 +2215,35 @@ class AdminController extends Controller
             'Ministry' => [
                 'Number of Languages' => [
                     'end_2024' => 'languages_previous_year',
+                    'goal_year' => 'languages_goal_year',
                     'goal' => ['languages_goal_q1', 'languages_goal_q2', 'languages_goal_q3', 'languages_goal_q4'],
                     'achieved' => ['languages_achieved_q1', 'languages_achieved_q2', 'languages_achieved_q3', 'languages_achieved_q4'],
                     'by_language' => false,
                 ],
                 'Number of Volunteers' => [
                     'end_2024' => 'volunteers_previous_year',
+                    'goal_year' => 'volunteers_goal_year',
                     'goal' => ['volunteers_goal_q1', 'volunteers_goal_q2', 'volunteers_goal_q3', 'volunteers_goal_q4'],
                     'achieved' => ['volunteers_achieved_q1', 'volunteers_achieved_q2', 'volunteers_achieved_q3', 'volunteers_achieved_q4'],
                     'by_language' => false,
                 ],
                 'Bible Mentors' => [
                     'end_2024' => null,
+                    'goal_year' => 'volunteers_mentors_goal_year',
                     'goal' => ['volunteers_mentors_goal_q1', 'volunteers_mentors_goal_q2', 'volunteers_mentors_goal_q3', 'volunteers_mentors_goal_q4'],
                     'achieved' => ['volunteers_mentors_achieved_q1', 'volunteers_mentors_achieved_q2', 'volunteers_mentors_achieved_q3', 'volunteers_mentors_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Chat Volunteers' => [
                     'end_2024' => null,
+                    'goal_year' => 'volunteers_chatters_goal_year',
                     'goal' => ['volunteers_chatters_goal_q1', 'volunteers_chatters_goal_q2', 'volunteers_chatters_goal_q3', 'volunteers_chatters_goal_q4'],
                     'achieved' => ['volunteers_chatters_achieved_q1', 'volunteers_chatters_achieved_q2', 'volunteers_chatters_achieved_q3', 'volunteers_chatters_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Content Creators' => [
                     'end_2024' => null,
+                    'goal_year' => 'volunteers_creators_goal_year',
                     'goal' => ['volunteers_creators_goal_q1', 'volunteers_creators_goal_q2', 'volunteers_creators_goal_q3', 'volunteers_creators_goal_q4'],
                     'achieved' => ['volunteers_creators_achieved_q1', 'volunteers_creators_achieved_q2', 'volunteers_creators_achieved_q3', 'volunteers_creators_achieved_q4'],
                     'by_language' => true,
@@ -2175,30 +2252,35 @@ class AdminController extends Controller
             'Outreach & Engagement' => [
                 'Evangelistic Students' => [
                     'end_2024' => null,
+                    'goal_year' => 'evangelistic_students_goal_year',
                     'goal' => ['evangelistic_students_goal_q1', 'evangelistic_students_goal_q2', 'evangelistic_students_goal_q3', 'evangelistic_students_goal_q4'],
                     'achieved' => ['evangelistic_students_achieved_q1', 'evangelistic_students_achieved_q2', 'evangelistic_students_achieved_q3', 'evangelistic_students_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Discipleship Students' => [
                     'end_2024' => null,
+                    'goal_year' => 'discipleship_students_goal_year',
                     'goal' => ['discipleship_students_goal_q1', 'discipleship_students_goal_q2', 'discipleship_students_goal_q3', 'discipleship_students_goal_q4'],
                     'achieved' => ['discipleship_students_achieved_q1', 'discipleship_students_achieved_q2', 'discipleship_students_achieved_q3', 'discipleship_students_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Leadership Students' => [
                     'end_2024' => null,
+                    'goal_year' => 'leadership_students_goal_year',
                     'goal' => ['leadership_students_goal_q1', 'leadership_students_goal_q2', 'leadership_students_goal_q3', 'leadership_students_goal_q4'],
                     'achieved' => ['leadership_students_achieved_q1', 'leadership_students_achieved_q2', 'leadership_students_achieved_q3', 'leadership_students_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Evangelistic Conversations' => [
                     'end_2024' => null,
+                    'goal_year' => 'evangelistic_conversations_goal_year',
                     'goal' => ['evangelistic_conversations_goal_q1', 'evangelistic_conversations_goal_q2', 'evangelistic_conversations_goal_q3', 'evangelistic_conversations_goal_q4'],
                     'achieved' => ['evangelistic_conversations_achieved_q1', 'evangelistic_conversations_achieved_q2', 'evangelistic_conversations_achieved_q3', 'evangelistic_conversations_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Pastoral Connections' => [
                     'end_2024' => null,
+                    'goal_year' => 'pastoral_connections_goal_year',
                     'goal' => ['pastoral_connections_goal_q1', 'pastoral_connections_goal_q2', 'pastoral_connections_goal_q3', 'pastoral_connections_goal_q4'],
                     'achieved' => ['pastoral_connections_achieved_q1', 'pastoral_connections_achieved_q2', 'pastoral_connections_achieved_q3', 'pastoral_connections_achieved_q4'],
                     'by_language' => true,
@@ -2207,24 +2289,28 @@ class AdminController extends Controller
             'Social Media Reach' => [
                 'Facebook Reach' => [
                     'end_2024' => null,
+                    'goal_year' => 'facebook_reach_goal_year',
                     'goal' => ['facebook_reach_goal_q1', 'facebook_reach_goal_q2', 'facebook_reach_goal_q3', 'facebook_reach_goal_q4'],
                     'achieved' => ['facebook_reach_achieved_q1', 'facebook_reach_achieved_q2', 'facebook_reach_achieved_q3', 'facebook_reach_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Instagram Reach' => [
                     'end_2024' => null,
+                    'goal_year' => 'instagram_reach_goal_year',
                     'goal' => ['instagram_reach_goal_q1', 'instagram_reach_goal_q2', 'instagram_reach_goal_q3', 'instagram_reach_goal_q4'],
                     'achieved' => ['instagram_reach_achieved_q1', 'instagram_reach_achieved_q2', 'instagram_reach_achieved_q3', 'instagram_reach_achieved_q4'],
                     'by_language' => true,
                 ],
                 'YouTube Reach' => [
                     'end_2024' => null,
+                    'goal_year' => 'youtube_reach_goal_year',
                     'goal' => ['youtube_reach_goal_q1', 'youtube_reach_goal_q2', 'youtube_reach_goal_q3', 'youtube_reach_goal_q4'],
                     'achieved' => ['youtube_reach_achieved_q1', 'youtube_reach_achieved_q2', 'youtube_reach_achieved_q3', 'youtube_reach_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Website Reach' => [
                     'end_2024' => null,
+                    'goal_year' => 'website_reach_goal_year',
                     'goal' => ['website_reach_goal_q1', 'website_reach_goal_q2', 'website_reach_goal_q3', 'website_reach_goal_q4'],
                     'achieved' => ['website_reach_achieved_q1', 'website_reach_achieved_q2', 'website_reach_achieved_q3', 'website_reach_achieved_q4'],
                     'by_language' => true,
@@ -2233,27 +2319,45 @@ class AdminController extends Controller
             'Financial & Operations' => [
                 'Income (€)' => [
                     'end_2024' => null,
+                    'goal_year' => 'income_euros_goal_year',
                     'goal' => ['income_euros_goal_q1', 'income_euros_goal_q2', 'income_euros_goal_q3', 'income_euros_goal_q4'],
                     'achieved' => ['income_euros_achieved_q1', 'income_euros_achieved_q2', 'income_euros_achieved_q3', 'income_euros_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Expenditure (€)' => [
                     'end_2024' => null,
+                    'goal_year' => 'expenditure_euros_goal_year',
                     'goal' => ['expenditure_euros_goal_q1', 'expenditure_euros_goal_q2', 'expenditure_euros_goal_q3', 'expenditure_euros_goal_q4'],
                     'achieved' => ['expenditure_euros_achieved_q1', 'expenditure_euros_achieved_q2', 'expenditure_euros_achieved_q3', 'expenditure_euros_achieved_q4'],
                     'by_language' => true,
                 ],
                 'PR Total Organic Reach' => [
                     'end_2024' => null,
+                    'goal_year' => 'pr_total_organic_reach_goal_year',
                     'goal' => ['pr_total_organic_reach_goal_q1', 'pr_total_organic_reach_goal_q2', 'pr_total_organic_reach_goal_q3', 'pr_total_organic_reach_goal_q4'],
                     'achieved' => ['pr_total_organic_reach_achieved_q1', 'pr_total_organic_reach_achieved_q2', 'pr_total_organic_reach_achieved_q3', 'pr_total_organic_reach_achieved_q4'],
                     'by_language' => true,
                 ],
                 'Personnel FTE' => [
                     'end_2024' => null,
+                    'goal_year' => 'personal_fte_goal_year',
                     'goal' => ['personal_fte_goal_q1', 'personal_fte_goal_q2', 'personal_fte_goal_q3', 'personal_fte_goal_q4'],
                     'achieved' => ['personal_fte_achieved_q1', 'personal_fte_achieved_q2', 'personal_fte_achieved_q3', 'personal_fte_achieved_q4'],
                     'by_language' => true,
+                ],
+                'Organization - Income from Fundraising' => [
+                    'end_2024' => 'income_fundraising_end_year',
+                    'goal_year' => 'income_fundraising_goal_year',
+                    'goal' => ['income_fundraising_goal', 'income_fundraising_goal', 'income_fundraising_goal', 'income_fundraising_goal'],
+                    'achieved' => ['income_fundraising_achieved', 'income_fundraising_achieved', 'income_fundraising_achieved', 'income_fundraising_achieved'],
+                    'by_language' => false,
+                ],
+                'Organization - Number of Supporters' => [
+                    'end_2024' => 'number_of_supporters_end_year',
+                    'goal_year' => 'number_of_supporters_goal_year',
+                    'goal' => ['number_of_supporters_goal', 'number_of_supporters_goal', 'number_of_supporters_goal', 'number_of_supporters_goal'],
+                    'achieved' => ['number_of_supporters_achieved', 'number_of_supporters_achieved', 'number_of_supporters_achieved', 'number_of_supporters_achieved'],
+                    'by_language' => false,
                 ],
             ]
         ];
@@ -2279,6 +2383,7 @@ class AdminController extends Controller
                             $languageKey = $language->name;
                             $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey] = [
                                 'end_2024' => 0,
+                                'goal_year' => 0,
                                 'goal' => 0,
                                 'achieved' => 0,
                                 'percentage' => 0,
@@ -2291,12 +2396,14 @@ class AdminController extends Controller
                             
                             if ($report) {
                                 $endValue = $fieldConfig['end_2024'] ? ($report->{$fieldConfig['end_2024']} ?? 0) : 0;
+                                $goalYearValue = ($fieldConfig['goal_year'] ?? false) ? ($report->{$fieldConfig['goal_year']} ?? 0) : 0;
                                 $goalValue = $report->{$fieldConfig['goal'][$quarterIndex]} ?? 0;
                                 $achievedValue = $report->{$fieldConfig['achieved'][$quarterIndex]} ?? 0;
                                 $percentage = ($goalValue > 0) ? round(($achievedValue / $goalValue) * 100, 2) : 0;
                                 
                                 $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey] = [
                                     'end_2024' => $endValue,
+                                    'goal_year' => $goalYearValue,
                                     'goal' => $goalValue,
                                     'achieved' => $achievedValue,
                                     'percentage' => $percentage,
@@ -2306,12 +2413,14 @@ class AdminController extends Controller
                         
                         // Calculate total for this field
                         $totalEnd = 0;
+                        $totalGoalYear = 0;
                         $totalGoal = 0;
                         $totalAchieved = 0;
                         
                         foreach ($languages as $language) {
                             $languageKey = $language->name;
                             $totalEnd += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['end_2024'];
+                            $totalGoalYear += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['goal_year'];
                             $totalGoal += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['goal'];
                             $totalAchieved += $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'][$languageKey]['achieved'];
                         }
@@ -2320,6 +2429,7 @@ class AdminController extends Controller
                         
                         $aggregatedData[$quarter][$sectionName][$fieldLabel]['data']['Total'] = [
                             'end_2024' => $totalEnd,
+                            'goal_year' => $totalGoalYear,
                             'goal' => $totalGoal,
                             'achieved' => $totalAchieved,
                             'percentage' => $totalPercentage,
@@ -2327,15 +2437,18 @@ class AdminController extends Controller
                     } else {
                         // For non-language-specific fields, aggregate across all languages
                         $totalEnd = 0;
+                        $totalGoalYear = 0;
                         $totalGoal = 0;
                         $totalAchieved = 0;
                         
                         foreach ($submittedReports->where('quarter', $quarter) as $report) {
                             $endValue = $fieldConfig['end_2024'] ? ($report->{$fieldConfig['end_2024']} ?? 0) : 0;
+                            $goalYearValue = ($fieldConfig['goal_year'] ?? false) ? ($report->{$fieldConfig['goal_year']} ?? 0) : 0;
                             $goalValue = $report->{$fieldConfig['goal'][$quarterIndex]} ?? 0;
                             $achievedValue = $report->{$fieldConfig['achieved'][$quarterIndex]} ?? 0;
                             
                             $totalEnd += $endValue;
+                            $totalGoalYear += $goalYearValue;
                             $totalGoal += $goalValue;
                             $totalAchieved += $achievedValue;
                         }
@@ -2344,6 +2457,7 @@ class AdminController extends Controller
                         
                         $aggregatedData[$quarter][$sectionName][$fieldLabel]['data'] = [
                             'end_2024' => $totalEnd,
+                            'goal_year' => $totalGoalYear,
                             'goal' => $totalGoal,
                             'achieved' => $totalAchieved,
                             'percentage' => $totalPercentage,
@@ -2353,12 +2467,85 @@ class AdminController extends Controller
             }
         }
 
+        // Get submission status for this admin
+        $currentAdmin = auth('admin')->user();
+        $submissions = \App\Models\AdminAggregatedSubmission::where('admin_id', $currentAdmin->id)
+            ->get()
+            ->keyBy('quarter');
+
         return view('admin.reports-aggregated-admin', [
             'aggregatedData' => $aggregatedData,
             'languages' => $languages,
             'quarters' => $quarters,
             'submittedReports' => $submittedReports,
             'isAdminPanel' => true,
+            'submissions' => $submissions,
         ]);
+    }
+
+    /**
+     * Submit aggregated report for a quarter to super admin
+     */
+    public function submitAggregatedReport(Request $request)
+    {
+        $validated = $request->validate([
+            'quarter' => 'required|string',
+        ]);
+
+        $admin = auth('admin')->user();
+        $quarter = $validated['quarter'];
+
+        try {
+            // Get all approved reports for this admin's languages in this quarter
+            $assignedLanguages = \App\Models\Language::where('assigned_admin_id', $admin->id)->pluck('id');
+            
+            $reports = Report::where(function($query) {
+                $query->where('review_status', 'approved')
+                      ->orWhere('status', 'approved');
+            })
+            ->where('quarter', $quarter)
+            ->whereIn('language_id', $assignedLanguages)
+            ->where('submitted_to_super_admin', false)
+            ->get();
+
+            if ($reports->isEmpty()) {
+                return redirect()->back()->with('warning', "No approved reports to submit for {$quarter}.");
+            }
+
+            // Mark all reports as submitted to super admin
+            $updatedCount = Report::where(function($query) {
+                $query->where('review_status', 'approved')
+                      ->orWhere('status', 'approved');
+            })
+            ->where('quarter', $quarter)
+            ->whereIn('language_id', $assignedLanguages)
+            ->where('submitted_to_super_admin', false)
+            ->update([
+                'submitted_to_super_admin' => true,
+                'submitted_to_super_admin_at' => now(),
+                'submitted_to_super_admin_by' => $admin->id,
+            ]);
+
+            // Create or update submission record
+            try {
+                \App\Models\AdminAggregatedSubmission::updateOrCreate(
+                    [
+                        'admin_id' => $admin->id,
+                        'quarter' => $quarter,
+                    ],
+                    [
+                        'submitted_at' => now(),
+                    ]
+                );
+            } catch (\Exception $submissionError) {
+                \Log::warning('AdminAggregatedSubmission update had an issue, but reports were submitted: ' . $submissionError->getMessage());
+                // Don't fail the whole operation if the submission tracking fails
+            }
+
+            return redirect()->back()->with('success', "Aggregated report for {$quarter} submitted successfully to Super Admin! ({$updatedCount} reports submitted)");
+        } catch (\Exception $e) {
+            \Log::error('Submit Aggregated Report Error: ' . $e->getMessage() . '\n' . $e->getTraceAsString());
+            return redirect()->back()->with('error', 'Failed to submit report. Error: ' . $e->getMessage());
+        }
     }
 }

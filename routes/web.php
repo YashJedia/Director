@@ -50,6 +50,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/reports/{report}/submit-to-super-admin', [AdminController::class, 'submitToSuperAdmin'])->name('reports.submit-to-super-admin');
         Route::get('/reports-aggregated', [AdminController::class, 'viewAggregatedReports'])->name('reports.aggregated');
         Route::get('/reports-aggregated-admin', [AdminController::class, 'viewAdminAggregatedReports'])->name('reports.aggregated-admin');
+        Route::post('/submit-aggregated-report', [AdminController::class, 'submitAggregatedReport'])->name('submit-aggregated-report');
         
         // Language management
         Route::get('/languages/{language}/edit', [AdminController::class, 'showEditLanguage'])->name('languages.edit');
