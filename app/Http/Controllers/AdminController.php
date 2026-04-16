@@ -1883,6 +1883,13 @@ class AdminController extends Controller
         // Define sections with their fields and database mappings per quarter
         $sections = [
             'Ministry' => [
+                'Number of Languages' => [
+                    'end_2024' => 'languages_previous_year',
+                    'goal_year' => 'languages_goal_year',
+                    'goal' => ['languages_goal_q1', 'languages_goal_q2', 'languages_goal_q3', 'languages_goal_q4'],
+                    'achieved' => ['languages_achieved_q1', 'languages_achieved_q2', 'languages_achieved_q3', 'languages_achieved_q4'],
+                    'by_language' => false,
+                ],
                 'Number of Volunteers' => [
                     'end_2024' => 'volunteers_previous_year',
                     'goal_year' => 'volunteers_goal_year',
@@ -1912,44 +1919,7 @@ class AdminController extends Controller
                     'by_language' => true,
                 ],
             ],
-            'Outreach & Engagement' => [
-                'Evangelistic Students' => [
-                    'end_2024' => null,
-                    'goal_year' => 'evangelistic_students_goal_year',
-                    'goal' => ['evangelistic_students_goal_q1', 'evangelistic_students_goal_q2', 'evangelistic_students_goal_q3', 'evangelistic_students_goal_q4'],
-                    'achieved' => ['evangelistic_students_achieved_q1', 'evangelistic_students_achieved_q2', 'evangelistic_students_achieved_q3', 'evangelistic_students_achieved_q4'],
-                    'by_language' => true,
-                ],
-                'Discipleship Students' => [
-                    'end_2024' => null,
-                    'goal_year' => 'discipleship_students_goal_year',
-                    'goal' => ['discipleship_students_goal_q1', 'discipleship_students_goal_q2', 'discipleship_students_goal_q3', 'discipleship_students_goal_q4'],
-                    'achieved' => ['discipleship_students_achieved_q1', 'discipleship_students_achieved_q2', 'discipleship_students_achieved_q3', 'discipleship_students_achieved_q4'],
-                    'by_language' => true,
-                ],
-                'Leadership Students' => [
-                    'end_2024' => null,
-                    'goal_year' => 'leadership_students_goal_year',
-                    'goal' => ['leadership_students_goal_q1', 'leadership_students_goal_q2', 'leadership_students_goal_q3', 'leadership_students_goal_q4'],
-                    'achieved' => ['leadership_students_achieved_q1', 'leadership_students_achieved_q2', 'leadership_students_achieved_q3', 'leadership_students_achieved_q4'],
-                    'by_language' => true,
-                ],
-                'Evangelistic Conversations' => [
-                    'end_2024' => null,
-                    'goal_year' => 'evangelistic_conversations_goal_year',
-                    'goal' => ['evangelistic_conversations_goal_q1', 'evangelistic_conversations_goal_q2', 'evangelistic_conversations_goal_q3', 'evangelistic_conversations_goal_q4'],
-                    'achieved' => ['evangelistic_conversations_achieved_q1', 'evangelistic_conversations_achieved_q2', 'evangelistic_conversations_achieved_q3', 'evangelistic_conversations_achieved_q4'],
-                    'by_language' => true,
-                ],
-                'Pastoral Connections' => [
-                    'end_2024' => null,
-                    'goal_year' => 'pastoral_connections_goal_year',
-                    'goal' => ['pastoral_connections_goal_q1', 'pastoral_connections_goal_q2', 'pastoral_connections_goal_q3', 'pastoral_connections_goal_q4'],
-                    'achieved' => ['pastoral_connections_achieved_q1', 'pastoral_connections_achieved_q2', 'pastoral_connections_achieved_q3', 'pastoral_connections_achieved_q4'],
-                    'by_language' => true,
-                ],
-            ],
-            'Social Media Reach' => [
+            'Organic Reach' => [
                 'Facebook Reach' => [
                     'end_2024' => null,
                     'goal_year' => 'facebook_reach_goal_year',
@@ -1976,6 +1946,52 @@ class AdminController extends Controller
                     'goal_year' => 'website_reach_goal_year',
                     'goal' => ['website_reach_goal_q1', 'website_reach_goal_q2', 'website_reach_goal_q3', 'website_reach_goal_q4'],
                     'achieved' => ['website_reach_achieved_q1', 'website_reach_achieved_q2', 'website_reach_achieved_q3', 'website_reach_achieved_q4'],
+                    'by_language' => true,
+                ],
+            ],
+            'Bible Course Students' => [
+                'Evangelistic Students' => [
+                    'end_2024' => null,
+                    'goal_year' => 'evangelistic_students_goal_year',
+                    'goal' => ['evangelistic_students_goal_q1', 'evangelistic_students_goal_q2', 'evangelistic_students_goal_q3', 'evangelistic_students_goal_q4'],
+                    'achieved' => ['evangelistic_students_achieved_q1', 'evangelistic_students_achieved_q2', 'evangelistic_students_achieved_q3', 'evangelistic_students_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Discipleship Students' => [
+                    'end_2024' => null,
+                    'goal_year' => 'discipleship_students_goal_year',
+                    'goal' => ['discipleship_students_goal_q1', 'discipleship_students_goal_q2', 'discipleship_students_goal_q3', 'discipleship_students_goal_q4'],
+                    'achieved' => ['discipleship_students_achieved_q1', 'discipleship_students_achieved_q2', 'discipleship_students_achieved_q3', 'discipleship_students_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Leadership Students' => [
+                    'end_2024' => null,
+                    'goal_year' => 'leadership_students_goal_year',
+                    'goal' => ['leadership_students_goal_q1', 'leadership_students_goal_q2', 'leadership_students_goal_q3', 'leadership_students_goal_q4'],
+                    'achieved' => ['leadership_students_achieved_q1', 'leadership_students_achieved_q2', 'leadership_students_achieved_q3', 'leadership_students_achieved_q4'],
+                    'by_language' => true,
+                ],
+            ],
+            'Chat Conversations' => [
+                'Evangelistic Conversations' => [
+                    'end_2024' => null,
+                    'goal_year' => 'evangelistic_conversations_goal_year',
+                    'goal' => ['evangelistic_conversations_goal_q1', 'evangelistic_conversations_goal_q2', 'evangelistic_conversations_goal_q3', 'evangelistic_conversations_goal_q4'],
+                    'achieved' => ['evangelistic_conversations_achieved_q1', 'evangelistic_conversations_achieved_q2', 'evangelistic_conversations_achieved_q3', 'evangelistic_conversations_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Pastoral Connections' => [
+                    'end_2024' => null,
+                    'goal_year' => 'pastoral_connections_goal_year',
+                    'goal' => ['pastoral_connections_goal_q1', 'pastoral_connections_goal_q2', 'pastoral_connections_goal_q3', 'pastoral_connections_goal_q4'],
+                    'achieved' => ['pastoral_connections_achieved_q1', 'pastoral_connections_achieved_q2', 'pastoral_connections_achieved_q3', 'pastoral_connections_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Number of Connections' => [
+                    'end_2024' => null,
+                    'goal_year' => 'connections_goal_year',
+                    'goal' => ['connections_goal_q1', 'connections_goal_q2', 'connections_goal_q3', 'connections_goal_q4'],
+                    'achieved' => ['connections_achieved_q1', 'connections_achieved_q2', 'connections_achieved_q3', 'connections_achieved_q4'],
                     'by_language' => true,
                 ],
             ],
@@ -2249,44 +2265,7 @@ class AdminController extends Controller
                     'by_language' => true,
                 ],
             ],
-            'Outreach & Engagement' => [
-                'Evangelistic Students' => [
-                    'end_2024' => null,
-                    'goal_year' => 'evangelistic_students_goal_year',
-                    'goal' => ['evangelistic_students_goal_q1', 'evangelistic_students_goal_q2', 'evangelistic_students_goal_q3', 'evangelistic_students_goal_q4'],
-                    'achieved' => ['evangelistic_students_achieved_q1', 'evangelistic_students_achieved_q2', 'evangelistic_students_achieved_q3', 'evangelistic_students_achieved_q4'],
-                    'by_language' => true,
-                ],
-                'Discipleship Students' => [
-                    'end_2024' => null,
-                    'goal_year' => 'discipleship_students_goal_year',
-                    'goal' => ['discipleship_students_goal_q1', 'discipleship_students_goal_q2', 'discipleship_students_goal_q3', 'discipleship_students_goal_q4'],
-                    'achieved' => ['discipleship_students_achieved_q1', 'discipleship_students_achieved_q2', 'discipleship_students_achieved_q3', 'discipleship_students_achieved_q4'],
-                    'by_language' => true,
-                ],
-                'Leadership Students' => [
-                    'end_2024' => null,
-                    'goal_year' => 'leadership_students_goal_year',
-                    'goal' => ['leadership_students_goal_q1', 'leadership_students_goal_q2', 'leadership_students_goal_q3', 'leadership_students_goal_q4'],
-                    'achieved' => ['leadership_students_achieved_q1', 'leadership_students_achieved_q2', 'leadership_students_achieved_q3', 'leadership_students_achieved_q4'],
-                    'by_language' => true,
-                ],
-                'Evangelistic Conversations' => [
-                    'end_2024' => null,
-                    'goal_year' => 'evangelistic_conversations_goal_year',
-                    'goal' => ['evangelistic_conversations_goal_q1', 'evangelistic_conversations_goal_q2', 'evangelistic_conversations_goal_q3', 'evangelistic_conversations_goal_q4'],
-                    'achieved' => ['evangelistic_conversations_achieved_q1', 'evangelistic_conversations_achieved_q2', 'evangelistic_conversations_achieved_q3', 'evangelistic_conversations_achieved_q4'],
-                    'by_language' => true,
-                ],
-                'Pastoral Connections' => [
-                    'end_2024' => null,
-                    'goal_year' => 'pastoral_connections_goal_year',
-                    'goal' => ['pastoral_connections_goal_q1', 'pastoral_connections_goal_q2', 'pastoral_connections_goal_q3', 'pastoral_connections_goal_q4'],
-                    'achieved' => ['pastoral_connections_achieved_q1', 'pastoral_connections_achieved_q2', 'pastoral_connections_achieved_q3', 'pastoral_connections_achieved_q4'],
-                    'by_language' => true,
-                ],
-            ],
-            'Social Media Reach' => [
+            'Organic Reach' => [
                 'Facebook Reach' => [
                     'end_2024' => null,
                     'goal_year' => 'facebook_reach_goal_year',
@@ -2313,6 +2292,52 @@ class AdminController extends Controller
                     'goal_year' => 'website_reach_goal_year',
                     'goal' => ['website_reach_goal_q1', 'website_reach_goal_q2', 'website_reach_goal_q3', 'website_reach_goal_q4'],
                     'achieved' => ['website_reach_achieved_q1', 'website_reach_achieved_q2', 'website_reach_achieved_q3', 'website_reach_achieved_q4'],
+                    'by_language' => true,
+                ],
+            ],
+            'Bible Course Students' => [
+                'Evangelistic Students' => [
+                    'end_2024' => null,
+                    'goal_year' => 'evangelistic_students_goal_year',
+                    'goal' => ['evangelistic_students_goal_q1', 'evangelistic_students_goal_q2', 'evangelistic_students_goal_q3', 'evangelistic_students_goal_q4'],
+                    'achieved' => ['evangelistic_students_achieved_q1', 'evangelistic_students_achieved_q2', 'evangelistic_students_achieved_q3', 'evangelistic_students_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Discipleship Students' => [
+                    'end_2024' => null,
+                    'goal_year' => 'discipleship_students_goal_year',
+                    'goal' => ['discipleship_students_goal_q1', 'discipleship_students_goal_q2', 'discipleship_students_goal_q3', 'discipleship_students_goal_q4'],
+                    'achieved' => ['discipleship_students_achieved_q1', 'discipleship_students_achieved_q2', 'discipleship_students_achieved_q3', 'discipleship_students_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Leadership Students' => [
+                    'end_2024' => null,
+                    'goal_year' => 'leadership_students_goal_year',
+                    'goal' => ['leadership_students_goal_q1', 'leadership_students_goal_q2', 'leadership_students_goal_q3', 'leadership_students_goal_q4'],
+                    'achieved' => ['leadership_students_achieved_q1', 'leadership_students_achieved_q2', 'leadership_students_achieved_q3', 'leadership_students_achieved_q4'],
+                    'by_language' => true,
+                ],
+            ],
+            'Chat Conversations' => [
+                'Evangelistic Conversations' => [
+                    'end_2024' => null,
+                    'goal_year' => 'evangelistic_conversations_goal_year',
+                    'goal' => ['evangelistic_conversations_goal_q1', 'evangelistic_conversations_goal_q2', 'evangelistic_conversations_goal_q3', 'evangelistic_conversations_goal_q4'],
+                    'achieved' => ['evangelistic_conversations_achieved_q1', 'evangelistic_conversations_achieved_q2', 'evangelistic_conversations_achieved_q3', 'evangelistic_conversations_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Pastoral Connections' => [
+                    'end_2024' => null,
+                    'goal_year' => 'pastoral_connections_goal_year',
+                    'goal' => ['pastoral_connections_goal_q1', 'pastoral_connections_goal_q2', 'pastoral_connections_goal_q3', 'pastoral_connections_goal_q4'],
+                    'achieved' => ['pastoral_connections_achieved_q1', 'pastoral_connections_achieved_q2', 'pastoral_connections_achieved_q3', 'pastoral_connections_achieved_q4'],
+                    'by_language' => true,
+                ],
+                'Number of Connections' => [
+                    'end_2024' => null,
+                    'goal_year' => 'connections_goal_year',
+                    'goal' => ['connections_goal_q1', 'connections_goal_q2', 'connections_goal_q3', 'connections_goal_q4'],
+                    'achieved' => ['connections_achieved_q1', 'connections_achieved_q2', 'connections_achieved_q3', 'connections_achieved_q4'],
                     'by_language' => true,
                 ],
             ],

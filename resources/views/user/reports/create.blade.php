@@ -133,7 +133,7 @@
                 <tbody>
                     <!-- Goal Progress Rows -->
                     @foreach(['1' => 'Q1', '2' => 'Q2', '3' => 'Q3', '4' => 'Q4'] as $qNum => $qLabel)
-                        <!-- Ministry Section Header -->
+                        <!-- SECTION 1: Ministry Section Header -->
                         <tr class="bg-blue-100 border-b-2 border-blue-300 quarter-field" data-quarter="{{ $qLabel }}">
                             <td colspan="6" class="px-4 py-2 text-lg font-bold text-blue-800">
                                 📊 Ministry
@@ -146,7 +146,7 @@
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="volunteers_goal_year" min="0" max="999999" class="table-input" value="{{ old('volunteers_goal_year') }}"></td>
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="volunteers_goal_q{{ $qNum }}" min="0" max="999999" class="table-input goal-input" value="{{ old('volunteers_goal_q' . $qNum) }}"></td>
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="volunteers_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('volunteers_achieved_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="volunteers_goal_q{{ $qNum }}" data-achieved-field="volunteers_achieved_q{{ $qNum }}" value="N/A"></td>
+                            <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="volunteers_goal_year" data-achieved-field="volunteers_achieved_q{{ $qNum }}" value="N/A"></td>
                         </tr>
                         <!-- Volunteers: Mentors -->
                         <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
@@ -175,61 +175,11 @@
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="volunteers_creators_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('volunteers_creators_achieved_q' . $qNum) }}"></td>
                             <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="volunteers_creators_goal_q{{ $qNum }}" data-achieved-field="volunteers_creators_achieved_q{{ $qNum }}" value="N/A"></td>
                         </tr>
-                        <!-- Outreach & Engagement Section Header -->
+
+                        <!-- SECTION 2: Organic Reach (Social Media) Section Header -->
                         <tr class="bg-blue-100 border-b-2 border-blue-300 quarter-field" data-quarter="{{ $qLabel }}">
                             <td colspan="6" class="px-4 py-2 text-lg font-bold text-blue-800">
-                                📊 Outreach & Engagement
-                            </td>
-                        </tr>
-                        <!-- Bible Course: Evangelistic -->
-                        <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
-                            <td class="px-4 py-3 font-semibold text-gray-800 bg-gray-50 border-r border-gray-300">Evangelistic Students</td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="evangelistic_students_end_year" min="0" max="999999" class="table-input" value="{{ old('evangelistic_students_end_year') }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="evangelistic_students_goal_year" min="0" max="999999" class="table-input" value="{{ old('evangelistic_students_goal_year') }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="evangelistic_students_goal_q{{ $qNum }}" min="0" max="999999" class="table-input goal-input" value="{{ old('evangelistic_students_goal_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="evangelistic_students_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('evangelistic_students_achieved_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="evangelistic_students_goal_q{{ $qNum }}" data-achieved-field="evangelistic_students_achieved_q{{ $qNum }}" value="N/A"></td>
-                        </tr>
-                        <!-- Bible Course: Discipleship -->
-                        <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
-                            <td class="px-4 py-3 font-semibold text-gray-800 bg-gray-50 border-r border-gray-300">Discipleship Students</td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="discipleship_students_end_year" min="0" max="999999" class="table-input" value="{{ old('discipleship_students_end_year') }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="discipleship_students_goal_year" min="0" max="999999" class="table-input" value="{{ old('discipleship_students_goal_year') }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="discipleship_students_goal_q{{ $qNum }}" min="0" max="999999" class="table-input goal-input" value="{{ old('discipleship_students_goal_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="discipleship_students_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('discipleship_students_achieved_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="discipleship_students_goal_q{{ $qNum }}" data-achieved-field="discipleship_students_achieved_q{{ $qNum }}" value="N/A"></td>
-                        </tr>
-                        <!-- Bible Course: Leadership -->
-                        <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
-                            <td class="px-4 py-3 font-semibold text-gray-800 bg-gray-50 border-r border-gray-300">Leadership Students</td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="leadership_students_end_year" min="0" max="999999" class="table-input" value="{{ old('leadership_students_end_year') }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="leadership_students_goal_year" min="0" max="999999" class="table-input" value="{{ old('leadership_students_goal_year') }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="leadership_students_goal_q{{ $qNum }}" min="0" max="999999" class="table-input goal-input" value="{{ old('leadership_students_goal_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="leadership_students_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('leadership_students_achieved_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="leadership_students_goal_q{{ $qNum }}" data-achieved-field="leadership_students_achieved_q{{ $qNum }}" value="N/A"></td>
-                        </tr>
-                        <!-- Chat: Evangelistic -->
-                        <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
-                            <td class="px-4 py-3 font-semibold text-gray-800 bg-gray-50 border-r border-gray-300">Evangelistic Conversations</td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="evangelistic_conversations_end_year" min="0" max="999999" class="table-input" value="{{ old('evangelistic_conversations_end_year') }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="evangelistic_conversations_goal_year" min="0" max="999999" class="table-input" value="{{ old('evangelistic_conversations_goal_year') }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="evangelistic_conversations_goal_q{{ $qNum }}" min="0" max="999999" class="table-input goal-input" value="{{ old('evangelistic_conversations_goal_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="evangelistic_conversations_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('evangelistic_conversations_achieved_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="evangelistic_conversations_goal_q{{ $qNum }}" data-achieved-field="evangelistic_conversations_achieved_q{{ $qNum }}" value="N/A"></td>
-                        </tr>
-                        <!-- Chat: Pastoral Connections -->
-                        <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
-                            <td class="px-4 py-3 font-semibold text-gray-800 bg-gray-50 border-r border-gray-300">Pastoral Connections</td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="pastoral_connections_end_year" min="0" max="999999" class="table-input" value="{{ old('pastoral_connections_end_year') }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="pastoral_connections_goal_year" min="0" max="999999" class="table-input" value="{{ old('pastoral_connections_goal_year') }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="pastoral_connections_goal_q{{ $qNum }}" min="0" max="999999" class="table-input goal-input" value="{{ old('pastoral_connections_goal_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="pastoral_connections_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('pastoral_connections_achieved_q' . $qNum) }}"></td>
-                            <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="pastoral_connections_goal_q{{ $qNum }}" data-achieved-field="pastoral_connections_achieved_q{{ $qNum }}" value="N/A"></td>
-                        </tr>
-                        <!-- Social Media Reach Section Header -->
-                        <tr class="bg-blue-100 border-b-2 border-blue-300 quarter-field" data-quarter="{{ $qLabel }}">
-                            <td colspan="6" class="px-4 py-2 text-lg font-bold text-blue-800">
-                                📊 Social Media Reach
+                                📊 Organic Reach
                             </td>
                         </tr>
                         <!-- Organic Reach: Facebook -->
@@ -268,6 +218,13 @@
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="website_reach_achieved_q{{ $qNum }}" min="0" max="999999999" class="table-input achieved-input" value="{{ old('website_reach_achieved_q' . $qNum) }}"></td>
                             <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="website_reach_goal_q{{ $qNum }}" data-achieved-field="website_reach_achieved_q{{ $qNum }}" value="N/A"></td>
                         </tr>
+
+                        <!-- SECTION 3: Bible Course Students Section Header -->
+                        <tr class="bg-blue-100 border-b-2 border-blue-300 quarter-field" data-quarter="{{ $qLabel }}">
+                            <td colspan="6" class="px-4 py-2 text-lg font-bold text-blue-800">
+                                📊 Bible Course Students
+                            </td>
+                        </tr>
                         <!-- Bible Course: Evangelistic -->
                         <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
                             <td class="px-4 py-3 font-semibold text-gray-800 bg-gray-50 border-r border-gray-300">Evangelistic Students</td>
@@ -286,7 +243,7 @@
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="discipleship_students_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('discipleship_students_achieved_q' . $qNum) }}"></td>
                             <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="discipleship_students_goal_q{{ $qNum }}" data-achieved-field="discipleship_students_achieved_q{{ $qNum }}" value="N/A"></td>
                         </tr>
-                        <!-- Leadership Students -->
+                        <!-- Bible Course: Leadership -->
                         <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
                             <td class="px-4 py-3 font-semibold text-gray-800 bg-gray-50 border-r border-gray-300">Leadership Students</td>
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="leadership_students_end_year" min="0" max="999999" class="table-input" value="{{ old('leadership_students_end_year') }}"></td>
@@ -295,7 +252,14 @@
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="leadership_students_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('leadership_students_achieved_q' . $qNum) }}"></td>
                             <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="leadership_students_goal_q{{ $qNum }}" data-achieved-field="leadership_students_achieved_q{{ $qNum }}" value="N/A"></td>
                         </tr>
-                        <!-- Evangelistic Conversations -->
+
+                        <!-- SECTION 4: Chat Conversations Section Header -->
+                        <tr class="bg-blue-100 border-b-2 border-blue-300 quarter-field" data-quarter="{{ $qLabel }}">
+                            <td colspan="6" class="px-4 py-2 text-lg font-bold text-blue-800">
+                                📊 Chat Conversations
+                            </td>
+                        </tr>
+                        <!-- Chat: Evangelistic -->
                         <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
                             <td class="px-4 py-3 font-semibold text-gray-800 bg-gray-50 border-r border-gray-300">Evangelistic Conversations</td>
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="evangelistic_conversations_end_year" min="0" max="999999" class="table-input" value="{{ old('evangelistic_conversations_end_year') }}"></td>
@@ -304,7 +268,7 @@
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="evangelistic_conversations_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('evangelistic_conversations_achieved_q' . $qNum) }}"></td>
                             <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="evangelistic_conversations_goal_q{{ $qNum }}" data-achieved-field="evangelistic_conversations_achieved_q{{ $qNum }}" value="N/A"></td>
                         </tr>
-                        <!-- Pastoral Connections -->
+                        <!-- Chat: Pastoral Connections -->
                         <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
                             <td class="px-4 py-3 font-semibold text-gray-800 bg-gray-50 border-r border-gray-300">Pastoral Connections</td>
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="pastoral_connections_end_year" min="0" max="999999" class="table-input" value="{{ old('pastoral_connections_end_year') }}"></td>
@@ -313,7 +277,17 @@
                             <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="pastoral_connections_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('pastoral_connections_achieved_q' . $qNum) }}"></td>
                             <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="pastoral_connections_goal_q{{ $qNum }}" data-achieved-field="pastoral_connections_achieved_q{{ $qNum }}" value="N/A"></td>
                         </tr>
-                        <!-- Financial & Operations Section Header -->
+                        <!-- Chat: Number of Connections -->
+                        <tr class="border-b border-gray-200 hover:bg-green-50 quarter-field" data-quarter="{{ $qLabel }}">
+                            <td class="px-4 py-3 font-semibold text-gray-800 bg-gray-50 border-r border-gray-300">Number of Connections</td>
+                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="connections_end_year" min="0" max="999999" class="table-input" value="{{ old('connections_end_year') }}"></td>
+                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="connections_goal_year" min="0" max="999999" class="table-input" value="{{ old('connections_goal_year') }}"></td>
+                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="connections_goal_q{{ $qNum }}" min="0" max="999999" class="table-input goal-input" value="{{ old('connections_goal_q' . $qNum) }}"></td>
+                            <td class="px-4 py-3 border-r border-gray-300"><input type="number" name="connections_achieved_q{{ $qNum }}" min="0" max="999999" class="table-input achieved-input" value="{{ old('connections_achieved_q' . $qNum) }}"></td>
+                            <td class="px-4 py-3 text-center"><input type="text" readonly class="table-input percentage-display" data-goal-field="connections_goal_q{{ $qNum }}" data-achieved-field="connections_achieved_q{{ $qNum }}" value="N/A"></td>
+                        </tr>
+
+                        <!-- SECTION 5: Financial & Operations Section Header -->
                         <tr class="bg-blue-100 border-b-2 border-blue-300 quarter-field" data-quarter="{{ $qLabel }}">
                             <td colspan="6" class="px-4 py-2 text-lg font-bold text-blue-800">
                                 📊 Financial & Operations

@@ -17,7 +17,24 @@
         </div>
         <div class="flex items-center space-x-4">
             <div class="text-gray-500 text-sm border border-gray-300 rounded-full px-4 py-2">
-                Current Period: <strong>Q3 2025</strong>
+                @php
+                    $now = \Carbon\Carbon::now();
+                    $month = $now->month;
+                    $year = $now->year;
+                    
+                    if ($month >= 1 && $month <= 3) {
+                        $quarter = 'Q1';
+                    } elseif ($month >= 4 && $month <= 6) {
+                        $quarter = 'Q2';
+                    } elseif ($month >= 7 && $month <= 9) {
+                        $quarter = 'Q3';
+                    } else {
+                        $quarter = 'Q4';
+                    }
+                    
+                    $currentQuarterDisplay = "$quarter $year";
+                @endphp
+                Current Period: <strong>{{ $currentQuarterDisplay }}</strong>
             </div>
             <div class="relative">
                 <button class="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity" id="profileToggle">
